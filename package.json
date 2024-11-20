@@ -1,0 +1,70 @@
+{
+    "name": "nodejs-typescript-template",
+    "version": "1.383.0",
+    "description": "A Payment credit service for MASUMI AI Nodes",
+    "main": "dist/src/index.js",
+    "author": "NMKR",
+    "type": "commonjs",
+    "license": "MIT",
+    "prisma": {
+        "seed": "ts-node prisma/seed.ts"
+    },
+    "_moduleAliases": {
+        "@": "./dist"
+    },
+    "scripts": {
+        "lint": "eslint --fix --quiet src/**/*.ts",
+        "format": "prettier --log-level silent --write src/**/*.ts",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
+        "prisma:generate": "npx prisma generate",
+        "prisma:migrate": "npx prisma migrate dev",
+        "prisma:seed": "npx prisma db seed",
+        "dev": "nodemon --watch src/**/*.ts --exec ts-node ./src/index.ts",
+        "build": "npx prisma generate && tsc",
+        "start": "NODE_ENV=production && node ./dist/index.js",
+        "swagger": "ts-node ./src/utils/swagger-generator/cli.ts"
+    },
+    "dependencies": {
+        "@asteasolutions/zod-to-openapi": "^7.2.0",
+        "@blockfrost/blockfrost-js": "^5.5.0",
+        "@jest/types": "^29.6.3",
+        "@paralleldrive/cuid2": "^2.2.2",
+        "@prisma/client": "^5.21.1",
+        "async-sema": "^3.1.1",
+        "dotenv": "^16.4.5",
+        "express": "^5.0.1",
+        "express-zod-api": "^20.14.3",
+        "http-errors": "^2.0.0",
+        "http-status-codes": "^2.3.0",
+        "module-alias": "^2.2.3",
+        "node": "^22.10.0",
+        "node-cron": "^3.0.3",
+        "swagger-ui-express": "^5.0.1",
+        "winston": "^3.15.0",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.15.0",
+        "@types/express": "^5.0.0",
+        "@types/jest": "^29.5.14",
+        "@types/node": "^22.7.7",
+        "@types/node-cron": "^3.0.11",
+        "@types/swagger-ui-express": "^4.1.6",
+        "@typescript-eslint/eslint-plugin": "^8.10.0",
+        "@typescript-eslint/parser": "^8.10.0",
+        "eslint": "^9.15.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.2.1",
+        "globals": "^15.12.0",
+        "jest": "^29.7.0",
+        "nodemon": "^3.1.7",
+        "prettier": "^3.3.3",
+        "prisma": "^5.21.1",
+        "ts-jest": "^29.2.5",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.6.3",
+        "typescript-eslint": "^8.15.0"
+    }
+}
