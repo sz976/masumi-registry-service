@@ -13,9 +13,7 @@ Registry entries (and de-registrations) are cached in a database and periodicall
 
 ## Related Repositories
 
-Masumi Payment Service. Used to register and deregister agents and handle payments.
-
-Links TBD
+[Masumi Payment Service](https://github.com/masumi-ai/masumi-payment-service). Used to register and deregister agents and handle payments.
 
 ## Project Architecture and Technology Stack
 
@@ -31,6 +29,9 @@ Our backend architecture is built upon the following design patterns and powerfu
 - [Prisma](https://www.prisma.io/): Implemented as the ORM to interact with our PostgreSQL database
 - [DOTENV](https://www.npmjs.com/package/dotenv): Incorporated to securely load environment variables from `.env` files
 - [Zod-to-OpenAPI](https://www.npmjs.com/package/@asteasolutions/zod-to-openapi): Used to generate the OpenAPI schema from the Zod schemas
+- [Blockfrost](https://www.npmjs.com/package/@blockfrost/blockfrost-js): Used to interact with the Cardano blockchain
+- [Jest](https://jestjs.io/): Used as the testing framework
+- [Docker](https://www.docker.com/): Used to containerize the application for production
 
 ## Install and Setup
 
