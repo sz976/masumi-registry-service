@@ -17,9 +17,7 @@ Registry entries (and de-registrations) are cached in a database and periodicall
 
 ## Project Architecture and Technology Stack
 
-This section provides an overview of the key architectural patterns and technologies employed in our backend:
-
-Our backend architecture is built upon the following design patterns and powerful libraries:
+This section provides an overview of the key architectural patterns and technologies employed in this service:
 
 - [Onion Architecture](http://jeffreypalermo.com/blog/the-onion-architecture-part-1/):
   Employed as the core architectural design pattern
