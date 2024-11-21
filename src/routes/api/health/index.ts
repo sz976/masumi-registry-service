@@ -12,7 +12,7 @@ export const healthEndpointGet = unauthenticatedEndpointFactory.build({
     input: z.object({
     }),
     output: healthResponseSchema,
-    handler: async ({ input: { }, options, logger }) => {
+    handler: async () => {
         const healthConfiguration = await healthService.getHealthConfiguration();
         return healthConfiguration;
     },

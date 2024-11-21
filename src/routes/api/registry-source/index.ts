@@ -29,7 +29,7 @@ export const queryRegistrySourceEndpointGet = adminAuthenticatedEndpointFactory.
     method: "get",
     input: getRegistrySourceSchemaInput,
     output: getRegistrySourceSchemaOutput,
-    handler: async ({ input, options, logger }) => {
+    handler: async ({ input, }) => {
         const data = await registrySourceService.getRegistrySources(input.cursorId, input.limit)
         return { sources: data }
     },
@@ -51,7 +51,7 @@ export const addRegistrySourceEndpointPost = adminAuthenticatedEndpointFactory.b
     method: "post",
     input: addRegistrySourceSchemaInput,
     output: addRegistrySourceSchemaOutput,
-    handler: async ({ input, options, logger }) => {
+    handler: async ({ input, }) => {
         const result = await registrySourceService.addRegistrySource(input)
         return result
     },
@@ -85,7 +85,7 @@ export const deleteRegistrySourceSchemaOutput = z.object({
     id: z.string(),
 });
 
-export const deleteAPIKeyEndpointDelete = adminAuthenticatedEndpointFactory.build({
+export const deleteRegistrySourceEndpointDelete = adminAuthenticatedEndpointFactory.build({
     method: "delete",
     input: deleteRegistrySourceSchemaInput,
     output: deleteRegistrySourceSchemaOutput,

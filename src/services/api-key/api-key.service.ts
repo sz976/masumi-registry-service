@@ -11,7 +11,7 @@ async function getApiKey(id: string | undefined, apiKey: string | undefined) {
     return null;
 }
 async function addApiKey(permission: Permission, usageLimited: boolean, maxUsageCredits: number) {
-    let apiKey = ("masumi-registry-" + permission == Permission.ADMIN ? "admin-" : "") + createId()
+    const apiKey = ("masumi-registry-" + permission == Permission.ADMIN ? "admin-" : "") + createId()
     return await apiKeyRepository.addApiKey(apiKey, permission, usageLimited, maxUsageCredits)
 }
 async function updateApiKey(id: string | undefined, apiKey: string | undefined, status: APIKeyStatus, usageLimited: boolean, maxUsageCredits: number) {

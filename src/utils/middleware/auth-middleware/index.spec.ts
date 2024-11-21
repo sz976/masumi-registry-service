@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { testMiddleware } from "express-zod-api";
 import { authMiddleware } from "./index";
 import { $Enums } from "@prisma/client";
@@ -48,6 +49,7 @@ describe("authMiddleware", () => {
             permission: $Enums.Permission.USER,
             accumulatedUsageCredits: 0,
             maxUsageCredits: 100,
+            status: $Enums.APIKeyStatus.ACTIVE,
             usageLimited: true,
         });
 
@@ -59,12 +61,51 @@ describe("authMiddleware", () => {
             }),
         ).rejects.toThrow("Unauthorized, admin access required");
     });
+    it("should throw 401 if api key is inactive admin", async () => {
+        const { prisma } = require("@/utils/db");
+        (prisma.apiKey.findUnique as jest.Mock).mockResolvedValue({
+            id: 1,
+            permission: $Enums.Permission.USER,
+            accumulatedUsageCredits: 0,
+            maxUsageCredits: 100,
+            status: $Enums.APIKeyStatus.REVOKED,
+            usageLimited: true,
+        });
+
+        await expect(
+            testMiddleware({
+                middleware: authMiddleware(false),
+                requestProps: { method: "POST", body: {}, headers: { token: "valid" } },
+                options: {},
+            }),
+        ).rejects.toThrow("API key is revoked");
+    });
+    it("should throw 401 if api key is inactive admin", async () => {
+        const { prisma } = require("@/utils/db");
+        (prisma.apiKey.findUnique as jest.Mock).mockResolvedValue({
+            id: 1,
+            permission: $Enums.Permission.ADMIN,
+            accumulatedUsageCredits: 0,
+            maxUsageCredits: 100,
+            status: $Enums.APIKeyStatus.REVOKED,
+            usageLimited: true,
+        });
+
+        await expect(
+            testMiddleware({
+                middleware: authMiddleware(true),
+                requestProps: { method: "POST", body: {}, headers: { token: "valid" } },
+                options: {},
+            }),
+        ).rejects.toThrow("API key is revoked");
+    });
 
     it("should pass validation with valid user token", async () => {
         const mockApiKey = {
             id: 1,
             permission: $Enums.Permission.USER,
             accumulatedUsageCredits: 0,
+            status: $Enums.APIKeyStatus.ACTIVE,
             maxUsageCredits: 100,
             usageLimited: true,
         };
@@ -92,6 +133,7 @@ describe("authMiddleware", () => {
             permission: $Enums.Permission.ADMIN,
             accumulatedUsageCredits: 0,
             maxUsageCredits: 100,
+            status: $Enums.APIKeyStatus.ACTIVE,
             usageLimited: true,
         };
         const { prisma } = require("@/utils/db");

@@ -13,7 +13,7 @@
         "@": "./dist"
     },
     "scripts": {
-        "lint": "eslint --fix --quiet src/**/*.ts",
+        "lint": "eslint --fix --quiet --config eslint.config.mjs",
         "format": "prettier --log-level silent --write src/**/*.ts",
         "test": "jest",
         "test:watch": "jest --watch",

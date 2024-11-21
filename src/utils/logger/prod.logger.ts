@@ -1,5 +1,5 @@
 import { createLogger, format, transports } from "winston";
-const { combine, timestamp, label, printf, errors, json } = format;
+const { combine, timestamp, errors, json } = format;
 
 function buildProdLogger() {
     return createLogger({

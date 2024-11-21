@@ -12,7 +12,7 @@ export const authMiddleware = (requiresAdmin: boolean) =>
             name: "api-key",
         },
         input: z.object({}),
-        handler: async ({ input: { }, request, logger }) => {
+        handler: async ({ request, logger }) => {
             logger.info("Checking the key and token");
             const sendKey = request.headers.token;
             if (!sendKey) {

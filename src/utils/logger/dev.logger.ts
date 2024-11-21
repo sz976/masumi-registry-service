@@ -1,5 +1,5 @@
 import { createLogger, format, transports } from "winston";
-const { combine, timestamp, label, printf, errors } = format;
+const { combine, timestamp, printf, errors } = format;
 
 function buildDevLogger() {
     const logFormat = printf(({ level, message, timestamp, stack }) => {

@@ -1,14 +1,8 @@
 import { authenticatedEndpointFactory } from '@/utils/endpoint-factory/authenticated';
-import { adminAuthenticatedEndpointFactory } from '@/utils/endpoint-factory/admin-authenticated';
 import { z } from 'zod';
 import { ez } from "express-zod-api";
 import { tokenCreditService } from '@/services/token-credit';
-import { cardanoRegistryService } from '@/services/cardano-registry';
-import { $Enums, PaymentType } from '@prisma/client';
-import { prisma } from '@/utils/db';
-import { healthCheckService } from '@/services/health-check';
-import { createId } from '@paralleldrive/cuid2';
-import createHttpError from 'http-errors';
+import { $Enums } from '@prisma/client';
 import { registryEntryService } from '@/services/registry-entry';
 
 export const queryRegistrySchemaInput = z.object({
