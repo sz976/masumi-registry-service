@@ -1,8 +1,6 @@
 import { adminAuthenticatedEndpointFactory } from '@/utils/endpoint-factory/admin-authenticated';
 import { z } from 'zod';
-import { $Enums, APIKeyStatus, Permission } from '@prisma/client';
-import { prisma } from '@/utils/db';
-import { createId } from '@paralleldrive/cuid2';
+import { APIKeyStatus, Permission } from '@prisma/client';
 import createHttpError from 'http-errors';
 import { apiKeyService } from '@/services/api-key/api-key.service';
 
@@ -29,8 +27,8 @@ export const queryAPIKeyEndpointGet = adminAuthenticatedEndpointFactory.build({
     method: "get",
     input: getAPIKeySchemaInput,
     output: getAPIKeySchemaOutput,
-    handler: async ({ input, options, logger }) => {
-        let data = await apiKeyService.getApiKey(input.id, input.apiKey)
+    handler: async ({ input }) => {
+        const data = await apiKeyService.getApiKey(input.id, input.apiKey)
 
         if (!data)
             throw createHttpError(404, "Not found")
@@ -60,8 +58,8 @@ export const addAPIKeyEndpointPost = adminAuthenticatedEndpointFactory.build({
     method: "post",
     input: addAPIKeySchemaInput,
     output: addAPIKeySchemaOutput,
-    handler: async ({ input, options, logger }) => {
-        let result = await apiKeyService.addApiKey(input.permission, input.usageLimited, input.maxUsageCredits)
+    handler: async ({ input }) => {
+        const result = await apiKeyService.addApiKey(input.permission, input.usageLimited, input.maxUsageCredits)
         return result;
     },
 });
@@ -88,9 +86,9 @@ export const updateAPIKeyEndpointPatch = adminAuthenticatedEndpointFactory.build
     method: "patch",
     input: updateAPIKeySchemaInput,
     output: updateAPIKeySchemaOutput,
-    handler: async ({ input, options, logger }) => {
+    handler: async ({ input }) => {
 
-        let result = await apiKeyService.updateApiKey(input.id, input.apiKey, input.status, input.usageLimited, input.maxUsageCredits)
+        const result = await apiKeyService.updateApiKey(input.id, input.apiKey, input.status, input.usageLimited, input.maxUsageCredits)
         if (!result)
             throw createHttpError(404, "Not found")
 
@@ -113,9 +111,9 @@ export const deleteAPIKeyEndpointDelete = adminAuthenticatedEndpointFactory.buil
     input: deleteAPIKeySchemaInput,
     output: deleteAPIKeySchemaOutput,
 
-    handler: async ({ input, options, logger }) => {
+    handler: async ({ input }) => {
 
-        let result = await apiKeyService.deleteApiKey(input.id, input.apiKey)
+        const result = await apiKeyService.deleteApiKey(input.id, input.apiKey)
 
         if (!result)
             throw createHttpError(404, "Not found")

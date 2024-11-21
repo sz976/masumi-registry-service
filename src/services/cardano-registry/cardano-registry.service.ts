@@ -28,7 +28,7 @@ export async function updateDeregisteredCardanoRegistryEntries() {
     if (sources.length == 0)
         return;
 
-    let acquiredMutex = await deleteMutex.tryAcquire();
+    const acquiredMutex = await deleteMutex.tryAcquire();
     //if we are already performing an update, we wait for it to finish and return
     if (!acquiredMutex)
         return await deleteMutex.acquire();
@@ -52,11 +52,11 @@ export async function updateDeregisteredCardanoRegistryEntries() {
 
             while (latestAssets.length != 0) {
 
-                let assetsToProcess = await Promise.all(latestAssets.map(async (asset) => {
+                const assetsToProcess = await Promise.all(latestAssets.map(async (asset) => {
                     return await blockfrost.assetsById(asset.identifier)
                 }))
 
-                let burnedAssets = assetsToProcess.filter(a => a.quantity == "0")
+                const burnedAssets = assetsToProcess.filter(a => a.quantity == "0")
 
                 await Promise.all(burnedAssets.map(async (asset) => {
                     await prisma.registryEntry.update({
@@ -109,7 +109,7 @@ export async function updateLatestCardanoRegistryEntries(onlyEntriesAfter?: Date
     if (sources.length == 0)
         return;
 
-    let acquiredMutex = await updateMutex.tryAcquire();
+    const acquiredMutex = await updateMutex.tryAcquire();
     //if we are already performing an update, we wait for it to finish and return
     if (!acquiredMutex)
         return await updateMutex.acquire();
@@ -186,10 +186,7 @@ export async function updateLatestCardanoRegistryEntries(onlyEntriesAfter?: Date
                 logger.error("Error updating cardano registry entries", { error: error, sourceId: source.id })
             }
         }))
-    } catch (error) {
-        throw error
-    }
-    finally {
+    } finally {
         //library is strange as we can release from any non-acquired semaphore
         updateMutex.release()
     }
@@ -252,7 +249,7 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
 
         //check endpoint
         const endpoint = metadataStringConvert(parsedMetadata.data.api_url)!
-        let isAvailable = await healthCheckService.checkAndVerifyEndpoint({ api_url: endpoint, identifier: asset.asset, registry: { identifier: source.identifier!, type: $Enums.RegistryEntryType.WEB3_CARDANO_V1 } })
+        const isAvailable = await healthCheckService.checkAndVerifyEndpoint({ api_url: endpoint, identifier: asset.asset, registry: { identifier: source.identifier!, type: $Enums.RegistryEntryType.WEB3_CARDANO_V1 } })
 
         return await prisma.$transaction(async (tx) => {
             const existingEntry = await tx.registryEntry.findUnique({

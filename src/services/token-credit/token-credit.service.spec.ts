@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { tokenCreditService } from "./token-credit.service";
 
-import { $Enums } from "@prisma/client";
 
 
 jest.mock("@/repositories/creditTokens", () => ({

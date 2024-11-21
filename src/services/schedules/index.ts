@@ -1,4 +1,3 @@
-import { prisma } from '@/utils/db';
 import cron from "node-cron";
 import { updateLatestCardanoRegistryEntries, updateDeregisteredCardanoRegistryEntries } from "@/services/cardano-registry/cardano-registry.service";
 import { CONFIG } from "@/utils/config";

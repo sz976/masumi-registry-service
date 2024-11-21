@@ -1,6 +1,5 @@
 import { registrySourceRepository } from "@/repositories/registry-source";
 import { addRegistrySourceSchemaInput, updateRegistrySourceSchemaInput } from "@/routes/api/registry-source";
-import { Network, RegistryEntryType } from "@prisma/client";
 import { z } from "zod";
 async function getRegistrySources(cursorId: string | undefined, limit: number) {
     return await registrySourceRepository.getRegistrySource(cursorId, limit);
