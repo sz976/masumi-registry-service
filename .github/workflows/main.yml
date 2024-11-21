@@ -37,6 +37,8 @@ jobs:
       # Step 1: Checkout code
       - name: Checkout Code
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
 
       # Step 2: Set up Node.js environment
       - name: Set up Node.js
@@ -77,8 +79,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 4: Run ESLint with Auto-Fix
-      - name: Run ESLint with Auto-Fix
+      - name: Run ESLint remaining issues
         id: lint_fix_remaining
         run: |
           npx eslint --fix --config eslint.config.mjs --format=stylish > lint-results.txt || true
