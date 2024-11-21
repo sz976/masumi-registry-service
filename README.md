@@ -13,7 +13,7 @@ Registry entries (and de-registrations) are cached in a database and periodicall
 
 ## Related Repositories
 
-[Masumi Payment Service](https://github.com/masumi-ai/masumi-payment-service). Used to register and deregister agents and handle payments.
+[Masumi Payment Service](https://github.com/nftmakerio/masumi-payment-service). Used to register and deregister agents and handle payments.
 
 ## Project Architecture and Technology Stack
 
