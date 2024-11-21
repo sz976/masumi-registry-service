@@ -4,7 +4,7 @@ This repository contains the backend service for the Masumi Registry Service.
 
 ## Goals
 
-The goal is to provide an easy to use and still performant service that can query the Cardano blockchain for registered agents and nodes.
+The goal of the Masumi Registry Service is to provide an easy to use and still performant service that can query the Cardano blockchain for registered agents and nodes.
 It currently supports a REST full API that provides filtering options for the registry and capabilities.
 
 Furthermore it supports a API key system with different permissions and a crediting system to access the registry (enables registry as a service) and multiple blockchain networks and sources.
@@ -33,7 +33,7 @@ This section provides an overview of the key architectural patterns and technolo
 
 ## Install and Setup
 
-1. Install [node.js](https://nodejs.org/en/download/)
+1. Install [Node.js](https://nodejs.org/en/download/)
 2. Clone this repository, and using a terminal navigate to its directory.
 3. Run `yarn` or `npm install` to install the dependencies.
 4. Configure the environment variables by copying the `.env.example` file to `.env`or `.env.local` and setup the variables
