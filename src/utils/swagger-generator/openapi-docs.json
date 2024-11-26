@@ -333,7 +333,7 @@
                                                     },
                                                     "uptimeCheckCount": 10,
                                                     "uptimeCount": 8,
-                                                    "lastUptimeCheck": "2024-11-20T07:37:38.503Z",
+                                                    "lastUptimeCheck": "2024-11-26T08:30:26.884Z",
                                                     "api_url": "https://localhost:3000/api/",
                                                     "capability": {
                                                         "name": "Example Capability",
@@ -342,7 +342,7 @@
                                                     },
                                                     "company_name": "MASUMI",
                                                     "identifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                                    "id": "p7x9qd5g1zu3l86rz065mife",
+                                                    "id": "kezejpi3qjo8lf37j6atepgl",
                                                     "paymentIdentifier": [
                                                         {
                                                             "paymentIdentifier": "addr1333333333333333333333333333333333333333333333333333333333333333",

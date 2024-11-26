@@ -1,4 +1,3 @@
-import "module-alias/register";
 import { generateOpenAPI } from ".";
 import fs from "fs";
 
