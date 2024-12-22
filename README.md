@@ -62,7 +62,7 @@ To verify that the application is working correctly, point your browser to
 should see a response with one books in JSON format.
 
 You can see a OpenAPI (Swagger) definition of the REST API at
-[http://localhost:3001/api-docs/](http://localhost:3001/api-docs/). This
+[http://localhost:3001/docs/](http://localhost:3001/docs/). This
 interface also allows you to interact with the API.
 
 ## Run with Docker
