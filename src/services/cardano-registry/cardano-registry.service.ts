@@ -8,6 +8,30 @@ import { logger } from "@/utils/logger";
 import { BlockFrostAPI } from "@blockfrost/blockfrost-js";
 
 const metadataSchema = z.object({
+
+    /*
+"name": "<name>",
+"description": "<description>",
+"api_url": "<api_url>",
+"example_output": "<ipfs_hash>",
+"version": "<version>",
+"author": {
+"name": "<author_name>",
+"contact": "<author_contact_details>",
+"organization": "<author_orga>"
+},
+"payment_address": "<cardano_address>",
+"requests_per_hour": "request_amount",
+"tags": [
+"<tag>"
+],
+"legal": {
+"privacy policy": "<url>",
+"terms": "<url>",
+"other": "<url>"
+},
+"image": "http://example.com/path/to/image.png"
+    */
     name: z.string(),
     description: z.string().or(z.array(z.string())).optional(),
     api_url: z.string().url().or(z.array(z.string())),
@@ -132,7 +156,7 @@ export async function updateLatestCardanoRegistryEntries(onlyEntriesAfter?: Date
             try {
                 const blockfrost = new BlockFrostAPI({
                     projectId: source.apiKey!,
-                    network: source.network == $Enums.Network.MAINNET ? "mainnet" : "preview"
+                    network: source.network == $Enums.Network.MAINNET ? "mainnet" : source.network == $Enums.Network.PREVIEW ? "preview" : "preprod"
                 });
                 let pageOffset = source.latestPage
                 let latestIdentifier = source.latestIdentifier
@@ -235,7 +259,7 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
 
         const blockfrost = new BlockFrostAPI({
             projectId: source.apiKey!,
-            network: source.network == $Enums.Network.MAINNET ? "mainnet" : "preview"
+            network: source.network == $Enums.Network.MAINNET ? "mainnet" : source.network == $Enums.Network.PREVIEW ? "preview" : "preprod"
         });
 
         const registryData = await blockfrost.assetsById(asset.asset)

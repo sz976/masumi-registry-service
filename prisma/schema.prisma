@@ -133,6 +133,7 @@ model RegistrySources {
 
 enum Network {
   PREVIEW
+  PREPROD
   MAINNET
 }
 

@@ -8,6 +8,8 @@ async function init() {
         level: "info",
         message: "initialized cron events",
     });
+    const start = new Date()
+    await updateLatestCardanoRegistryEntries(start)
     if (CONFIG.UPDATE_CARDANO_REGISTRY_INTERVAL != null) {
         cron.schedule(CONFIG.UPDATE_CARDANO_REGISTRY_INTERVAL, async () => {
             logger.info("updating cardano registry entries")
