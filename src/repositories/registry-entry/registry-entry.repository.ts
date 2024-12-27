@@ -11,7 +11,8 @@ async function getRegistryEntry(capability: { name: string | undefined; version:
         include: {
             paymentIdentifier: true,
             capability: true,
-            registry: true
+            registry: true,
+            tags: true
         },
         orderBy: [{
             createdAt: 'desc',

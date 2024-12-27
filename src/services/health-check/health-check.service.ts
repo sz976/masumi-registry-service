@@ -1,5 +1,5 @@
 import { prisma } from "@/utils/db";
-import { $Enums, Capability, PaymentIdentifier, RegistryEntry, RegistrySources } from "@prisma/client";
+import { $Enums, Capability, PaymentIdentifier, RegistryEntry, RegistrySources, Tag } from "@prisma/client";
 
 async function checkAndVerifyEndpoint({ api_url, identifier, registry }: { api_url: string, identifier: string, registry: { identifier: string | null, type: $Enums.RegistryEntryType } }) {
     try {
@@ -33,7 +33,7 @@ async function checkAndVerifyRegistryEntry({ registryEntry, minHealthCheckDate }
     return await checkAndVerifyEndpoint({ api_url: registryEntry.api_url, identifier: registryEntry.identifier, registry: registryEntry.registry })
 }
 
-async function checkVerifyAndUpdateRegistryEntries({ registryEntries, minHealthCheckDate }: { registryEntries: (RegistryEntry & { registry: RegistrySources, paymentIdentifier: PaymentIdentifier[], capability: Capability })[], minHealthCheckDate: Date | undefined }) {
+async function checkVerifyAndUpdateRegistryEntries({ registryEntries, minHealthCheckDate }: { registryEntries: (RegistryEntry & { registry: RegistrySources, paymentIdentifier: PaymentIdentifier[], capability: Capability, tags: Tag[] })[], minHealthCheckDate: Date | undefined }) {
     if (minHealthCheckDate == null)
         return registryEntries;
 

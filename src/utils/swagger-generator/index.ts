@@ -93,13 +93,21 @@ export function generateOpenAPI() {
                   entries: [
                     {
                       name: "Example API",
-                      description: "Example API description",
+                      description: "Example Capability description",
                       status: "ONLINE",
                       registry: {
                         type: "WEB3_CARDANO_V1",
                         identifier: "0000000000000000000000000000000000000000000000000000000000000000",
                         url: null,
                       },
+                      author_contact: null,
+                      author_name: null,
+                      image: "testimage.de",
+                      other_legal: null,
+                      privacy_policy: null,
+                      requests_per_hour: 15,
+                      tags: null,
+                      terms_and_condition: "If the answer is 42 what was the question",
                       uptimeCheckCount: 10,
                       uptimeCount: 8,
                       lastUptimeCheck: new Date(),
@@ -109,7 +117,7 @@ export function generateOpenAPI() {
                         version: "1.0.0",
                         description: "Example Capability description",
                       },
-                      company_name: "MASUMI",
+                      author_organization: "MASUMI",
                       identifier: "222222222222222222222222222222222222222222222222222222222222222222",
                       id: cuid2.createId(),
                       paymentIdentifier: [

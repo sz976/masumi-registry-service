@@ -42,7 +42,17 @@ export const queryRegistrySchemaOutput = z.object({
             uptimeCount: z.number(),
             uptimeCheckCount: z.number(),
             api_url: z.string(),
-            company_name: z.string().nullable(),
+            author_name: z.string().nullable(),
+            author_organization: z.string().nullable(),
+            author_contact: z.string().nullable(),
+            image: z.string().nullable(),
+            privacy_policy: z.string().nullable(),
+            terms_and_condition: z.string().nullable(),
+            other_legal: z.string().nullable(),
+            requests_per_hour: z.number().nullable(),
+            tags: z.array(z.object({
+                value: z.string()
+            })).nullable(),
             identifier: z.string(),
         }
     ))
