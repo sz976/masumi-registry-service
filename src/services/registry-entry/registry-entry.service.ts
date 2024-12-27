@@ -8,7 +8,7 @@ import { PaymentType } from "@prisma/client";
 
 async function getRegistryEntries(input: z.infer<typeof queryRegistrySchemaInput>) {
     await cardanoRegistryService.updateLatestCardanoRegistryEntries(input.minRegistryDate);
-    const healthCheckedEntries: ({ registry: { type: $Enums.RegistryEntryType; id: string; createdAt: Date; updatedAt: Date; identifier: string | null; url: string | null; note: string | null; latestPage: number; latestIdentifier: string | null; }; paymentIdentifier: { id: string; createdAt: Date; updatedAt: Date; paymentIdentifier: string | null; paymentType: $Enums.PaymentType; registryEntryId: string | null; }[]; capability: { name: string; version: string; description: string | null; id: string; createdAt: Date; updatedAt: Date; }; } & { name: string; description: string | null; status: $Enums.Status; id: string; lastUptimeCheck: Date; uptimeCount: number; uptimeCheckCount: number; api_url: string; company_name: string | null; createdAt: Date; updatedAt: Date; registrySourcesId: string; identifier: string; capabilitiesId: string; })[] = []
+    const healthCheckedEntries: Awaited<ReturnType<typeof healthCheckService.checkVerifyAndUpdateRegistryEntries>>['0'][] = [];
     let currentCursorId = input.cursorId ?? undefined
     const allowedPaymentTypes: $Enums.PaymentType[] = [PaymentType.WEB3_CARDANO_V1]
     while (healthCheckedEntries.length < input.limit) {

@@ -44,6 +44,16 @@ CREATE TABLE "UsageEntry" (
 );
 
 -- CreateTable
+CREATE TABLE "Tag" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "value" TEXT NOT NULL,
+
+    CONSTRAINT "Tag_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "RegistryEntry" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -51,7 +61,14 @@ CREATE TABLE "RegistryEntry" (
     "name" TEXT NOT NULL,
     "api_url" TEXT NOT NULL,
     "description" TEXT,
-    "company_name" TEXT,
+    "requests_per_hour" DOUBLE PRECISION,
+    "author_name" TEXT,
+    "author_contact" TEXT,
+    "author_organization" TEXT,
+    "privacy_policy" TEXT,
+    "terms_and_condition" TEXT,
+    "other_legal" TEXT,
+    "image" TEXT NOT NULL,
     "lastUptimeCheck" TIMESTAMP(3) NOT NULL,
     "uptimeCount" INTEGER NOT NULL DEFAULT 0,
     "uptimeCheckCount" INTEGER NOT NULL DEFAULT 0,
@@ -113,11 +130,20 @@ CREATE TABLE "UpdatedRegistryEntriesLog" (
     CONSTRAINT "UpdatedRegistryEntriesLog_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "_RegistryEntryToTag" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "apiKey_apiKey_key" ON "apiKey"("apiKey");
 
 -- CreateIndex
 CREATE INDEX "apiKey_apiKey_idx" ON "apiKey"("apiKey");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Tag_value_key" ON "Tag"("value");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "RegistryEntry_identifier_registrySourcesId_key" ON "RegistryEntry"("identifier", "registrySourcesId");
@@ -131,6 +157,12 @@ CREATE UNIQUE INDEX "Capability_name_version_key" ON "Capability"("name", "versi
 -- CreateIndex
 CREATE UNIQUE INDEX "RegistrySources_type_identifier_key" ON "RegistrySources"("type", "identifier");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "_RegistryEntryToTag_AB_unique" ON "_RegistryEntryToTag"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_RegistryEntryToTag_B_index" ON "_RegistryEntryToTag"("B");
+
 -- AddForeignKey
 ALTER TABLE "UsageEntry" ADD CONSTRAINT "UsageEntry_apiKeyId_fkey" FOREIGN KEY ("apiKeyId") REFERENCES "apiKey"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -142,3 +174,9 @@ ALTER TABLE "RegistryEntry" ADD CONSTRAINT "RegistryEntry_capabilitiesId_fkey" F
 
 -- AddForeignKey
 ALTER TABLE "PaymentIdentifier" ADD CONSTRAINT "PaymentIdentifier_registryEntryId_fkey" FOREIGN KEY ("registryEntryId") REFERENCES "RegistryEntry"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_RegistryEntryToTag" ADD CONSTRAINT "_RegistryEntryToTag_A_fkey" FOREIGN KEY ("A") REFERENCES "RegistryEntry"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_RegistryEntryToTag" ADD CONSTRAINT "_RegistryEntryToTag_B_fkey" FOREIGN KEY ("B") REFERENCES "Tag"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -49,14 +49,33 @@ model UsageEntry {
   apiKeyId String?
 }
 
+model Tag {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  value     String   @unique
+
+  RegistryEntry RegistryEntry[]
+}
+
 model RegistryEntry {
-  id           String   @id @default(cuid())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  name         String
-  api_url      String
-  description  String?
-  company_name String?
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name                String
+  api_url             String
+  description         String?
+  requests_per_hour   Float?
+  author_name         String?
+  author_contact      String?
+  author_organization String?
+
+  privacy_policy      String?
+  terms_and_condition String?
+  other_legal         String?
+  image               String
+  tags                Tag[]
 
   lastUptimeCheck  DateTime
   uptimeCount      Int             @default(0)

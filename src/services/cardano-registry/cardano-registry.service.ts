@@ -20,7 +20,6 @@ const metadataSchema = z.object({
 "contact": "<author_contact_details>",
 "organization": "<author_orga>"
 },
-"payment_address": "<cardano_address>",
 "requests_per_hour": "request_amount",
 "tags": [
 "<tag>"
@@ -35,10 +34,24 @@ const metadataSchema = z.object({
     name: z.string(),
     description: z.string().or(z.array(z.string())).optional(),
     api_url: z.string().url().or(z.array(z.string())),
-    capability_name: z.string().or(z.array(z.string())),
-    capability_version: z.string(),
-    capability_description: z.string().or(z.array(z.string())).optional(),
-    company_name: z.string().or(z.array(z.string())).optional()
+    example_output: z.string().or(z.array(z.string())).optional(),
+    capability: z.object({
+        name: z.string().or(z.array(z.string())),
+        version: z.string().or(z.array(z.string())),
+    }),
+    requests_per_hour: z.string().or(z.array(z.string())).optional(),
+    author: z.object({
+        name: z.string().or(z.array(z.string())).optional(),
+        contact: z.string().or(z.array(z.string())).optional(),
+        organization: z.string().or(z.array(z.string())).optional()
+    }).optional(),
+    legal: z.object({
+        privacy_policy: z.string().or(z.array(z.string())),
+        terms: z.string().or(z.array(z.string())),
+        other: z.string().or(z.array(z.string()))
+    }).optional(),
+    tags: z.array(z.string().or(z.array(z.string()))).optional(),
+    image: z.string().or(z.array(z.string()))
 })
 const deleteMutex = new Sema(1);
 export async function updateDeregisteredCardanoRegistryEntries() {
@@ -120,7 +133,7 @@ export async function updateLatestCardanoRegistryEntries(onlyEntriesAfter?: Date
         return;
 
     //we do not need any isolation level here as worst case we have a few duplicate checks in the next run but no data loss. Advantage we do not need to lock the table
-    const sources = await prisma.registrySources.findMany({
+    let sources = await prisma.registrySources.findMany({
         where: {
             type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
             identifier: { not: null },
@@ -133,10 +146,24 @@ export async function updateLatestCardanoRegistryEntries(onlyEntriesAfter?: Date
     if (sources.length == 0)
         return;
 
-    const acquiredMutex = await updateMutex.tryAcquire();
+    let acquiredMutex = await updateMutex.tryAcquire();
     //if we are already performing an update, we wait for it to finish and return
-    if (!acquiredMutex)
-        return await updateMutex.acquire();
+    if (!acquiredMutex) {
+        acquiredMutex = await updateMutex.acquire();
+        sources = await prisma.registrySources.findMany({
+            where: {
+                type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
+                identifier: { not: null },
+                updatedAt: {
+                    lte: onlyEntriesAfter
+                }
+            }
+        })
+        if (sources.length == 0) {
+            updateMutex.release();
+            return;
+        }
+    }
 
     try {
         //sanity checks
@@ -150,7 +177,7 @@ export async function updateLatestCardanoRegistryEntries(onlyEntriesAfter?: Date
 
         logger.debug("updating entries from sources", { count: sources.length })
         //the return variable, note that the order of the entries is not guaranteed
-        const latestEntries: ({ name: string; status: $Enums.Status; description: string | null; api_url: string; company_name: string | null; id: string; createdAt: Date; updatedAt: Date; identifier: string; lastUptimeCheck: Date; uptimeCount: number; uptimeCheckCount: number; registrySourcesId: string; capabilitiesId: string; })[] = []
+        const latestEntries: ({ name: string; status: $Enums.Status; description: string | null; api_url: string; author_name: string | null; author_contact: string | null; author_organization: string | null; privacy_policy: string | null; terms_and_condition: string | null; other_legal: string | null; image: string; id: string; createdAt: Date; updatedAt: Date; identifier: string; lastUptimeCheck: Date; uptimeCount: number; uptimeCheckCount: number; registrySourcesId: string; capabilitiesId: string; requests_per_hour: number | null; })[] = []
         //iterate via promises to skip await time
         await Promise.all(sources.map(async (source) => {
             try {
@@ -251,7 +278,15 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                 },
                 update: { status: $Enums.Status.DEREGISTERED },
                 create: {
-                    status: $Enums.Status.DEREGISTERED, capability: { connectOrCreate: { create: { name: "", version: "" }, where: { name_version: { name: "", version: "" } } } }, identifier: asset.asset, registry: { connect: { id: source.id } }, name: "", description: "", api_url: "", company_name: "", lastUptimeCheck: new Date()
+                    status: $Enums.Status.DEREGISTERED,
+                    capability: { connectOrCreate: { create: { name: "", version: "" }, where: { name_version: { name: "", version: "" } } } },
+                    identifier: asset.asset,
+                    registry: { connect: { id: source.id } },
+                    name: "?",
+                    description: "?",
+                    api_url: "?",
+                    image: "?",
+                    lastUptimeCheck: new Date()
                 }
             })
             return null;
@@ -286,6 +321,14 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
             })
             let newEntry;
             if (existingEntry) {
+                const capability_name = metadataStringConvert(parsedMetadata.data.capability.name)!
+                const capability_version = metadataStringConvert(parsedMetadata.data.capability.version)!
+                const requests_per_hour_string = metadataStringConvert(parsedMetadata.data.requests_per_hour)
+                let requests_per_hour = undefined;
+                try {
+                    if (requests_per_hour_string)
+                        requests_per_hour = parseFloat(requests_per_hour_string)
+                } catch { /* ignore */ }
                 newEntry = await tx.registryEntry.update({
                     include: {
                         registry: true,
@@ -306,7 +349,21 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                         name: parsedMetadata.data.name,
                         description: metadataStringConvert(parsedMetadata.data.description),
                         api_url: metadataStringConvert(parsedMetadata.data.api_url)!,
-                        company_name: metadataStringConvert(parsedMetadata.data.company_name),
+                        author_name: metadataStringConvert(parsedMetadata.data.author?.name),
+                        author_organization: metadataStringConvert(parsedMetadata.data.author?.organization),
+                        author_contact: metadataStringConvert(parsedMetadata.data.author?.contact),
+                        image: metadataStringConvert(parsedMetadata.data.image),
+                        privacy_policy: metadataStringConvert(parsedMetadata.data.legal?.privacy_policy),
+                        terms_and_condition: metadataStringConvert(parsedMetadata.data.legal?.terms),
+                        other_legal: metadataStringConvert(parsedMetadata.data.legal?.other),
+                        requests_per_hour: requests_per_hour,
+                        tags: parsedMetadata.data.tags ? {
+                            connectOrCreate: parsedMetadata.data.tags.map(tag => ({
+                                create: { value: metadataStringConvert(tag)! },
+                                where: { value: metadataStringConvert(tag)! }
+                            }))
+                        } : undefined,
+
                         paymentIdentifier: {
                             upsert: {
                                 create: {
@@ -327,10 +384,18 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                         },
                         identifier: asset.asset,
                         registry: { connect: { id: source.id } },
-                        capability: { connectOrCreate: { create: { name: metadataStringConvert(parsedMetadata.data.capability_name)!, version: metadataStringConvert(parsedMetadata.data.capability_version)! }, where: { name_version: { name: metadataStringConvert(parsedMetadata.data.capability_name)!, version: metadataStringConvert(parsedMetadata.data.capability_version)! } } } }
+                        capability: { connectOrCreate: { create: { name: capability_name, version: capability_version }, where: { name_version: { name: capability_name, version: capability_version } } } }
                     }
                 })
             } else {
+                const capability_name = metadataStringConvert(parsedMetadata.data.capability.name)!
+                const capability_version = metadataStringConvert(parsedMetadata.data.capability.version)!
+                const requests_per_hour_string = metadataStringConvert(parsedMetadata.data.requests_per_hour)
+                let requests_per_hour = undefined;
+                try {
+                    if (requests_per_hour_string)
+                        requests_per_hour = parseFloat(requests_per_hour_string)
+                } catch { /* ignore */ }
                 await tx.registryEntry.create({
                     include: {
                         registry: true,
@@ -345,18 +410,30 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                         name: parsedMetadata.data.name,
                         description: metadataStringConvert(parsedMetadata.data.description),
                         api_url: metadataStringConvert(parsedMetadata.data.api_url)!,
-                        company_name: metadataStringConvert(parsedMetadata.data.company_name),
+                        author_name: metadataStringConvert(parsedMetadata.data.author?.name),
+                        author_organization: metadataStringConvert(parsedMetadata.data.author?.organization),
+                        author_contact: metadataStringConvert(parsedMetadata.data.author?.contact),
+                        image: metadataStringConvert(parsedMetadata.data.image)!,
+                        privacy_policy: metadataStringConvert(parsedMetadata.data.legal?.privacy_policy),
+                        terms_and_condition: metadataStringConvert(parsedMetadata.data.legal?.terms),
+                        other_legal: metadataStringConvert(parsedMetadata.data.legal?.other),
+                        requests_per_hour: requests_per_hour,
+                        tags: parsedMetadata.data.tags ? {
+                            connectOrCreate: parsedMetadata.data.tags.map(tag => ({
+                                create: { value: metadataStringConvert(tag)! },
+                                where: { value: metadataStringConvert(tag)! }
+                            }))
+                        } : undefined,
                         identifier: asset.asset,
                         paymentIdentifier: { create: { paymentIdentifier: holderData[0].address, paymentType: $Enums.PaymentType.WEB3_CARDANO_V1 } },
                         registry: { connect: { id: source.id } },
-                        capability: { connectOrCreate: { create: { name: metadataStringConvert(parsedMetadata.data.capability_name)!, version: metadataStringConvert(parsedMetadata.data.capability_version)! }, where: { name_version: { name: metadataStringConvert(parsedMetadata.data.capability_name)!, version: metadataStringConvert(parsedMetadata.data.capability_version)! } } } }
-
+                        capability: { connectOrCreate: { create: { name: capability_name, version: capability_version }, where: { name_version: { name: capability_name, version: capability_version } } } }
                     },
                 })
             }
 
             return newEntry;
-        })
+        }, { maxWait: 50000, timeout: 10000 })
     }))
 
     //filter out nulls -> tokens not following the metadata standard and burned tokens
