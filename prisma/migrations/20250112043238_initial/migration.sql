@@ -166,6 +166,9 @@ CREATE UNIQUE INDEX "RegistryEntry_identifier_registrySourcesId_key" ON "Registr
 CREATE UNIQUE INDEX "PaymentIdentifier_registryEntryId_paymentType_key" ON "PaymentIdentifier"("registryEntryId", "paymentType");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Price_quantity_policyId_assetId_registryEntryId_key" ON "Price"("quantity", "policyId", "assetId", "registryEntryId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Capability_name_version_key" ON "Capability"("name", "version");
 
 -- CreateIndex

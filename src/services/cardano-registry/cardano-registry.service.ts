@@ -370,10 +370,9 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                             }))
                         } : undefined,
                         prices: {
-                            create: parsedMetadata.data.pricing.map(price => ({
-                                quantity: price.quantity,
-                                policyId: price.policy_id,
-                                assetId: price.asset_id
+                            connectOrCreate: parsedMetadata.data.pricing.map(price => ({
+                                create: { quantity: price.quantity, policyId: price.policy_id, assetId: price.asset_id },
+                                where: { quantity_policyId_assetId_registryEntryId: { quantity: price.quantity, policyId: price.policy_id, assetId: price.asset_id, registryEntryId: existingEntry.id } }
                             })),
                         },
                         paymentIdentifier: {
@@ -438,6 +437,13 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                                 where: { value: metadataStringConvert(tag)! }
                             }))
                         } : undefined,
+                        prices: {
+                            create: parsedMetadata.data.pricing.map(price => ({
+                                quantity: price.quantity,
+                                policyId: price.policy_id,
+                                assetId: price.asset_id
+                            })),
+                        },
                         identifier: asset.asset,
                         paymentIdentifier: { create: { paymentIdentifier: holderData[0].address, paymentType: $Enums.PaymentType.WEB3_CARDANO_V1, sellerVKey: resolvePaymentKeyHash(holderData[0].address) } },
                         registry: { connect: { id: source.id } },
