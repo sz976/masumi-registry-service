@@ -52,6 +52,11 @@ const metadataSchema = z.object({
         other: z.string().or(z.array(z.string()))
     }).optional(),
     tags: z.array(z.string().or(z.array(z.string()))).optional(),
+    pricing: z.array(z.object({
+        quantity: z.number({ coerce: true }).int().min(1),
+        policy_id: z.string(),
+        asset_id: z.string()
+    })).min(1),
     image: z.string().or(z.array(z.string()))
 })
 const deleteMutex = new Sema(1);
@@ -364,7 +369,13 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                                 where: { value: metadataStringConvert(tag)! }
                             }))
                         } : undefined,
-
+                        prices: {
+                            create: parsedMetadata.data.pricing.map(price => ({
+                                quantity: price.quantity,
+                                policyId: price.policy_id,
+                                assetId: price.asset_id
+                            })),
+                        },
                         paymentIdentifier: {
                             upsert: {
                                 create: {
