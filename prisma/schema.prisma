@@ -100,6 +100,7 @@ model PaymentIdentifier {
   paymentType       PaymentType
   RegistryEntry     RegistryEntry? @relation(fields: [registryEntryId], references: [id])
   registryEntryId   String?
+  sellerVKey        String?
 
   @@unique([registryEntryId, paymentType])
 }

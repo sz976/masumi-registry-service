@@ -88,6 +88,7 @@ CREATE TABLE "PaymentIdentifier" (
     "paymentIdentifier" TEXT,
     "paymentType" "PaymentType" NOT NULL,
     "registryEntryId" TEXT,
+    "sellerVKey" TEXT,
 
     CONSTRAINT "PaymentIdentifier_pkey" PRIMARY KEY ("id")
 );

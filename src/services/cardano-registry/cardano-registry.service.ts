@@ -6,6 +6,7 @@ import { metadataStringConvert } from "@/utils/metadata-string-convert";
 import { healthCheckService } from "@/services/health-check";
 import { logger } from "@/utils/logger";
 import { BlockFrostAPI } from "@blockfrost/blockfrost-js";
+import { resolvePaymentKeyHash } from "@meshsdk/core";
 
 const metadataSchema = z.object({
 
@@ -368,9 +369,11 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                             upsert: {
                                 create: {
                                     paymentIdentifier: holderData[0].address,
+                                    sellerVKey: resolvePaymentKeyHash(holderData[0].address),
                                     paymentType: $Enums.PaymentType.WEB3_CARDANO_V1
                                 },
                                 update: {
+                                    sellerVKey: resolvePaymentKeyHash(holderData[0].address),
                                     paymentIdentifier: holderData[0].address,
                                     paymentType: $Enums.PaymentType.WEB3_CARDANO_V1
                                 },
@@ -425,7 +428,7 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                             }))
                         } : undefined,
                         identifier: asset.asset,
-                        paymentIdentifier: { create: { paymentIdentifier: holderData[0].address, paymentType: $Enums.PaymentType.WEB3_CARDANO_V1 } },
+                        paymentIdentifier: { create: { paymentIdentifier: holderData[0].address, paymentType: $Enums.PaymentType.WEB3_CARDANO_V1, sellerVKey: resolvePaymentKeyHash(holderData[0].address) } },
                         registry: { connect: { id: source.id } },
                         capability: { connectOrCreate: { create: { name: capability_name, version: capability_version }, where: { name_version: { name: capability_name, version: capability_version } } } }
                     },
