@@ -76,6 +76,8 @@ export function generateOpenAPI() {
             version: "Optional version",
           },
           cursorId: "last_paginated_item",
+          registryIdentifier: "registry_identifier",
+          assetIdentifier: "asset_identifier",
           minRegistryDate: new Date().toISOString(),
           minHealthCheckDate: new Date().toISOString(),
         },

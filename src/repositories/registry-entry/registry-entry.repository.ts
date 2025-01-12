@@ -1,12 +1,14 @@
 import { prisma } from "@/utils/db"
 import { $Enums, PaymentType } from "@prisma/client";
 
-async function getRegistryEntry(capability: { name: string | undefined; version: string | undefined } | undefined, allowedPaymentTypes: PaymentType[], currentCursorId: { id: string } | undefined, limit: number) {
+async function getRegistryEntry(capability: { name: string | undefined; version: string | undefined } | undefined, allowedPaymentTypes: PaymentType[], currentRegistryIdentifier: string | undefined, currentAssetIdentifier: string | undefined, currentCursorId: string | undefined, limit: number) {
     return await prisma.registryEntry.findMany({
         where: {
             capability: capability,
             paymentIdentifier: { some: { paymentType: { in: allowedPaymentTypes } } },
-            status: { not: $Enums.Status.INVALID }
+            status: { not: $Enums.Status.INVALID },
+            identifier: currentAssetIdentifier,
+            registry: { identifier: currentRegistryIdentifier }
         },
         include: {
             paymentIdentifier: true,
@@ -19,7 +21,7 @@ async function getRegistryEntry(capability: { name: string | undefined; version:
         }, {
             id: "desc"
         }],
-        cursor: currentCursorId,
+        cursor: currentCursorId ? { id: currentCursorId } : undefined,
         //over-fetching to account for health check failures
         take: (limit * 2)
     });

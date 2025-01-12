@@ -9,6 +9,8 @@ export const queryRegistrySchemaInput = z.object({
     capability: z.object({ name: z.string().min(1).max(150), version: z.string().max(150).optional() }).optional(),
     limit: z.number({ coerce: true }).int().min(1).max(50).default(10),
     //optional data
+    registryIdentifier: z.string().min(1).max(250).optional(),
+    assetIdentifier: z.string().min(1).max(250).optional(),
     cursorId: z.string().min(1).max(50).optional(),
     minRegistryDate: ez.dateIn().optional(),
     minHealthCheckDate: ez.dateIn().optional(),

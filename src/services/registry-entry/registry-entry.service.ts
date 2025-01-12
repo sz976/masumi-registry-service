@@ -12,7 +12,7 @@ async function getRegistryEntries(input: z.infer<typeof queryRegistrySchemaInput
     let currentCursorId = input.cursorId ?? undefined
     const allowedPaymentTypes: $Enums.PaymentType[] = [PaymentType.WEB3_CARDANO_V1]
     while (healthCheckedEntries.length < input.limit) {
-        const registryEntries = await registryEntryRepository.getRegistryEntry(input.capability ? { name: input.capability?.name, version: input.capability?.version } : undefined, allowedPaymentTypes, currentCursorId ? { id: currentCursorId } : undefined, input.limit);
+        const registryEntries = await registryEntryRepository.getRegistryEntry(input.capability ? { name: input.capability?.name, version: input.capability?.version } : undefined, allowedPaymentTypes, input.registryIdentifier, input.assetIdentifier, currentCursorId, input.limit);
         const result = await healthCheckService.checkVerifyAndUpdateRegistryEntries({ registryEntries, minHealthCheckDate: input.minHealthCheckDate })
         result.forEach(entry => healthCheckedEntries.push(entry))
         //all database entries fetched
