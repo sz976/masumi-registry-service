@@ -90,6 +90,7 @@ model RegistryEntry {
   capabilitiesId    String
   prices            Price[]
 
+  @@unique([registrySourcesId, api_url])
   @@unique([identifier, registrySourcesId])
 }
 

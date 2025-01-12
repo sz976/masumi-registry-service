@@ -317,6 +317,17 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
         const isAvailable = await healthCheckService.checkAndVerifyEndpoint({ api_url: endpoint, identifier: asset.asset, registry: { identifier: source.identifier!, type: $Enums.RegistryEntryType.WEB3_CARDANO_V1 } })
 
         return await prisma.$transaction(async (tx) => {
+            const duplicateEntry = await tx.registryEntry.findFirst({
+                where: {
+                    registrySourcesId: source.id,
+                    api_url: metadataStringConvert(parsedMetadata.data.api_url)!,
+                    identifier: { not: asset.asset }
+                }
+            })
+            if (duplicateEntry) {
+                logger.info("Someone tried to duplicate an entry for the same api url", { duplicateEntry: duplicateEntry })
+                return null;
+            }
             const existingEntry = await tx.registryEntry.findUnique({
                 where: {
                     identifier_registrySourcesId: {
@@ -325,8 +336,10 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                     }
                 }
             })
+
             let newEntry;
             if (existingEntry) {
+                //TODO this can be ignored unless we allow updates to the registry entry
                 const capability_name = metadataStringConvert(parsedMetadata.data.capability.name)!
                 const capability_version = metadataStringConvert(parsedMetadata.data.capability.version)!
                 const requests_per_hour_string = metadataStringConvert(parsedMetadata.data.requests_per_hour)
