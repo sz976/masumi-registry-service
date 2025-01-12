@@ -110,7 +110,7 @@ model Price {
   id              String         @id @default(cuid())
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
-  quantity        Int
+  quantity        BigInt
   policyId        String
   assetId         String
   RegistryEntry   RegistryEntry? @relation(fields: [registryEntryId], references: [id])
