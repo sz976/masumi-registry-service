@@ -160,9 +160,6 @@ CREATE INDEX "apiKey_apiKey_idx" ON "apiKey"("apiKey");
 CREATE UNIQUE INDEX "Tag_value_key" ON "Tag"("value");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RegistryEntry_registrySourcesId_api_url_key" ON "RegistryEntry"("registrySourcesId", "api_url");
-
--- CreateIndex
 CREATE UNIQUE INDEX "RegistryEntry_identifier_registrySourcesId_key" ON "RegistryEntry"("identifier", "registrySourcesId");
 
 -- CreateIndex

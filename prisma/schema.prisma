@@ -90,7 +90,8 @@ model RegistryEntry {
   capabilitiesId    String
   prices            Price[]
 
-  @@unique([registrySourcesId, api_url])
+  //we might not want to enforce this if we want an agent to be able to register again
+  //@@unique([registrySourcesId, api_url])
   @@unique([identifier, registrySourcesId])
 }
 

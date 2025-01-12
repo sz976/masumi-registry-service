@@ -7,6 +7,7 @@ import { healthCheckService } from "@/services/health-check";
 import { logger } from "@/utils/logger";
 import { BlockFrostAPI } from "@blockfrost/blockfrost-js";
 import { resolvePaymentKeyHash } from "@meshsdk/core";
+import cuid2 from "@paralleldrive/cuid2";
 
 const metadataSchema = z.object({
 
@@ -290,7 +291,7 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                     registry: { connect: { id: source.id } },
                     name: "?",
                     description: "?",
-                    api_url: "?",
+                    api_url: "?_" + cuid2.createId(),
                     image: "?",
                     lastUptimeCheck: new Date()
                 }
@@ -325,6 +326,8 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                 }
             })
             if (duplicateEntry) {
+                //TODO this can be removed if we want to allow re registration of the same agent (url)
+                //WARNING this also only works if the api url does not accept any query parameters or similar
                 logger.info("Someone tried to duplicate an entry for the same api url", { duplicateEntry: duplicateEntry })
                 return null;
             }
