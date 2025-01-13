@@ -19,8 +19,6 @@ Registry entries (and de-registrations) are cached in a database and periodicall
 
 This section provides an overview of the key architectural patterns and technologies employed in this service:
 
-- [Onion Architecture](http://jeffreypalermo.com/blog/the-onion-architecture-part-1/):
-  Employed as the core architectural design pattern
 - [Express-Zod-Api](https://www.npmjs.com/package/express-zod-api): Utilized as the framework for implementing our RESTful API with Swagger UI. The library uses:
   - [Express](http://expressjs.com/) as the framework for implementing our RESTful API
   - [Zod](https://www.npmjs.com/package/zod) for request validation
@@ -41,12 +39,13 @@ This section provides an overview of the key architectural patterns and technolo
    - PORT: The port to run the server on (default is 3001)
    - UPDATE_CARDANO_REGISTRY_INTERVAL: The interval to update the cardano registry as a cron string
    - UPDATE_CARDANO_DEREGISTER_INTERVAL: The interval to update the cardano deregistered entries as a cron string
-5. In case you need to apply migrations to the database run `yarn prisma:migrate` or `npm prisma:migrate` otherwise run `yarn prisma:generate` or `npm prisma:generate` to generate the prisma client (only works after installing the dependencies via step 3)
-6. In case the database is not yet seeded (and or migrated) please also setup the following variables:
+
+5. In case the database is not yet seeded (and or migrated) please also setup the following variables:
    - BLOCKFROST_API_KEY: An API Key from [https://blockfrost.io/](https://blockfrost.io/) for the correct blockchain network, you can create this fro free
    - REGISTRY_SOURCE_NETWORK: PREPROD Currently only supports the PREPROD Cardano network
    - REGISTRY_SOURCE_IDENTIFIER_CARDANO: The identifier of the cardano registry source, this is the name of the policy used
    - ADMIN_KEY: The key of the admin user, this key will have all permissions and can create new api_keys
+6. In case you need to apply migrations to the database run `yarn prisma:migrate` or `npm run prisma:migrate` otherwise run `yarn prisma:generate` or `npm run prisma:generate` to generate the prisma client (only works after installing the dependencies via step 3)
 7. In case you want to seed the database now run `yarn prisma:seed` or `npm prisma:seed`
 
 ## Build & Run
@@ -58,11 +57,11 @@ This section provides an overview of the key architectural patterns and technolo
 - You can run `yarn dev` or `npm dev` to combine the 2 steps above, while listening to changes and restarting automatically.
 
 To verify that the application is working correctly, point your browser to
-[http://localhost:3001/api/health](http://localhost:3001/api/health) - you
+[http://localhost:3000/api/v1/health](http://localhost:3000/api/health) - you
 should see a response with one books in JSON format.
 
 You can see a OpenAPI (Swagger) definition of the REST API at
-[http://localhost:3001/docs/](http://localhost:3001/docs/). This
+[http://localhost:3000/docs/](http://localhost:3000/docs/). This
 interface also allows you to interact with the API.
 
 ## Run with Docker
@@ -146,4 +145,7 @@ layers
 - [x] Support for multiple blockchain networks and registry sources
 - [x] Caching of registry entries
 - [x] Periodic updating of the registry entries
+- [ ] Better test coverage
+- [ ] Improve documentation
+- [ ] Code cleanup
 - [ ] Admin UI to manage the registry
