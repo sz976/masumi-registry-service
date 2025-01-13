@@ -27,10 +27,6 @@ export const queryRegistrySchemaOutput = z.object({
                 identifier: z.string().nullable(),
                 url: z.string().nullable(),
             }),
-            paymentIdentifier: z.array(z.object({
-                paymentIdentifier: z.string().nullable(),
-                paymentType: z.nativeEnum($Enums.PaymentType),
-            })),
             capability: z.object({
                 name: z.string(),
                 version: z.string(),

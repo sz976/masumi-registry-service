@@ -25,6 +25,7 @@ import {
   deleteRegistrySourceSchemaOutput,
   updateRegistrySourceSchemaOutput,
 } from "@/routes/api/registry-source";
+import { queryPaymentInformationInput, queryPaymentInformationSchemaOutput } from "@/routes/api/payment-information";
 
 extendZodWithOpenApi(z);
 
@@ -52,6 +53,83 @@ export function generateOpenAPI() {
               .openapi({ example: { data: { type: "masumi-registry", version: "0.1.2" }, status: "success" } }),
           },
         },
+      },
+    },
+  });
+  /************************** Payment Information **************************/
+
+  registry.registerPath({
+    method: "get",
+    path: "/payment-information/",
+    description: "Get payment information for a registry entry",
+    summary: "REQUIRES API KEY Authentication (+user)",
+    tags: ["payment-information"],
+    request: {
+      query: queryPaymentInformationInput.openapi({
+        example: {
+          registryIdentifier: "registry_identifier",
+          assetIdentifier: "asset_identifier",
+        },
+      }),
+    },
+    responses: {
+      200: {
+        description: "Registry entries",
+        content: {
+          "application/json": {
+            schema: z.object({ data: queryPaymentInformationSchemaOutput, status: z.string() }).openapi({
+              example: {
+                data: {
+                  name: "Example API",
+                  description: "Example Capability description",
+                  status: "ONLINE",
+                  registry: {
+                    type: "WEB3_CARDANO_V1",
+                    identifier: "0000000000000000000000000000000000000000000000000000000000000000",
+                    url: null,
+                  },
+                  author_contact: null,
+                  author_name: null,
+                  image: "testimage.de",
+                  other_legal: null,
+                  privacy_policy: null,
+                  requests_per_hour: 15,
+                  tags: null,
+                  terms_and_condition: "If the answer is 42 what was the question",
+                  uptimeCheckCount: 10,
+                  uptimeCount: 8,
+                  lastUptimeCheck: new Date(),
+                  api_url: "https://localhost:3000/api/",
+                  capability: {
+                    name: "Example Capability",
+                    version: "1.0.0",
+                    description: "Example Capability description",
+                  },
+                  author_organization: "MASUMI",
+                  identifier: "222222222222222222222222222222222222222222222222222222222222222222",
+                  id: cuid2.createId(),
+                  paymentIdentifier: [
+                    {
+                      paymentIdentifier: "addr1333333333333333333333333333333333333333333333333333333333333333",
+                      paymentType: "WEB3_CARDANO_V1",
+                      sellerVKey: "sellerVKey"
+                    },
+                  ],
+                },
+                status: "success",
+              },
+            }),
+          },
+        },
+      },
+      400: {
+        description: "Bad Request (possible parameters missing or invalid)",
+      },
+      401: {
+        description: "Unauthorized",
+      },
+      500: {
+        description: "Internal Server Error",
       },
     },
   });
@@ -122,12 +200,6 @@ export function generateOpenAPI() {
                       author_organization: "MASUMI",
                       identifier: "222222222222222222222222222222222222222222222222222222222222222222",
                       id: cuid2.createId(),
-                      paymentIdentifier: [
-                        {
-                          paymentIdentifier: "addr1333333333333333333333333333333333333333333333333333333333333333",
-                          paymentType: "WEB3_CARDANO_V1",
-                        },
-                      ],
                     },
                   ],
                 },

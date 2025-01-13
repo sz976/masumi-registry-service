@@ -4,6 +4,7 @@ import { queryRegistryEntryGet, } from '@/routes/api/registry-entry';
 import { queryAPIKeyEndpointGet as queryCentralizedRegistrySourceGet, addAPIKeyEndpointPost as addCentralizedRegistrySourceEndpointPost, updateAPIKeyEndpointPatch, deleteAPIKeyEndpointDelete as deleteCentralizedRegistrySourceEndpointDelete } from "./api-key";
 import { capabilityGet } from "./capability";
 import { queryRegistrySourceEndpointGet, addRegistrySourceEndpointPost, updateRegistrySourceEndpointPatch, deleteRegistrySourceEndpointDelete } from "./registry-source";
+import { queryPaymentInformationGet } from "./payment-information";
 export const apiRouter: Routing = {
     v1: {
         health: healthEndpointGet,
@@ -18,6 +19,9 @@ export const apiRouter: Routing = {
         }),
         "capability": new DependsOnMethod({
             get: capabilityGet,
+        }),
+        "payment-information": new DependsOnMethod({
+            get: queryPaymentInformationGet,
         }),
         "registry-source": new DependsOnMethod({
             get: queryRegistrySourceEndpointGet,

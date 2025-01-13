@@ -318,6 +318,8 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
         const isAvailable = await healthCheckService.checkAndVerifyEndpoint({ api_url: endpoint, identifier: asset.asset, registry: { identifier: source.identifier!, type: $Enums.RegistryEntryType.WEB3_CARDANO_V1 } })
 
         return await prisma.$transaction(async (tx) => {
+            /*We do not need to ensure uniqueness of the api url as we require each agent to send its registry identifier, when requesting a payment 
+            
             const duplicateEntry = await tx.registryEntry.findFirst({
                 where: {
                     registrySourcesId: source.id,
@@ -330,7 +332,8 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                 //WARNING this also only works if the api url does not accept any query parameters or similar
                 logger.info("Someone tried to duplicate an entry for the same api url", { duplicateEntry: duplicateEntry })
                 return null;
-            }
+            }*/
+
             const existingEntry = await tx.registryEntry.findUnique({
                 where: {
                     identifier_registrySourcesId: {
@@ -355,8 +358,11 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                     include: {
                         registry: true,
                         paymentIdentifier: true,
-                        capability: true
+                        capability: true,
+                        prices: true,
+                        tags: true
                     },
+
                     where: {
                         identifier_registrySourcesId: {
                             identifier: asset.asset,
@@ -425,11 +431,13 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                     if (requests_per_hour_string)
                         requests_per_hour = parseFloat(requests_per_hour_string)
                 } catch { /* ignore */ }
-                await tx.registryEntry.create({
+                newEntry = await tx.registryEntry.create({
                     include: {
                         registry: true,
                         paymentIdentifier: true,
-                        capability: true
+                        capability: true,
+                        prices: true,
+                        tags: true
                     },
                     data: {
                         lastUptimeCheck: new Date(),
