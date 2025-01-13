@@ -26,13 +26,12 @@ initialize()
                 delete: ["query", "params"],
             },
             startupLogo: false,
-            server: {
+            beforeRouting: ({ app, }) => {
+                logger.info("Serving the API documentation at localhost:" + PORT + "/docs");
+                app.use("/docs", ui.serve, ui.setup(generateOpenAPI()));
+            },
+            http: {
                 listen: PORT,
-                beforeRouting: ({ app, logger, }) => {
-                    logger.info("Serving the API documentation at localhost:" + PORT + "/docs");
-                    app.use("/docs", ui.serve, ui.setup(generateOpenAPI()));
-                },
-
             },
             cors: ({ defaultHeaders, }) => ({
                 ...defaultHeaders,
