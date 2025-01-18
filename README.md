@@ -43,7 +43,7 @@ This section provides an overview of the key architectural patterns and technolo
    - REGISTRY_SOURCE_NETWORK: PREPROD or MAINNET
    - ADMIN_KEY: The key of the admin user, this key will have all permissions and can create new api_keys
 8. If you're setting up the database for the first time also run run `yarn prisma:migrate` or `npm run prisma:migrate` otherwise run `yarn prisma:generate` or `npm run prisma:generate` to generate the prisma client (only works after installing the dependencies via step 3)
-9. If you're setting up the database for the first time run `yarn prisma:seed` or `npm prisma:seed` to seed the database
+9. If you're setting up the database for the first time run `yarn prisma:seed` or `npm run prisma:seed` to seed the database
 
 ## Build & Run
 
