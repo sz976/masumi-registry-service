@@ -147,7 +147,9 @@ CREATE TABLE "UpdatedRegistryEntriesLog" (
 -- CreateTable
 CREATE TABLE "_RegistryEntryToTag" (
     "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_RegistryEntryToTag_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateIndex
@@ -173,9 +175,6 @@ CREATE UNIQUE INDEX "Capability_name_version_key" ON "Capability"("name", "versi
 
 -- CreateIndex
 CREATE UNIQUE INDEX "RegistrySources_type_identifier_key" ON "RegistrySources"("type", "identifier");
-
--- CreateIndex
-CREATE UNIQUE INDEX "_RegistryEntryToTag_AB_unique" ON "_RegistryEntryToTag"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_RegistryEntryToTag_B_index" ON "_RegistryEntryToTag"("B");
