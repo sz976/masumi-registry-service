@@ -26,6 +26,8 @@ import {
   updateRegistrySourceSchemaOutput,
 } from "@/routes/api/registry-source";
 import { queryPaymentInformationInput, queryPaymentInformationSchemaOutput } from "@/routes/api/payment-information";
+import { PaymentType } from "@prisma/client";
+import { Status } from "@prisma/client";
 
 extendZodWithOpenApi(z);
 
@@ -149,15 +151,20 @@ export function generateOpenAPI() {
           //allowCentralizedPayment: true,
           //allowDecentralizedPayment: true,
           limit: 10,
-          capability: {
-            name: "Example Capability",
-            version: "Optional version",
-          },
           cursorId: "last_paginated_item",
-          registryIdentifier: "registry_identifier",
-          assetIdentifier: "asset_identifier",
+          filter: {
+            registryIdentifier: "registry_identifier",
+            assetIdentifier: "asset_identifier",
+            paymentTypes: [PaymentType.WEB3_CARDANO_V1],
+            status: [Status.ONLINE],
+            capability: {
+              name: "Example Capability",
+              version: "Optional version",
+            },
+          },
           minRegistryDate: new Date().toISOString(),
           minHealthCheckDate: new Date().toISOString(),
+
         },
       }),
     },
@@ -169,6 +176,7 @@ export function generateOpenAPI() {
           "application/json": {
             schema: z.object({ data: queryRegistrySchemaOutput, status: z.string() }).openapi({
               example: {
+
                 data: {
                   entries: [
                     {

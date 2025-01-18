@@ -1,12 +1,12 @@
 import { prisma } from "@/utils/db"
-import { $Enums, PaymentType } from "@prisma/client";
+import { PaymentType, Status } from "@prisma/client";
 
-async function getRegistryEntry(capability: { name: string | undefined; version: string | undefined } | undefined, allowedPaymentTypes: PaymentType[], currentRegistryIdentifier: string | undefined, currentAssetIdentifier: string | undefined, currentCursorId: string | undefined, limit: number) {
+async function getRegistryEntry(capability: { name: string | undefined; version: string | undefined } | undefined, allowedPaymentTypes: PaymentType[], allowedStatuses: Status[], currentRegistryIdentifier: string | undefined, currentAssetIdentifier: string | undefined, currentCursorId: string | undefined, limit: number) {
     return await prisma.registryEntry.findMany({
         where: {
             capability: capability,
             paymentIdentifier: { some: { paymentType: { in: allowedPaymentTypes } } },
-            status: { not: $Enums.Status.INVALID },
+            status: { in: allowedStatuses },
             identifier: currentAssetIdentifier,
             registry: { identifier: currentRegistryIdentifier }
         },
