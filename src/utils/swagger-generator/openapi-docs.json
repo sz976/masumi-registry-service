@@ -316,7 +316,7 @@
                                             "terms_and_condition": "If the answer is 42 what was the question",
                                             "uptimeCheckCount": 10,
                                             "uptimeCount": 8,
-                                            "lastUptimeCheck": "2025-01-18T05:49:39.975Z",
+                                            "lastUptimeCheck": "2025-01-18T05:52:47.332Z",
                                             "api_url": "https://localhost:3000/api/",
                                             "capability": {
                                                 "name": "Example Capability",
@@ -325,7 +325,7 @@
                                             },
                                             "author_organization": "MASUMI",
                                             "identifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                            "id": "qa361vzozup58jyk2veoy3ek",
+                                            "id": "fxzog8jjgu32gxyuug83nipw",
                                             "paymentIdentifier": [
                                                 {
                                                     "paymentIdentifier": "addr1333333333333333333333333333333333333333333333333333333333333333",
@@ -397,7 +397,8 @@
                                         "enum": [
                                             "WEB3_CARDANO_V1"
                                         ]
-                                    }
+                                    },
+                                    "maxItems": 5
                                 },
                                 "status": {
                                     "type": "array",
@@ -409,7 +410,8 @@
                                             "DEREGISTERED",
                                             "INVALID"
                                         ]
-                                    }
+                                    },
+                                    "maxItems": 5
                                 },
                                 "registryIdentifier": {
                                     "type": "string",
@@ -688,7 +690,7 @@
                                                     "terms_and_condition": "If the answer is 42 what was the question",
                                                     "uptimeCheckCount": 10,
                                                     "uptimeCount": 8,
-                                                    "lastUptimeCheck": "2025-01-18T05:49:39.975Z",
+                                                    "lastUptimeCheck": "2025-01-18T05:52:47.333Z",
                                                     "api_url": "https://localhost:3000/api/",
                                                     "capability": {
                                                         "name": "Example Capability",
@@ -697,7 +699,7 @@
                                                     },
                                                     "author_organization": "MASUMI",
                                                     "identifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                                    "id": "ztxxiszdzgu6wp1p3344m692"
+                                                    "id": "iat5l23j28xutuyywcgox0ff"
                                                 }
                                             ]
                                         },
