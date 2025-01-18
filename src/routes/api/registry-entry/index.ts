@@ -11,8 +11,8 @@ export const queryRegistrySchemaInput = z.object({
     //optional data
     cursorId: z.string().min(1).max(50).optional(),
     filter: z.object({
-        paymentTypes: z.array(z.nativeEnum($Enums.PaymentType)).optional(),
-        status: z.array(z.nativeEnum($Enums.Status)).optional(),
+        paymentTypes: z.array(z.nativeEnum($Enums.PaymentType)).max(5).optional(),
+        status: z.array(z.nativeEnum($Enums.Status)).max(5).optional(),
         registryIdentifier: z.string().min(1).max(250).optional(),
         assetIdentifier: z.string().min(1).max(250).optional(),
         capability: z.object({ name: z.string().min(1).max(150), version: z.string().max(150).optional() }).optional(),
