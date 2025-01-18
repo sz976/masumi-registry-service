@@ -38,8 +38,8 @@ This section provides an overview of the key architectural patterns and technolo
 6. Configure the environment variables by copying the `.env.example` file to `.env`or `.env.local` and setup the variables
    - DATABASE_URL: The endpoint for a PostgreSQL database to be used
    - PORT: The port to run the server on (default is 3001)
-   - UPDATE_CARDANO_REGISTRY_INTERVAL: The interval to update the cardano registry as a cron string (keep the default if 
-   - UPDATE_CARDANO_DEREGISTER_INTERVAL: The interval to update the cardano deregistered entries as a cron string
+   - UPDATE_CARDANO_REGISTRY_INTERVAL: The interval to update the cardano registry as a cron string (default is every 2 minutes)
+   - UPDATE_CARDANO_DEREGISTER_INTERVAL: The interval to update the cardano deregistered entries as a cron string (default is every 3 minutes)
 7. If you're setting up the database for the first time also set the following variables:
    - BLOCKFROST_API_KEY: An API Key from [https://blockfrost.io/](https://blockfrost.io/) for the correct blockchain network, you can create this for free
    - REGISTRY_SOURCE_NETWORK: PREPROD or MAINNET
