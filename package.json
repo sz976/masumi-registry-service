@@ -1,6 +1,6 @@
 {
     "name": "masumi-registry-service",
-    "version": "1.0.3",
+    "version": "0.0.3",
     "description": "A Registry Lookup service for MASUMI AI Nodes",
     "main": "dist/index.js",
     "author": "NMKR",
