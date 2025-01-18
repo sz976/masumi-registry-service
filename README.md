@@ -34,23 +34,22 @@ This section provides an overview of the key architectural patterns and technolo
 1. Install [Node.js](https://nodejs.org/en/download/)
 2. Clone this repository, and using a terminal navigate to its directory.
 3. Run `yarn` or `npm install` to install the dependencies.
-4. Configure the environment variables by copying the `.env.example` file to `.env`or `.env.local` and setup the variables
-   - DATABASE_URL: Please provide the endpoint for a PostgreSQL database to be used
+5. Setup a local or online PostgreSQL database (Note: If you already installed the Masumi Payment Service this should be the same PostgreSQL database)
+6. Configure the environment variables by copying the `.env.example` file to `.env`or `.env.local` and setup the variables
+   - DATABASE_URL: The endpoint for a PostgreSQL database to be used
    - PORT: The port to run the server on (default is 3001)
-   - UPDATE_CARDANO_REGISTRY_INTERVAL: The interval to update the cardano registry as a cron string
+   - UPDATE_CARDANO_REGISTRY_INTERVAL: The interval to update the cardano registry as a cron string (keep the default if 
    - UPDATE_CARDANO_DEREGISTER_INTERVAL: The interval to update the cardano deregistered entries as a cron string
-
-5. In case the database is not yet seeded (and or migrated) please also setup the following variables:
-   - BLOCKFROST_API_KEY: An API Key from [https://blockfrost.io/](https://blockfrost.io/) for the correct blockchain network, you can create this fro free
-   - REGISTRY_SOURCE_NETWORK: PREPROD Currently only supports the PREPROD Cardano network
-   - REGISTRY_SOURCE_IDENTIFIER_CARDANO: The identifier of the cardano registry source, this is the name of the policy used
+7. If you're setting up the database for the first time also set the following variables:
+   - BLOCKFROST_API_KEY: An API Key from [https://blockfrost.io/](https://blockfrost.io/) for the correct blockchain network, you can create this for free
+   - REGISTRY_SOURCE_NETWORK: PREPROD or MAINNET
    - ADMIN_KEY: The key of the admin user, this key will have all permissions and can create new api_keys
-6. In case you need to apply migrations to the database run `yarn prisma:migrate` or `npm run prisma:migrate` otherwise run `yarn prisma:generate` or `npm run prisma:generate` to generate the prisma client (only works after installing the dependencies via step 3)
-7. In case you want to seed the database now run `yarn prisma:seed` or `npm prisma:seed`
+8. If you're setting up the database for the first time also run run `yarn prisma:migrate` or `npm run prisma:migrate` otherwise run `yarn prisma:generate` or `npm run prisma:generate` to generate the prisma client (only works after installing the dependencies via step 3)
+9. If you're setting up the database for the first time run `yarn prisma:seed` or `npm prisma:seed` to seed the database
 
 ## Build & Run
 
-1. Copy the contents of the `.env.example` file to a `.env` next to it, and edit it with your values.
+1. Make sure that the content of the `.env.example` file is copied to a `.env` file, and edited it with your values. This should already be covered in the "Install and Setup"
 2. Run `yarn build` or `npm build` to build the files.
 3. Run `yarn start` or `npm start` to start the application.
 
