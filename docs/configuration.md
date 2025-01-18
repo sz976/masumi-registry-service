@@ -4,7 +4,7 @@ Configure the environment variables by copying the `.env.example` file to `.env`
 variables
 
 - **DATABASE_URL**: The endpoint for a PostgreSQL database to be used
-- **PORT**: The port to run the server on (default is 3001)
+- **PORT**: The port to run the server on (default is 3000)
 
 If you're setting up the database for the first time (or want to provide some initial data) you also need the
 following variables before seeding:

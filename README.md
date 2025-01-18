@@ -27,7 +27,7 @@ To run this project locally follow this guide. Otherwise take a look at the [Dep
    1. Either run `npm run build && npm start`
    2. Or run `npm run dev` to run the service in development mode
 
-Congratulations! You have now setup the Masumi Registry Service. Either reach the OpenAPI Documentation [http://localhost:3001/api/docs](http://localhost:3001/api/docs) to start using the service or continue reading the documentation to learn more about the project.
+Congratulations! You have now setup the Masumi Registry Service. Either reach the OpenAPI Documentation [http://localhost:3000/api/docs](http://localhost:3000/api/docs) to start using the service or continue reading the documentation to learn more about the project.
 
 ## Contributing
 
