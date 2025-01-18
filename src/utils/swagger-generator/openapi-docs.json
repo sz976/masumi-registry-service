@@ -316,7 +316,7 @@
                                             "terms_and_condition": "If the answer is 42 what was the question",
                                             "uptimeCheckCount": 10,
                                             "uptimeCount": 8,
-                                            "lastUptimeCheck": "2025-01-13T10:22:23.707Z",
+                                            "lastUptimeCheck": "2025-01-18T05:52:47.332Z",
                                             "api_url": "https://localhost:3000/api/",
                                             "capability": {
                                                 "name": "Example Capability",
@@ -325,7 +325,7 @@
                                             },
                                             "author_organization": "MASUMI",
                                             "identifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                            "id": "pb4gxd67yxx110pksqfdni0j",
+                                            "id": "fxzog8jjgu32gxyuug83nipw",
                                             "paymentIdentifier": [
                                                 {
                                                     "paymentIdentifier": "addr1333333333333333333333333333333333333333333333333333333333333333",
@@ -367,28 +367,6 @@
                 "parameters": [
                     {
                         "schema": {
-                            "type": "object",
-                            "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "minLength": 1,
-                                    "maxLength": 150
-                                },
-                                "version": {
-                                    "type": "string",
-                                    "maxLength": 150
-                                }
-                            },
-                            "required": [
-                                "name"
-                            ]
-                        },
-                        "required": false,
-                        "name": "capability",
-                        "in": "query"
-                    },
-                    {
-                        "schema": {
                             "type": "integer",
                             "minimum": 1,
                             "maximum": 50,
@@ -402,30 +380,70 @@
                         "schema": {
                             "type": "string",
                             "minLength": 1,
-                            "maxLength": 250
-                        },
-                        "required": false,
-                        "name": "registryIdentifier",
-                        "in": "query"
-                    },
-                    {
-                        "schema": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 250
-                        },
-                        "required": false,
-                        "name": "assetIdentifier",
-                        "in": "query"
-                    },
-                    {
-                        "schema": {
-                            "type": "string",
-                            "minLength": 1,
                             "maxLength": 50
                         },
                         "required": false,
                         "name": "cursorId",
+                        "in": "query"
+                    },
+                    {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "paymentTypes": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "enum": [
+                                            "WEB3_CARDANO_V1"
+                                        ]
+                                    },
+                                    "maxItems": 5
+                                },
+                                "status": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "enum": [
+                                            "ONLINE",
+                                            "OFFLINE",
+                                            "DEREGISTERED",
+                                            "INVALID"
+                                        ]
+                                    },
+                                    "maxItems": 5
+                                },
+                                "registryIdentifier": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 250
+                                },
+                                "assetIdentifier": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 250
+                                },
+                                "capability": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 150
+                                        },
+                                        "version": {
+                                            "type": "string",
+                                            "maxLength": 150
+                                        }
+                                    },
+                                    "required": [
+                                        "name"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": false,
+                        "name": "filter",
                         "in": "query"
                     },
                     {
@@ -672,7 +690,7 @@
                                                     "terms_and_condition": "If the answer is 42 what was the question",
                                                     "uptimeCheckCount": 10,
                                                     "uptimeCount": 8,
-                                                    "lastUptimeCheck": "2025-01-13T10:22:23.707Z",
+                                                    "lastUptimeCheck": "2025-01-18T05:52:47.333Z",
                                                     "api_url": "https://localhost:3000/api/",
                                                     "capability": {
                                                         "name": "Example Capability",
@@ -681,7 +699,7 @@
                                                     },
                                                     "author_organization": "MASUMI",
                                                     "identifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                                    "id": "jlnnaiwjlxnimmx9ptxgwlm6"
+                                                    "id": "iat5l23j28xutuyywcgox0ff"
                                                 }
                                             ]
                                         },

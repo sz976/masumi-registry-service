@@ -6,17 +6,21 @@ import { $Enums } from '@prisma/client';
 import { registryEntryService } from '@/services/registry-entry';
 
 export const queryRegistrySchemaInput = z.object({
-    capability: z.object({ name: z.string().min(1).max(150), version: z.string().max(150).optional() }).optional(),
+
     limit: z.number({ coerce: true }).int().min(1).max(50).default(10),
     //optional data
-    registryIdentifier: z.string().min(1).max(250).optional(),
-    assetIdentifier: z.string().min(1).max(250).optional(),
     cursorId: z.string().min(1).max(50).optional(),
+    filter: z.object({
+        paymentTypes: z.array(z.nativeEnum($Enums.PaymentType)).max(5).optional(),
+        status: z.array(z.nativeEnum($Enums.Status)).max(5).optional(),
+        registryIdentifier: z.string().min(1).max(250).optional(),
+        assetIdentifier: z.string().min(1).max(250).optional(),
+        capability: z.object({ name: z.string().min(1).max(150), version: z.string().max(150).optional() }).optional(),
+    }).optional(),
+    //force refresh
     minRegistryDate: ez.dateIn().optional(),
     minHealthCheckDate: ez.dateIn().optional(),
-    //might be used in the future
-    //allowDecentralizedPayment: z.boolean().optional().default(true),
-    //allowCentralizedPayment: z.boolean().optional().default(true),
+
 })
 
 export const queryRegistrySchemaOutput = z.object({
@@ -65,7 +69,7 @@ export const queryRegistryEntryGet = authenticatedEndpointFactory.build({
         const tokenCost = 0;
         //TODO update cost model
         //TODO add custom errors
-        await tokenCreditService.handleTokenCredits(options, tokenCost, "query for: " + input.capability?.name);
+        await tokenCreditService.handleTokenCredits(options, tokenCost, "query for: " + input.filter?.capability?.name);
         const data = await registryEntryService.getRegistryEntries(input);
 
         return { entries: data.slice(0, Math.min(input.limit, data.length)) }
