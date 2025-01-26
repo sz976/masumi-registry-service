@@ -61,6 +61,7 @@ export const queryPaymentInformationGet = authenticatedEndpointFactory.build({
         if (!result) {
             throw new Error("Payment information not found");
         }
+
         return result;
     },
 });

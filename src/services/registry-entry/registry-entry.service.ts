@@ -20,7 +20,7 @@ async function getRegistryEntries(input: z.infer<typeof queryRegistrySchemaInput
         allowedStatuses = filter.status
     }
     while (healthCheckedEntries.length < input.limit) {
-        const registryEntries = await registryEntryRepository.getRegistryEntry(input.filter?.capability ? { name: input.filter.capability?.name, version: input.filter.capability?.version } : undefined, allowedPaymentTypes, allowedStatuses, input.filter?.registryIdentifier, input.filter?.assetIdentifier, currentCursorId, input.limit);
+        const registryEntries = await registryEntryRepository.getRegistryEntry(input.filter?.capability ? { name: input.filter.capability?.name, version: input.filter.capability?.version } : undefined, allowedPaymentTypes, allowedStatuses, input.filter?.registryIdentifier, input.filter?.assetIdentifier, input.filter?.tags, currentCursorId, input.limit);
         const result = await healthCheckService.checkVerifyAndUpdateRegistryEntries({ registryEntries, minHealthCheckDate: input.minHealthCheckDate })
         result.forEach(entry => healthCheckedEntries.push(entry))
         //all database entries fetched

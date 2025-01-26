@@ -15,6 +15,7 @@ export const queryRegistrySchemaInput = z.object({
         status: z.array(z.nativeEnum($Enums.Status)).max(5).optional(),
         registryIdentifier: z.string().min(1).max(250).optional(),
         assetIdentifier: z.string().min(1).max(250).optional(),
+        tags: z.array(z.string().min(1).max(150)).optional(),
         capability: z.object({ name: z.string().min(1).max(150), version: z.string().max(150).optional() }).optional(),
     }).optional(),
     //force refresh
