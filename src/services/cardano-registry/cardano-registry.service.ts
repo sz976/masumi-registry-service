@@ -58,7 +58,7 @@ const metadataSchema = z.object({
         unit: z.string().min(1).or(z.array(z.string().min(1)))
     })).min(1),
     image: z.string().or(z.array(z.string())),
-    metadata_version: z.number({ coerce: true }).int().min(1)
+    metadata_version: z.number({ coerce: true }).int().min(1).max(1)
 })
 const deleteMutex = new Sema(1);
 export async function updateDeregisteredCardanoRegistryEntries() {
