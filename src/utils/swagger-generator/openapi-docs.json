@@ -316,7 +316,7 @@
                                             "terms_and_condition": "If the answer is 42 what was the question",
                                             "uptimeCheckCount": 10,
                                             "uptimeCount": 8,
-                                            "lastUptimeCheck": "2025-01-26T17:23:54.587Z",
+                                            "lastUptimeCheck": "2025-01-26T17:27:19.637Z",
                                             "api_url": "https://localhost:3000/api/",
                                             "capability": {
                                                 "name": "Example Capability",
@@ -325,7 +325,7 @@
                                             },
                                             "author_organization": "MASUMI",
                                             "identifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                            "id": "tvplj11ox0ec9w8h38hvqv8c",
+                                            "id": "b5f7ftsmr7csqjg8t209grn0",
                                             "paymentIdentifier": [
                                                 {
                                                     "paymentIdentifier": "addr1333333333333333333333333333333333333333333333333333333333333333",
@@ -496,8 +496,8 @@
                                             "version": "Optional version"
                                         }
                                     },
-                                    "minRegistryDate": "2025-01-26T17:23:54.587Z",
-                                    "minHealthCheckDate": "2025-01-26T17:23:54.587Z"
+                                    "minRegistryDate": "2025-01-26T17:27:19.637Z",
+                                    "minHealthCheckDate": "2025-01-26T17:27:19.637Z"
                                 }
                             }
                         }
@@ -704,7 +704,7 @@
                                                     "terms_and_condition": "If the answer is 42 what was the question",
                                                     "uptimeCheckCount": 10,
                                                     "uptimeCount": 8,
-                                                    "lastUptimeCheck": "2025-01-26T17:23:54.587Z",
+                                                    "lastUptimeCheck": "2025-01-26T17:27:19.637Z",
                                                     "api_url": "https://localhost:3000/api/",
                                                     "capability": {
                                                         "name": "Example Capability",
@@ -713,7 +713,7 @@
                                                     },
                                                     "author_organization": "MASUMI",
                                                     "identifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                                    "id": "smx1kr2y3qhrdtyaee9k64cm"
+                                                    "id": "m9fcttalateyzyoz7zhave3i"
                                                 }
                                             ]
                                         },
@@ -824,7 +824,6 @@
                                                                 "type": "string",
                                                                 "nullable": true,
                                                                 "enum": [
-                                                                    "PREVIEW",
                                                                     "PREPROD",
                                                                     "MAINNET"
                                                                 ]
@@ -866,7 +865,7 @@
                                                     "url": "optional_url",
                                                     "note": "optional_note",
                                                     "apiKey": "optional_apiKey",
-                                                    "network": "PREVIEW",
+                                                    "network": "PREPROD",
                                                     "latestPage": 1,
                                                     "latestIdentifier": "optional_latestIdentifier"
                                                 }
@@ -919,7 +918,6 @@
                                         "type": "string",
                                         "nullable": true,
                                         "enum": [
-                                            "PREVIEW",
                                             "PREPROD",
                                             "MAINNET"
                                         ]
@@ -937,7 +935,7 @@
                                     "identifier": "optional_identifier",
                                     "note": "optional_note",
                                     "apiKey": "apiKey",
-                                    "network": "PREVIEW"
+                                    "network": "PREPROD"
                                 }
                             }
                         }

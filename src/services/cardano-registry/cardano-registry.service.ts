@@ -81,7 +81,7 @@ export async function updateDeregisteredCardanoRegistryEntries() {
         try {
             const blockfrost = new BlockFrostAPI({
                 projectId: source.apiKey!,
-                network: source.network == $Enums.Network.MAINNET ? "mainnet" : "preview"
+                network: source.network == $Enums.Network.MAINNET ? "mainnet" : "preprod"
             });
             let cursorId = null;
             let latestAssets = await prisma.registryEntry.findMany({
@@ -190,7 +190,7 @@ export async function updateLatestCardanoRegistryEntries(onlyEntriesAfter?: Date
             try {
                 const blockfrost = new BlockFrostAPI({
                     projectId: source.apiKey!,
-                    network: source.network == $Enums.Network.MAINNET ? "mainnet" : source.network == $Enums.Network.PREVIEW ? "preview" : "preprod"
+                    network: source.network == $Enums.Network.MAINNET ? "mainnet" : "preprod"
                 });
                 let pageOffset = source.latestPage
                 let latestIdentifier = source.latestIdentifier
@@ -301,7 +301,7 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
 
         const blockfrost = new BlockFrostAPI({
             projectId: source.apiKey!,
-            network: source.network == $Enums.Network.MAINNET ? "mainnet" : source.network == $Enums.Network.PREVIEW ? "preview" : "preprod"
+            network: source.network == $Enums.Network.MAINNET ? "mainnet" : "preprod"
         });
 
         const registryData = await blockfrost.assetsById(asset.asset)
