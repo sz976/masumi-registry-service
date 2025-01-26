@@ -16,7 +16,7 @@ You can find further documentation in the [docs](docs/) folder.
 
 ## Quick Start
 
-To run this project locally follow this guide. Otherwise take a look at the [Deployment Guide](docs/deployment.md) to learn how to deploy the service to a cloud provider.
+To run this project locally follow this guide. Otherwise, take a look at the [Deployment Guide](docs/deployment.md) to learn how to deploy the service to a cloud provider.
 
 1. Install [node.js](https://nodejs.org/en/download/) v18.x
 2. Clone this repository
