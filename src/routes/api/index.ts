@@ -1,15 +1,19 @@
 import { DependsOnMethod, Routing } from "express-zod-api";
 import { healthEndpointGet } from '@/routes/api/health';
-import { queryRegistryEntryGet, } from '@/routes/api/registry-entry';
+import { queryRegistryEntryPost, } from '@/routes/api/registry-entry';
 import { queryAPIKeyEndpointGet as queryCentralizedRegistrySourceGet, addAPIKeyEndpointPost as addCentralizedRegistrySourceEndpointPost, updateAPIKeyEndpointPatch, deleteAPIKeyEndpointDelete as deleteCentralizedRegistrySourceEndpointDelete } from "./api-key";
 import { capabilityGet } from "./capability";
 import { queryRegistrySourceEndpointGet, addRegistrySourceEndpointPost, updateRegistrySourceEndpointPatch, deleteRegistrySourceEndpointDelete } from "./registry-source";
 import { queryPaymentInformationGet } from "./payment-information";
+import { queryAPIKeyStatusEndpointGet } from "./api-key-status";
 export const apiRouter: Routing = {
     v1: {
         health: healthEndpointGet,
         "registry-entry": new DependsOnMethod({
-            get: queryRegistryEntryGet,
+            post: queryRegistryEntryPost,
+        }),
+        "api-key-status": new DependsOnMethod({
+            get: queryAPIKeyStatusEndpointGet,
         }),
         "api-key": new DependsOnMethod({
             get: queryCentralizedRegistrySourceGet,

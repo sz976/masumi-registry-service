@@ -1,2 +1,2 @@
-export { capabilityService as healthService } from "./capability.service";
+export { capabilityService } from "./capability.service";
 

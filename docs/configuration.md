@@ -10,5 +10,5 @@ If you're setting up the database for the first time (or want to provide some in
 following variables before seeding:
 
 - **BLOCKFROST_API_KEY**: An API Key from [https://blockfrost.io/](https://blockfrost.io/) for the correct blockchain network, you can create this for free
-- **REGISTRY_SOURCE_NETWORK**: PREPROD, PREVIEW or MAINNET
+- **REGISTRY_SOURCE_NETWORK**: PREPROD or MAINNET
 - **ADMIN_KEY**: The key of the admin user, this key will have all permissions and can create new api_keys

@@ -14,7 +14,7 @@ CREATE TYPE "Status" AS ENUM ('ONLINE', 'OFFLINE', 'DEREGISTERED', 'INVALID');
 CREATE TYPE "RegistryEntryType" AS ENUM ('WEB3_CARDANO_V1');
 
 -- CreateEnum
-CREATE TYPE "Network" AS ENUM ('PREVIEW', 'PREPROD', 'MAINNET');
+CREATE TYPE "Network" AS ENUM ('PREPROD', 'MAINNET');
 
 -- CreateTable
 CREATE TABLE "apiKey" (
@@ -99,8 +99,7 @@ CREATE TABLE "Price" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "quantity" BIGINT NOT NULL,
-    "policyId" TEXT NOT NULL,
-    "assetId" TEXT NOT NULL,
+    "unit" TEXT NOT NULL,
     "registryEntryId" TEXT,
 
     CONSTRAINT "Price_pkey" PRIMARY KEY ("id")
@@ -168,7 +167,7 @@ CREATE UNIQUE INDEX "RegistryEntry_identifier_registrySourcesId_key" ON "Registr
 CREATE UNIQUE INDEX "PaymentIdentifier_registryEntryId_paymentType_key" ON "PaymentIdentifier"("registryEntryId", "paymentType");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Price_quantity_policyId_assetId_registryEntryId_key" ON "Price"("quantity", "policyId", "assetId", "registryEntryId");
+CREATE UNIQUE INDEX "Price_quantity_unit_registryEntryId_key" ON "Price"("quantity", "unit", "registryEntryId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Capability_name_version_key" ON "Capability"("name", "version");

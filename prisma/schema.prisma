@@ -113,12 +113,11 @@ model Price {
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   quantity        BigInt
-  policyId        String
-  assetId         String
+  unit            String
   RegistryEntry   RegistryEntry? @relation(fields: [registryEntryId], references: [id])
   registryEntryId String?
 
-  @@unique([quantity, policyId, assetId, registryEntryId])
+  @@unique([quantity, unit, registryEntryId])
 }
 
 //TODO maybe add a rating system via payment amounts (success and failure)
@@ -168,7 +167,6 @@ model RegistrySources {
 }
 
 enum Network {
-  PREVIEW
   PREPROD
   MAINNET
 }

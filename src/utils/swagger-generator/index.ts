@@ -28,6 +28,7 @@ import {
 import { queryPaymentInformationInput, queryPaymentInformationSchemaOutput } from "@/routes/api/payment-information";
 import { PaymentType } from "@prisma/client";
 import { Status } from "@prisma/client";
+import { getAPIKeyStatusSchemaInput, getAPIKeyStatusSchemaOutput } from "@/routes/api/api-key-status";
 
 extendZodWithOpenApi(z);
 
@@ -139,34 +140,38 @@ export function generateOpenAPI() {
   /************************** Entries **************************/
 
   registry.registerPath({
-    method: "get",
+    method: "post",
     path: "/registry-entry/",
     description:
-      "Query the registry for available and online (health-checked) entries. Registry filter, allows pagination, filtering by payment type and capability and optional date filters (to force update any entries checked before the specified date. Warning: this might take a bit of time as response is not cached)",
+      "Query the registry for available and online (health-checked) entries. Registry filter, allows pagination, filtering by payment type and capability and optional date filters (to force update any entries checked before the specified date. Warning: this might take a bit of time as response is not cached). If no filter is set, only online entries are returned.",
     summary: "REQUIRES API KEY Authentication (+user)",
     tags: ["registry-entry"],
     request: {
-      query: queryRegistrySchemaInput.openapi({
-        example: {
-          //allowCentralizedPayment: true,
-          //allowDecentralizedPayment: true,
-          limit: 10,
-          cursorId: "last_paginated_item",
-          filter: {
-            registryIdentifier: "registry_identifier",
-            assetIdentifier: "asset_identifier",
-            paymentTypes: [PaymentType.WEB3_CARDANO_V1],
-            status: [Status.ONLINE],
-            capability: {
-              name: "Example Capability",
-              version: "Optional version",
-            },
+      body: {
+        description: "",
+        content: {
+          "application/json": {
+            schema: queryRegistrySchemaInput.openapi({
+              example: {
+                limit: 10,
+                cursorId: "last_paginated_item",
+                filter: {
+                  registryIdentifier: "registry_identifier",
+                  assetIdentifier: "asset_identifier",
+                  paymentTypes: [PaymentType.WEB3_CARDANO_V1],
+                  status: [Status.ONLINE, Status.OFFLINE],
+                  capability: {
+                    name: "Example Capability",
+                    version: "Optional version",
+                  },
+                },
+                minRegistryDate: new Date().toISOString(),
+                minHealthCheckDate: new Date().toISOString(),
+              },
+            }),
           },
-          minRegistryDate: new Date().toISOString(),
-          minHealthCheckDate: new Date().toISOString(),
-
         },
-      }),
+      },
     },
     security: [{ [apiKeyAuth.name]: [] }],
     responses: {
@@ -260,7 +265,7 @@ export function generateOpenAPI() {
                       url: "optional_url",
                       note: "optional_note",
                       apiKey: "optional_apiKey",
-                      network: "PREVIEW",
+                      network: "PREPROD",
                       latestPage: 1,
                       latestIdentifier: "optional_latestIdentifier",
                     },
@@ -291,7 +296,7 @@ export function generateOpenAPI() {
                 identifier: "optional_identifier",
                 note: "optional_note",
                 apiKey: "apiKey",
-                network: "PREVIEW",
+                network: "PREPROD",
               },
             }),
           },
@@ -447,6 +452,45 @@ export function generateOpenAPI() {
     },
   });
 
+  /************************** API Key Status **************************/
+  registry.registerPath({
+    method: "get",
+    path: "/api-key-status/",
+    description: "Gets the status of an API key",
+    summary: "REQUIRES API KEY Authentication (+user)",
+    tags: ["api-key-status"],
+    request: {
+      query: getAPIKeyStatusSchemaInput.openapi({
+        example: {
+
+        },
+      }),
+    },
+    security: [{ [apiKeyAuth.name]: [] }],
+    responses: {
+      200: {
+        description: "API Key Status",
+        content: {
+          "application/json": {
+            schema: z.object({ data: getAPIKeyStatusSchemaOutput, status: z.string() }).openapi({
+              example: {
+                data: {
+                  apiKey: "masumi-registry-api-key-secret",
+                  permission: "ADMIN",
+                  usageLimited: true,
+                  maxUsageCredits: 1000000,
+                  accumulatedUsageCredits: 0,
+                  status: "ACTIVE",
+                },
+                status: "success",
+              },
+            }),
+          },
+        },
+      },
+    },
+  });
+
   /************************** API Key **************************/
   registry.registerPath({
     method: "get",
@@ -457,8 +501,8 @@ export function generateOpenAPI() {
     request: {
       query: getAPIKeySchemaInput.openapi({
         example: {
-          id: "id_or_apiKey_unique-cuid-v2-of-entry-to-search",
-          apiKey: "id_or_apiKey_api-key-to-search",
+          cursorId: "last_paginated_item_api_key",
+          limit: 10,
         },
       }),
     },
@@ -471,13 +515,16 @@ export function generateOpenAPI() {
             schema: z.object({ data: getAPIKeySchemaOutput, status: z.string() }).openapi({
               example: {
                 data: {
-                  id: "unique-cuid-v2-auto-generated",
-                  apiKey: "masumi-registry-api-key-secret",
-                  permission: "ADMIN",
-                  usageLimited: true,
-                  maxUsageCredits: 1000000,
-                  accumulatedUsageCredits: 0,
-                  status: "ACTIVE",
+                  apiKeys: [
+                    {
+                      apiKey: "masumi-registry-api-key-secret",
+                      permission: "ADMIN",
+                      usageLimited: true,
+                      maxUsageCredits: 1000000,
+                      accumulatedUsageCredits: 0,
+                      status: "ACTIVE",
+                    },
+                  ],
                 },
                 status: "success",
               },
@@ -567,7 +614,6 @@ export function generateOpenAPI() {
           "application/json": {
             schema: updateAPIKeySchemaInput.openapi({
               example: {
-                id: "id_or_apiKey_unique-cuid-v2-of-entry-to-update",
                 apiKey: "id_or_apiKey_api-key-to-update",
                 usageLimited: true,
                 maxUsageCredits: 1000000,
@@ -586,7 +632,6 @@ export function generateOpenAPI() {
             schema: z.object({ data: updateAPIKeySchemaOutput, status: z.string() }).openapi({
               example: {
                 data: {
-                  id: "unique-cuid-v2-auto-generated",
                   apiKey: "masumi-registry-api-key-secret",
                   permission: "USER",
                   usageLimited: true,
@@ -625,8 +670,7 @@ export function generateOpenAPI() {
           "application/json": {
             schema: deleteAPIKeySchemaInput.openapi({
               example: {
-                id: "id_or_apiKey_unique-cuid-v2-of-entry-to-delete",
-                apiKey: "id_or_apiKey_api-key-to-delete",
+                apiKey: "api-key-to-delete",
               },
             }),
           },
@@ -636,14 +680,13 @@ export function generateOpenAPI() {
     security: [{ [apiKeyAuth.name]: [] }],
     responses: {
       200: {
-        description: "Registry entries",
+        description: "API Key",
         content: {
           "application/json": {
             schema: z.object({ data: deleteAPIKeySchemaOutput, status: z.string() }).openapi({
               example: {
                 data: {
-                  id: "unique-cuid-v2-of-entry-to-delete",
-                  apiKey: "id_or_apiKey_api-key-to-delete",
+                  apiKey: "deleted-masumi-registry-api-key-secret",
                 },
                 status: "success",
               },

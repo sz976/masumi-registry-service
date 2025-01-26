@@ -33,9 +33,9 @@ const metadataSchema = z.object({
 },
 "image": "http://example.com/path/to/image.png"
     */
-    name: z.string(),
+    name: z.string().min(1),
     description: z.string().or(z.array(z.string())).optional(),
-    api_url: z.string().url().or(z.array(z.string())),
+    api_url: z.string().min(1).url().or(z.array(z.string().min(1))),
     example_output: z.string().or(z.array(z.string())).optional(),
     capability: z.object({
         name: z.string().or(z.array(z.string())),
@@ -43,22 +43,22 @@ const metadataSchema = z.object({
     }),
     requests_per_hour: z.string().or(z.array(z.string())).optional(),
     author: z.object({
-        name: z.string().or(z.array(z.string())).optional(),
+        name: z.string().min(1).or(z.array(z.string().min(1))),
         contact: z.string().or(z.array(z.string())).optional(),
         organization: z.string().or(z.array(z.string())).optional()
-    }).optional(),
+    }),
     legal: z.object({
         privacy_policy: z.string().or(z.array(z.string())),
         terms: z.string().or(z.array(z.string())),
         other: z.string().or(z.array(z.string()))
     }).optional(),
-    tags: z.array(z.string().or(z.array(z.string()))).optional(),
+    tags: z.array(z.string().or(z.array(z.string()))).min(1),
     pricing: z.array(z.object({
         quantity: z.number({ coerce: true }).int().min(1),
-        policy_id: z.string(),
-        asset_id: z.string()
+        unit: z.string().min(1).or(z.array(z.string().min(1)))
     })).min(1),
-    image: z.string().or(z.array(z.string()))
+    image: z.string().or(z.array(z.string())),
+    metadata_version: z.number({ coerce: true }).int().min(1)
 })
 const deleteMutex = new Sema(1);
 export async function updateDeregisteredCardanoRegistryEntries() {
@@ -81,7 +81,7 @@ export async function updateDeregisteredCardanoRegistryEntries() {
         try {
             const blockfrost = new BlockFrostAPI({
                 projectId: source.apiKey!,
-                network: source.network == $Enums.Network.MAINNET ? "mainnet" : "preview"
+                network: source.network == $Enums.Network.MAINNET ? "mainnet" : "preprod"
             });
             let cursorId = null;
             let latestAssets = await prisma.registryEntry.findMany({
@@ -190,7 +190,7 @@ export async function updateLatestCardanoRegistryEntries(onlyEntriesAfter?: Date
             try {
                 const blockfrost = new BlockFrostAPI({
                     projectId: source.apiKey!,
-                    network: source.network == $Enums.Network.MAINNET ? "mainnet" : source.network == $Enums.Network.PREVIEW ? "preview" : "preprod"
+                    network: source.network == $Enums.Network.MAINNET ? "mainnet" : "preprod"
                 });
                 let pageOffset = source.latestPage
                 let latestIdentifier = source.latestIdentifier
@@ -301,7 +301,7 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
 
         const blockfrost = new BlockFrostAPI({
             projectId: source.apiKey!,
-            network: source.network == $Enums.Network.MAINNET ? "mainnet" : source.network == $Enums.Network.PREVIEW ? "preview" : "preprod"
+            network: source.network == $Enums.Network.MAINNET ? "mainnet" : "preprod"
         });
 
         const registryData = await blockfrost.assetsById(asset.asset)
@@ -393,8 +393,8 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                         } : undefined,
                         prices: {
                             connectOrCreate: parsedMetadata.data.pricing.map(price => ({
-                                create: { quantity: price.quantity, policyId: price.policy_id, assetId: price.asset_id },
-                                where: { quantity_policyId_assetId_registryEntryId: { quantity: price.quantity, policyId: price.policy_id, assetId: price.asset_id, registryEntryId: existingEntry.id } }
+                                create: { quantity: price.quantity, unit: metadataStringConvert(price.unit)! },
+                                where: { quantity_unit_registryEntryId: { quantity: price.quantity, unit: metadataStringConvert(price.unit)!, registryEntryId: existingEntry.id } }
                             })),
                         },
                         paymentIdentifier: {
@@ -464,8 +464,7 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                         prices: {
                             create: parsedMetadata.data.pricing.map(price => ({
                                 quantity: price.quantity,
-                                policyId: price.policy_id,
-                                assetId: price.asset_id
+                                unit: metadataStringConvert(price.unit)!
                             })),
                         },
                         identifier: asset.asset,

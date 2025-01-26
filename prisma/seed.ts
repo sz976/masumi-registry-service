@@ -19,12 +19,12 @@ export const seed = async (prisma: PrismaClient) => {
   const registrySourceIdentifier =
     process.env.REGISTRY_SOURCE_IDENTIFIER_CARDANO;
   const network = process.env.NETWORK;
-  if (registrySourceIdentifier != null && (network?.toLowerCase() === "mainnet" || network?.toLowerCase() === "preview" || network?.toLowerCase() === "preprod") && process.env.BLOCKFROST_API_KEY != null) {
+  if (registrySourceIdentifier != null && (network?.toLowerCase() === "mainnet" || network?.toLowerCase() === "preprod") && process.env.BLOCKFROST_API_KEY != null) {
     console.log('REGISTRY_SOURCE_IDENTIFIER_CARDANO is seeded');
     await prisma.registrySources.upsert({
       create: {
         type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
-        network: network.toLowerCase() === "mainnet" ? $Enums.Network.MAINNET : network.toLowerCase() === "preview" ? $Enums.Network.PREVIEW : $Enums.Network.PREPROD,
+        network: network.toLowerCase() === "mainnet" ? $Enums.Network.MAINNET : $Enums.Network.PREPROD,
         note: 'Created via seeding',
         identifier: registrySourceIdentifier,
         apiKey: process.env.BLOCKFROST_API_KEY,
