@@ -60,8 +60,8 @@ export const queryRegistrySchemaOutput = z.object({
     ))
 });
 
-export const queryRegistryEntryGet = authenticatedEndpointFactory.build({
-    method: "get",
+export const queryRegistryEntryPost = authenticatedEndpointFactory.build({
+    method: "post",
     input: queryRegistrySchemaInput,
     output: queryRegistrySchemaOutput,
     handler: async ({ input, options, logger }) => {

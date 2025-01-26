@@ -2,8 +2,9 @@ import { prisma } from "@/utils/db"
 import { APIKeyStatus } from "@prisma/client"
 import { Permission } from "@prisma/client"
 
-async function getApiKeys(cursorId: string | undefined, limit: number) {
-    return await prisma.apiKey.findMany({ cursor: cursorId ? { id: cursorId } : undefined, take: limit })
+
+async function getApiKeyByCursorId(cursorId: string | undefined, limit: number | undefined) {
+    return await prisma.apiKey.findMany({ cursor: cursorId ? { id: cursorId } : undefined, take: limit ?? 10 })
 }
 async function getApiKeyById(id: string) {
     return await prisma.apiKey.findUnique({ where: { id } })
@@ -29,4 +30,4 @@ async function deleteApiKeyViaId(id: string) {
 async function deleteApiKeyViaApiKey(apiKey: string) {
     return await prisma.apiKey.delete({ where: { apiKey } })
 }
-export const apiKeyRepository = { getApiKeys, getApiKeyById, getApiKeyByApiKey, addApiKey, updateApiKeyViaId, updateApiKeyViaApiKey, deleteApiKeyViaId, deleteApiKeyViaApiKey }
+export const apiKeyRepository = { getApiKeyById, getApiKeyByCursorId, getApiKeyByApiKey, addApiKey, updateApiKeyViaId, updateApiKeyViaApiKey, deleteApiKeyViaId, deleteApiKeyViaApiKey }

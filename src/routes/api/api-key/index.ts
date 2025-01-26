@@ -6,21 +6,21 @@ import { apiKeyService } from '@/services/api-key/api-key.service';
 
 
 export const getAPIKeySchemaInput = z.object({
-    id: z.string().max(550).optional(),
-    apiKey: z.string().max(550).optional()
+    cursorId: z.string().max(550).optional(),
+    limit: z.number({ coerce: true }).int().min(1).max(100).default(10),
+
 })
 
 
 export const getAPIKeySchemaOutput = z.object({
-
-    id: z.string(),
-    apiKey: z.string(),
-    permission: z.nativeEnum(Permission),
-    usageLimited: z.boolean(),
-    maxUsageCredits: z.number({ coerce: true }).int().min(0).max(1000000).nullable(),
-    accumulatedUsageCredits: z.number({ coerce: true }).int().min(0).max(1000000),
-    status: z.nativeEnum(APIKeyStatus),
-
+    apiKeys: z.array(z.object({
+        apiKey: z.string(),
+        permission: z.nativeEnum(Permission),
+        usageLimited: z.boolean(),
+        maxUsageCredits: z.number({ coerce: true }).int().min(0).max(1000000).nullable(),
+        accumulatedUsageCredits: z.number({ coerce: true }).int().min(0).max(1000000),
+        status: z.nativeEnum(APIKeyStatus),
+    }))
 });
 
 export const queryAPIKeyEndpointGet = adminAuthenticatedEndpointFactory.build({
@@ -28,12 +28,12 @@ export const queryAPIKeyEndpointGet = adminAuthenticatedEndpointFactory.build({
     input: getAPIKeySchemaInput,
     output: getAPIKeySchemaOutput,
     handler: async ({ input }) => {
-        const data = await apiKeyService.getApiKey(input.id, input.apiKey)
+        const data = await apiKeyService.getApiKey(input.cursorId, input.limit)
 
         if (!data)
             throw createHttpError(404, "Not found")
 
-        return data;
+        return { apiKeys: data }
     },
 });
 
@@ -65,15 +65,13 @@ export const addAPIKeyEndpointPost = adminAuthenticatedEndpointFactory.build({
 });
 
 export const updateAPIKeySchemaInput = z.object({
-    id: z.string().max(150).optional(),
-    apiKey: z.string().max(550).optional(),
+    apiKey: z.string().max(550),
     usageLimited: z.boolean().default(false),
     maxUsageCredits: z.number({ coerce: true }).int().min(0).max(1000000).default(0),
     status: z.nativeEnum(APIKeyStatus).default(APIKeyStatus.ACTIVE),
 })
 
 export const updateAPIKeySchemaOutput = z.object({
-    id: z.string(),
     apiKey: z.string(),
     permission: z.nativeEnum(Permission),
     usageLimited: z.boolean(),
@@ -88,7 +86,7 @@ export const updateAPIKeyEndpointPatch = adminAuthenticatedEndpointFactory.build
     output: updateAPIKeySchemaOutput,
     handler: async ({ input }) => {
 
-        const result = await apiKeyService.updateApiKey(input.id, input.apiKey, input.status, input.usageLimited, input.maxUsageCredits)
+        const result = await apiKeyService.updateApiKey(input.apiKey, input.status, input.usageLimited, input.maxUsageCredits)
         if (!result)
             throw createHttpError(404, "Not found")
 
@@ -97,12 +95,10 @@ export const updateAPIKeyEndpointPatch = adminAuthenticatedEndpointFactory.build
 });
 
 export const deleteAPIKeySchemaInput = z.object({
-    id: z.string().max(150).optional(),
-    apiKey: z.string().max(550).optional()
+    apiKey: z.string().max(550)
 })
 
 export const deleteAPIKeySchemaOutput = z.object({
-    id: z.string(),
     apiKey: z.string(),
 });
 
@@ -113,7 +109,7 @@ export const deleteAPIKeyEndpointDelete = adminAuthenticatedEndpointFactory.buil
 
     handler: async ({ input }) => {
 
-        const result = await apiKeyService.deleteApiKey(input.id, input.apiKey)
+        const result = await apiKeyService.deleteApiKey(input.apiKey)
 
         if (!result)
             throw createHttpError(404, "Not found")

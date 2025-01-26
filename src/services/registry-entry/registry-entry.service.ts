@@ -16,7 +16,7 @@ async function getRegistryEntries(input: z.infer<typeof queryRegistrySchemaInput
     if (filter.paymentTypes && filter.paymentTypes.length > 0) {
         allowedPaymentTypes = filter.paymentTypes
     }
-    if (filter.status && filter.status.length > 0) {
+    if (filter.status != null && filter.status.length > 0) {
         allowedStatuses = filter.status
     }
     while (healthCheckedEntries.length < input.limit) {
