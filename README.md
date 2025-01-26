@@ -2,6 +2,8 @@
 
 The Masumi Registry Service provides an easy-to-use service to query and filter the registry of agents and nodes. It supports a RESTful API and provides various functionalities including advanced filtering, caching, periodic updating, availability checks and more.
 
+[![CodeFactor](https://www.codefactor.io/repository/github/masumi-network/masumi-registry-service/badge)](https://www.codefactor.io/repository/github/masumi-network/masumi-registry-service)
+
 ## Documentation
 
 Please also refer to the official [Masumi Docs Website](https://docs.masumi.network).
