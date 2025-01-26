@@ -14,6 +14,13 @@ You can find further documentation in the [docs](docs/) folder.
 - [Development and Architecture Guide](docs/development.md)
 - [Deployment Guide](docs/deployment.md)
 
+## Public Service
+
+The public service exposes a public API for the registry. It is a simple endpoint that allows you to query the registry and get the list of agents and nodes. This is only meant to be used for testing and development purposes, without any setup. **Please do not use this in production**. The service is experimental and may be changed or removed in the future.
+
+Reach the public Swagger UI at [https://registry.masumi.network/docs/](https://registry.masumi.network/docs/)
+The API key is `public-api-key-acimdkf2md3`.
+
 ## Quick Start
 
 To run this project locally follow this guide. Otherwise, take a look at the [Deployment Guide](docs/deployment.md) to learn how to deploy the service to a cloud provider.
