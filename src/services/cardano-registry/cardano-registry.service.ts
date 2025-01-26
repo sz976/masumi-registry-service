@@ -33,7 +33,7 @@ const metadataSchema = z.object({
 },
 "image": "http://example.com/path/to/image.png"
     */
-    name: z.string().min(1),
+    name: z.string().min(1).or(z.array(z.string().min(1))),
     description: z.string().or(z.array(z.string())).optional(),
     api_url: z.string().min(1).url().or(z.array(z.string().min(1))),
     example_output: z.string().or(z.array(z.string())).optional(),
@@ -52,13 +52,13 @@ const metadataSchema = z.object({
         terms: z.string().or(z.array(z.string())),
         other: z.string().or(z.array(z.string()))
     }).optional(),
-    tags: z.array(z.string().or(z.array(z.string()))).min(1),
+    tags: z.array(z.string().min(1)).min(1),
     pricing: z.array(z.object({
         quantity: z.number({ coerce: true }).int().min(1),
         unit: z.string().min(1).or(z.array(z.string().min(1)))
     })).min(1),
     image: z.string().or(z.array(z.string())),
-    metadata_version: z.number({ coerce: true }).int().min(1)
+    metadata_version: z.number({ coerce: true }).int().min(1).max(1)
 })
 const deleteMutex = new Sema(1);
 export async function updateDeregisteredCardanoRegistryEntries() {
@@ -310,8 +310,10 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
         const parsedMetadata = metadataSchema.safeParse(onchainMetadata)
 
         //if the metadata is not valid or the token has no holder -> is burned, we skip it
-        if (!parsedMetadata.success || holderData.length < 1)
+        if (!parsedMetadata.success || holderData.length < 1) {
             return null;
+        }
+
 
         //check endpoint
         const endpoint = metadataStringConvert(parsedMetadata.data.api_url)!
@@ -374,7 +376,7 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                         uptimeCount: { increment: isAvailable == $Enums.Status.ONLINE ? 1 : 0 },
                         uptimeCheckCount: { increment: 1 },
                         status: isAvailable,
-                        name: parsedMetadata.data.name,
+                        name: metadataStringConvert(parsedMetadata.data.name)!,
                         description: metadataStringConvert(parsedMetadata.data.description),
                         api_url: metadataStringConvert(parsedMetadata.data.api_url)!,
                         author_name: metadataStringConvert(parsedMetadata.data.author?.name),
@@ -444,7 +446,7 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                         uptimeCount: isAvailable == $Enums.Status.ONLINE ? 1 : 0,
                         uptimeCheckCount: 1,
                         status: isAvailable,
-                        name: parsedMetadata.data.name,
+                        name: metadataStringConvert(parsedMetadata.data.name)!,
                         description: metadataStringConvert(parsedMetadata.data.description),
                         api_url: metadataStringConvert(parsedMetadata.data.api_url)!,
                         author_name: metadataStringConvert(parsedMetadata.data.author?.name),
