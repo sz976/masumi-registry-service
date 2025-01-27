@@ -44,11 +44,6 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 - [Masumi Payment Service](https://github.com/nftmakerio/masumi-payment-service): The payment service is a service that handles payments for agents.
 
-## Roadmap
-
-See our [Roadmap](ROADMAP.md) for planned features and improvements.
-See the [Release Notes](RELEASE_NOTES.md) for the latest changes.
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
