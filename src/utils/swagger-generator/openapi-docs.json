@@ -316,7 +316,7 @@
                                             "terms_and_condition": "If the answer is 42 what was the question",
                                             "uptimeCheckCount": 10,
                                             "uptimeCount": 8,
-                                            "lastUptimeCheck": "2025-01-27T12:56:22.329Z",
+                                            "lastUptimeCheck": "2025-01-28T12:28:04.323Z",
                                             "api_url": "https://localhost:3000/api/",
                                             "capability": {
                                                 "name": "Example Capability",
@@ -325,7 +325,7 @@
                                             },
                                             "author_organization": "MASUMI",
                                             "identifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                            "id": "a6gr0kyxgrefvgxkn7mo9xbf",
+                                            "id": "h0llave89inmbuxiwq0ghjat",
                                             "paymentIdentifier": [
                                                 {
                                                     "paymentIdentifier": "addr1333333333333333333333333333333333333333333333333333333333333333",
@@ -371,6 +371,13 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
+                                    "network": {
+                                        "type": "string",
+                                        "enum": [
+                                            "PREPROD",
+                                            "MAINNET"
+                                        ]
+                                    },
                                     "limit": {
                                         "type": "integer",
                                         "minimum": 1,
@@ -478,9 +485,13 @@
                                         ]
                                     }
                                 },
+                                "required": [
+                                    "network"
+                                ],
                                 "example": {
                                     "limit": 10,
                                     "cursorId": "last_paginated_item",
+                                    "network": "PREPROD",
                                     "filter": {
                                         "registryIdentifier": "registry_identifier",
                                         "assetIdentifier": "asset_identifier",
@@ -496,8 +507,8 @@
                                             "version": "Optional version"
                                         }
                                     },
-                                    "minRegistryDate": "2025-01-27T12:56:22.330Z",
-                                    "minHealthCheckDate": "2025-01-27T12:56:22.330Z"
+                                    "minRegistryDate": "2025-01-28T12:28:04.324Z",
+                                    "minHealthCheckDate": "2025-01-28T12:28:04.324Z"
                                 }
                             }
                         }
@@ -704,7 +715,7 @@
                                                     "terms_and_condition": "If the answer is 42 what was the question",
                                                     "uptimeCheckCount": 10,
                                                     "uptimeCount": 8,
-                                                    "lastUptimeCheck": "2025-01-27T12:56:22.330Z",
+                                                    "lastUptimeCheck": "2025-01-28T12:28:04.324Z",
                                                     "api_url": "https://localhost:3000/api/",
                                                     "capability": {
                                                         "name": "Example Capability",
@@ -713,7 +724,7 @@
                                                     },
                                                     "author_organization": "MASUMI",
                                                     "identifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                                    "id": "q87f9h26jgc48bzd9jqkdzcn"
+                                                    "id": "qk8xmwp1auuf5kzbnsthz0ee"
                                                 }
                                             ]
                                         },
