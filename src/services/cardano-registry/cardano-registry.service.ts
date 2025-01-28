@@ -11,28 +11,6 @@ import cuid2 from "@paralleldrive/cuid2";
 
 const metadataSchema = z.object({
 
-    /*
-"name": "<name>",
-"description": "<description>",
-"api_url": "<api_url>",
-"example_output": "<ipfs_hash>",
-"version": "<version>",
-"author": {
-"name": "<author_name>",
-"contact": "<author_contact_details>",
-"organization": "<author_orga>"
-},
-"requests_per_hour": "request_amount",
-"tags": [
-"<tag>"
-],
-"legal": {
-"privacy policy": "<url>",
-"terms": "<url>",
-"other": "<url>"
-},
-"image": "http://example.com/path/to/image.png"
-    */
     name: z.string().min(1).or(z.array(z.string().min(1))),
     description: z.string().or(z.array(z.string())).optional(),
     api_url: z.string().min(1).url().or(z.array(z.string().min(1))),
@@ -48,9 +26,9 @@ const metadataSchema = z.object({
         organization: z.string().or(z.array(z.string())).optional()
     }),
     legal: z.object({
-        privacy_policy: z.string().or(z.array(z.string())),
-        terms: z.string().or(z.array(z.string())),
-        other: z.string().or(z.array(z.string()))
+        privacy_policy: z.string().or(z.array(z.string())).optional(),
+        terms: z.string().or(z.array(z.string())).optional(),
+        other: z.string().or(z.array(z.string())).optional()
     }).optional(),
     tags: z.array(z.string().min(1)).min(1),
     pricing: z.array(z.object({

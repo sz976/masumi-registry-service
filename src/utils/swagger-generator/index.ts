@@ -155,6 +155,7 @@ export function generateOpenAPI() {
               example: {
                 limit: 10,
                 cursorId: "last_paginated_item",
+                network: "PREPROD",
                 filter: {
                   registryIdentifier: "registry_identifier",
                   assetIdentifier: "asset_identifier",

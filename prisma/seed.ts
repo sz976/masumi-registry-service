@@ -1,4 +1,4 @@
-import { $Enums, PrismaClient } from '@prisma/client';
+import { $Enums, Network, PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -16,29 +16,51 @@ export const seed = async (prisma: PrismaClient) => {
   } else {
     console.log('ADMIN_KEY is seeded');
   }
-  const registrySourceIdentifier =
-    process.env.REGISTRY_SOURCE_IDENTIFIER_CARDANO;
-  const network = process.env.NETWORK;
-  if (registrySourceIdentifier != null && (network?.toLowerCase() === "mainnet" || network?.toLowerCase() === "preprod") && process.env.BLOCKFROST_API_KEY != null) {
-    console.log('REGISTRY_SOURCE_IDENTIFIER_CARDANO is seeded');
+
+  const registrySourceIdentifierPreprod = "e57c0b9e2de90f51bef2b777b9b938db81265f8021cc538332f24eeb"
+  if (process.env.BLOCKFROST_API_KEY != null) {
+    console.log('REGISTRY_SOURCE_IDENTIFIER_CARDANO_PREPROD is seeded');
     await prisma.registrySources.upsert({
       create: {
         type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
-        network: network.toLowerCase() === "mainnet" ? $Enums.Network.MAINNET : $Enums.Network.PREPROD,
+        network: Network.PREPROD,
         note: 'Created via seeding',
-        identifier: registrySourceIdentifier,
+        identifier: registrySourceIdentifierPreprod,
         apiKey: process.env.BLOCKFROST_API_KEY,
       },
       update: {},
       where: {
         type_identifier: {
           type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
-          identifier: registrySourceIdentifier,
+          identifier: registrySourceIdentifierPreprod,
         },
       },
     });
   } else {
-    console.log('REGISTRY_SOURCE_IDENTIFIER_CARDANO is not seeded');
+    console.log('REGISTRY_SOURCE_IDENTIFIER_CARDANO_PREPROD is not seeded');
+  }
+
+  const registrySourceIdentifierMainnet = "0ccabe90d9ab4a6f047571f2ebbb9719b007bf1dffb68dfd66a3a553"
+  if (process.env.BLOCKFROST_API_KEY_MAINNET != null) {
+    console.log('REGISTRY_SOURCE_IDENTIFIER_CARDANO_MAINNET is seeded');
+    await prisma.registrySources.upsert({
+      create: {
+        type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
+        network: Network.MAINNET,
+        note: 'Created via seeding',
+        identifier: registrySourceIdentifierMainnet,
+        apiKey: process.env.BLOCKFROST_API_KEY_MAINNET,
+      },
+      update: {},
+      where: {
+        type_identifier: {
+          type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
+          identifier: registrySourceIdentifierMainnet,
+        },
+      },
+    });
+  } else {
+    console.log('REGISTRY_SOURCE_IDENTIFIER_CARDANO_MAINNET is not seeded');
   }
 };
 seed(prisma)

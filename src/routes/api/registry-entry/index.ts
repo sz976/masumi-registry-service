@@ -2,11 +2,11 @@ import { authenticatedEndpointFactory } from '@/utils/endpoint-factory/authentic
 import { z } from 'zod';
 import { ez } from "express-zod-api";
 import { tokenCreditService } from '@/services/token-credit';
-import { $Enums } from '@prisma/client';
+import { $Enums, Network } from '@prisma/client';
 import { registryEntryService } from '@/services/registry-entry';
 
 export const queryRegistrySchemaInput = z.object({
-
+    network: z.nativeEnum(Network),
     limit: z.number({ coerce: true }).int().min(1).max(50).default(10),
     //optional data
     cursorId: z.string().min(1).max(50).optional(),

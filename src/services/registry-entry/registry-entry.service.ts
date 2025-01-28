@@ -39,7 +39,8 @@ async function getRegistryEntries(input: z.infer<typeof queryRegistrySchemaInput
             input.filter?.assetIdentifier,
             input.filter?.tags,
             currentCursorId,
-            input.limit
+            input.limit,
+            input.network
         );
 
         const result = await healthCheckService.checkVerifyAndUpdateRegistryEntries({
