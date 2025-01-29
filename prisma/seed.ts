@@ -17,8 +17,8 @@ export const seed = async (prisma: PrismaClient) => {
     console.log('ADMIN_KEY is seeded');
   }
 
-  const registrySourceIdentifierPreprod = "e57c0b9e2de90f51bef2b777b9b938db81265f8021cc538332f24eeb"
-  if (process.env.BLOCKFROST_API_KEY != null) {
+  const registrySourceIdentifierPreprod = "b0fcefada74bec0132dbd01c01a631ead4473d0e0e566f69dd698c57"
+  if (process.env.BLOCKFROST_API_KEY_PREPROD != null) {
     console.log('REGISTRY_SOURCE_IDENTIFIER_CARDANO_PREPROD is seeded');
     await prisma.registrySources.upsert({
       create: {
@@ -26,7 +26,7 @@ export const seed = async (prisma: PrismaClient) => {
         network: Network.PREPROD,
         note: 'Created via seeding',
         identifier: registrySourceIdentifierPreprod,
-        apiKey: process.env.BLOCKFROST_API_KEY,
+        apiKey: process.env.BLOCKFROST_API_KEY_PREPROD,
       },
       update: {},
       where: {
@@ -40,7 +40,7 @@ export const seed = async (prisma: PrismaClient) => {
     console.log('REGISTRY_SOURCE_IDENTIFIER_CARDANO_PREPROD is not seeded');
   }
 
-  const registrySourceIdentifierMainnet = "0ccabe90d9ab4a6f047571f2ebbb9719b007bf1dffb68dfd66a3a553"
+  const registrySourceIdentifierMainnet = "0af294ef7fc26bceb20dd36ea556e8829b8ccaa743f1c66993d1b52a"
   if (process.env.BLOCKFROST_API_KEY_MAINNET != null) {
     console.log('REGISTRY_SOURCE_IDENTIFIER_CARDANO_MAINNET is seeded');
     await prisma.registrySources.upsert({
