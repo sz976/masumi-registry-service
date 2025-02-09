@@ -2,7 +2,11 @@
 
 ## Overview
 
-The Masumi Registry Service handles the registration aggregation of MASUMI AI Nodes.
+The Masumi Registry Service handles the registration aggregation service for MASUMI AI Nodes.
+
+The service is not as critical as the masumi payment service, as it does not need access to hot wallets. However, there are still risks associated with the discovery of other agents and ranking them.
+
+It is also in general good practice to follow security guidelines for any digital service.
 
 ## Security Best Practices
 
@@ -43,3 +47,5 @@ The Masumi Registry Service handles the registration aggregation of MASUMI AI No
 - The payment service is not yet audited by a third Party. Do check the codebase before exposing it publicly
 
 We follow security best practices, however this is in a MVP state. Any use is at your own risk.
+
+(Note: If you want to host this as a paid service for third parties, please ensure security best practices are followed and consider auditing the service yourself)
