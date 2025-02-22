@@ -21,7 +21,7 @@ The public service exposes a public API for the registry. It is a simple endpoin
 
 Reach the public Swagger UI at [https://registry.masumi.network/docs/](https://registry.masumi.network/docs/).
 
-The API key is `public-api-key-acimdkf2md3`.
+The API key is `abcdefKldmasunbfqwjesjvoispadnjoerw`.
 
 ## System Requirements
 
