@@ -7,7 +7,7 @@
     "license": "MIT",
     "type": "module",
     "prisma": {
-        "seed": "ts-node prisma/seed.ts"
+        "seed": "tsx ./prisma/seed.ts"
     },
     "scripts": {
         "lint": "eslint --fix --quiet --config eslint.config.mjs",
