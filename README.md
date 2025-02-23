@@ -27,7 +27,7 @@ The API key is `abcdefKldmasunbfqwjesjvoispadnjoerw`.
 
 Ensure your system meets the following requirements before installation:
 
-- Node.js v18.x or later
+- Node.js v20.x or later
 - PostgreSQL 15 database
 
 ## Installing the Masumi Registry Service
@@ -35,6 +35,7 @@ Ensure your system meets the following requirements before installation:
 We are focusing on setting everything up for the **Preprod** Environment of Masumi. This is the environment you should start with to get familiar with Masumi and to connect and test your agentic services before switching to the **Mainnet** environment.
 
 ### Step 1: Clone the Repository and Install Dependencies
+
 ```sh
 git clone https://github.com/masumi-network/masumi-registry-service
 cd masumi-registry-service/
@@ -42,13 +43,16 @@ npm install
 ```
 
 ### Step 2: Checkout the Latest Stable Version
+
 ```sh
 git fetch --tags
 git checkout $(git tag -l | sort -V | tail -n 1)
 ```
 
 ### Step 3: Configure Environment Variables
+
 Copy the `.env.example` file to `.env` and update only the following variables:
+
 ```sh
 DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/masumi_registry?schema=public"
 ENCRYPTION_KEY="abcdef_this_should_be_very_secure_and_32_characters_long"
@@ -63,12 +67,15 @@ Get a free Blockfrost API Key from [blockfrost.io](https://blockfrost.io) - [lea
 Set the Encryption and Admin Keys yourself.
 
 ### Step 4: Configure and Seed the PostgreSQL Database
+
 ```sh
 npm run prisma:migrate
 ```
 
 ### Step 5: Running the Service
+
 You can start the service in different modes:
+
 1. Build and run in production mode:
    ```sh
    npm run build && npm start
@@ -85,6 +92,7 @@ Once running, you can access the OpenAPI Documentation at [http://localhost:3000
 ### Getting the Blockfrost API Key
 
 Blockfrost is an API Service that allows the Masumi Registry Service to interact with the Cardano blockchain without running a full Cardano Node. It is free and easy to get:
+
 1. Sign up on [blockfrost.io](https://blockfrost.io)
 2. Click "Add Project"
 3. Make sure to choose "Cardano Preprod" as Network
@@ -95,18 +103,22 @@ Blockfrost is free for one project and allows **50,000 Requests a Day**, which i
 ### Installing PostgreSQL Database
 
 If PostgreSQL is not installed, follow these steps (for MacOS):
+
 ```sh
 brew install postgresql@15
 brew services start postgresql@15
 ```
 
 To create a database:
+
 ```sh
 psql postgres
 create database masumi_registry;
 \q
 ```
+
 Ensure that your `DATABASE_URL` matches the configured database settings in `.env`:
+
 ```sh
 DATABASE_URL="postgresql://<USERNAME>@localhost:5432/masumi_registry?schema=public"
 ```
