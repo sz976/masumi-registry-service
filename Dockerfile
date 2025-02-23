@@ -1,4 +1,4 @@
-FROM node:18-slim AS builder
+FROM node:20-slim AS builder
 RUN apt-get update -y && apt-get install -y openssl
 # Build step
 WORKDIR /usr/src/app
@@ -15,7 +15,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # Serve step
-FROM node:18-slim AS runner
+FROM node:20-slim AS runner
 RUN apt-get update -y && apt-get install -y openssl
 WORKDIR /usr/src/app
 
