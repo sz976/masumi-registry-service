@@ -14,19 +14,19 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
-model apiKey {
+model ApiKey {
   id                      String       @id @default(cuid())
   createdAt               DateTime     @default(now())
   updatedAt               DateTime     @updatedAt
-  apiKey                  String       @unique
+  token                   String       @unique
   status                  APIKeyStatus
   permission              Permission
   usageLimited            Boolean      @default(false)
   accumulatedUsageCredits Float        @default(0)
   maxUsageCredits         Float?
-  usage                   UsageEntry[]
+  Usage                   UsageEntry[]
 
-  @@index([apiKey])
+  @@index([token])
 }
 
 enum APIKeyStatus {
@@ -46,17 +46,8 @@ model UsageEntry {
   usedCredits Float
   note        String?
 
-  apiKey   apiKey? @relation(fields: [apiKeyId], references: [id])
+  ApiKey   ApiKey? @relation(fields: [apiKeyId], references: [id])
   apiKeyId String?
-}
-
-model Tag {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  value     String   @unique
-
-  RegistryEntry RegistryEntry[]
 }
 
 model RegistryEntry {
@@ -64,36 +55,36 @@ model RegistryEntry {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name                String
-  api_url             String
-  description         String?
-  requests_per_hour   Float?
-  author_name         String?
-  author_contact      String?
-  author_organization String?
+  name               String
+  apiUrl             String
+  description        String?
+  requestsPerHour    Float?
+  authorName         String?
+  authorContact      String?
+  authorOrganization String?
 
-  privacy_policy      String?
-  terms_and_condition String?
-  other_legal         String?
-  image               String
-  tags                Tag[]
+  privacyPolicy     String?
+  termsAndCondition String?
+  otherLegal        String?
+  image             String
+  tags              String[]
 
   lastUptimeCheck  DateTime
-  uptimeCount      Int             @default(0)
-  uptimeCheckCount Int             @default(0)
+  uptimeCount      Int            @default(0)
+  uptimeCheckCount Int            @default(0)
   status           Status
-  registry         RegistrySources @relation(fields: [registrySourcesId], references: [id], onDelete: Cascade)
+  RegistrySource   RegistrySource @relation(fields: [registrySourceId], references: [id], onDelete: Cascade)
 
-  paymentIdentifier PaymentIdentifier[]
-  capability        Capability          @relation(fields: [capabilitiesId], references: [id])
-  registrySourcesId String
+  PaymentIdentifier PaymentIdentifier[]
+  Capability        Capability          @relation(fields: [capabilitiesId], references: [id])
+  registrySourceId  String
   identifier        String
   capabilitiesId    String
-  prices            Price[]
+  Prices            Price[]
 
   //we might not want to enforce this if we want an agent to be able to register again
   //@@unique([registrySourcesId, api_url])
-  @@unique([identifier, registrySourcesId])
+  @@unique([identifier, registrySourceId])
 }
 
 model PaymentIdentifier {
@@ -150,21 +141,36 @@ model Capability {
   @@unique([name, version])
 }
 
-model RegistrySources {
-  id               String            @id @default(cuid())
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  type             RegistryEntryType
-  network          Network?
-  url              String?
-  identifier       String?
-  apiKey           String?
+model RegistrySource {
+  id                     String               @id @default(cuid())
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  type                   RegistryEntryType
+  network                Network?
+  url                    String?
+  identifier             String?
+  RegistrySourceConfig   RegistrySourceConfig @relation(fields: [registrySourceConfigId], references: [id])
+  registrySourceConfigId String
+
   note             String?
-  latestPage       Int               @default(1) //# blockfrost starts at page 1
+  latestPage       Int             @default(1) //# blockfrost starts at page 1
   latestIdentifier String?
   RegistryEntry    RegistryEntry[]
 
   @@unique([type, identifier])
+}
+
+enum RPCProvider {
+  BLOCKFROST
+}
+
+model RegistrySourceConfig {
+  id                String           @id @default(cuid())
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  rpcProvider       RPCProvider
+  rpcProviderApiKey String
+  RegistrySource    RegistrySource[]
 }
 
 enum Network {

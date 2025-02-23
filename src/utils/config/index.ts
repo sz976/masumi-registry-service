@@ -20,3 +20,11 @@ export const CONFIG = {
     UPDATE_CARDANO_DEREGISTER_INTERVAL: updateCardanoDeregisterInterval,
     VERSION: "0.1.2"
 };
+
+
+export const DEFAULTS = {
+    REGISTRY_POLICY_ID_PREPROD:
+        'da5bd59a96e050d829d21f7cb4fc38994f85cb37fadab9f8b9a1e8a2',
+    REGISTRY_POLICY_ID_MAINNET:
+        '2ecdeae3a746e95e1ed2162b6c3c62a76c7aa5e0962dad1a2650d175',
+};
