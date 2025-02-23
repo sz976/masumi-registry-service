@@ -40,10 +40,13 @@ const metadataSchema = z.object({
 })
 const deleteMutex = new Sema(1);
 export async function updateDeregisteredCardanoRegistryEntries() {
-    const sources = await prisma.registrySources.findMany({
+    const sources = await prisma.registrySource.findMany({
         where: {
             type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
             identifier: { not: null },
+        },
+        include: {
+            RegistrySourceConfig: true
         }
     })
 
@@ -58,14 +61,14 @@ export async function updateDeregisteredCardanoRegistryEntries() {
     await Promise.all(sources.map(async (source) => {
         try {
             const blockfrost = new BlockFrostAPI({
-                projectId: source.apiKey!,
+                projectId: source.RegistrySourceConfig.rpcProviderApiKey!,
                 network: source.network == $Enums.Network.MAINNET ? "mainnet" : "preprod"
             });
             let cursorId = null;
             let latestAssets = await prisma.registryEntry.findMany({
                 where: {
                     status: { in: [$Enums.Status.ONLINE, $Enums.Status.OFFLINE] },
-                    registrySourcesId: source.id
+                    registrySourceId: source.id
                 },
                 orderBy: { lastUptimeCheck: "desc" },
                 take: 50,
@@ -82,7 +85,7 @@ export async function updateDeregisteredCardanoRegistryEntries() {
 
                 await Promise.all(burnedAssets.map(async (asset) => {
                     await prisma.registryEntry.update({
-                        where: { identifier_registrySourcesId: { identifier: asset.asset, registrySourcesId: source.id } },
+                        where: { identifier_registrySourceId: { identifier: asset.asset, registrySourceId: source.id } },
                         data: { status: $Enums.Status.DEREGISTERED }
                     })
                 }))
@@ -94,7 +97,7 @@ export async function updateDeregisteredCardanoRegistryEntries() {
                 latestAssets = await prisma.registryEntry.findMany({
                     where: {
                         status: { in: [$Enums.Status.ONLINE, $Enums.Status.OFFLINE] },
-                        registrySourcesId: source.id
+                        registrySourceId: source.id
                     },
                     orderBy: { lastUptimeCheck: "desc" },
                     take: 50,
@@ -118,13 +121,16 @@ export async function updateLatestCardanoRegistryEntries(onlyEntriesAfter?: Date
         return;
 
     //we do not need any isolation level here as worst case we have a few duplicate checks in the next run but no data loss. Advantage we do not need to lock the table
-    let sources = await prisma.registrySources.findMany({
+    let sources = await prisma.registrySource.findMany({
         where: {
             type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
             identifier: { not: null },
             updatedAt: {
                 lte: onlyEntriesAfter
             }
+        },
+        include: {
+            RegistrySourceConfig: true
         }
     })
 
@@ -135,13 +141,16 @@ export async function updateLatestCardanoRegistryEntries(onlyEntriesAfter?: Date
     //if we are already performing an update, we wait for it to finish and return
     if (!acquiredMutex) {
         acquiredMutex = await updateMutex.acquire();
-        sources = await prisma.registrySources.findMany({
+        sources = await prisma.registrySource.findMany({
             where: {
                 type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
                 identifier: { not: null },
                 updatedAt: {
                     lte: onlyEntriesAfter
                 }
+            },
+            include: {
+                RegistrySourceConfig: true
             }
         })
         if (sources.length == 0) {
@@ -162,12 +171,12 @@ export async function updateLatestCardanoRegistryEntries(onlyEntriesAfter?: Date
 
         logger.debug("updating entries from sources", { count: sources.length })
         //the return variable, note that the order of the entries is not guaranteed
-        const latestEntries: ({ name: string; status: $Enums.Status; description: string | null; api_url: string; author_name: string | null; author_contact: string | null; author_organization: string | null; privacy_policy: string | null; terms_and_condition: string | null; other_legal: string | null; image: string; id: string; createdAt: Date; updatedAt: Date; identifier: string; lastUptimeCheck: Date; uptimeCount: number; uptimeCheckCount: number; registrySourcesId: string; capabilitiesId: string; requests_per_hour: number | null; })[] = []
+        const latestEntries = []
         //iterate via promises to skip await time
         await Promise.all(sources.map(async (source) => {
             try {
                 const blockfrost = new BlockFrostAPI({
-                    projectId: source.apiKey!,
+                    projectId: source.RegistrySourceConfig.rpcProviderApiKey!,
                     network: source.network == $Enums.Network.MAINNET ? "mainnet" : "preprod"
                 });
                 let pageOffset = source.latestPage
@@ -212,7 +221,7 @@ export async function updateLatestCardanoRegistryEntries(onlyEntriesAfter?: Date
                     latestAssets = await blockfrost.assetsPolicyById(source.identifier!, { page: pageOffset, count: 100 })
                     pageOffset = pageOffset + 1
                 }
-                await prisma.registrySources.update({
+                await prisma.registrySource.update({
                     where: { id: source.id },
                     data: { latestPage: (pageOffset - 1), latestIdentifier: latestIdentifier }
                 })
@@ -240,13 +249,13 @@ export async function updateLatestCardanoRegistryEntries(onlyEntriesAfter?: Date
     })*/
 }
 
-export const updateCardanoAssets = async (latestAssets: { asset: string, quantity: string }[], source: { id: string, identifier: string | null, apiKey: string | null, network: $Enums.Network | null }) => {
+export const updateCardanoAssets = async (latestAssets: { asset: string, quantity: string }[], source: { id: string, identifier: string | null, RegistrySourceConfig: { rpcProviderApiKey: string }, network: $Enums.Network | null }) => {
     logger.info(`updating ${latestAssets.length} cardano assets`)
     //note that the order of the entries is not guaranteed at this point
     const resultingUpdates = await Promise.all(latestAssets.map(async (asset) => {
         if (source.network == null)
             throw new Error("Source network is not set")
-        if (source.apiKey == null)
+        if (source.RegistrySourceConfig.rpcProviderApiKey == null)
             throw new Error("Source api key is not set")
 
         logger.debug("updating asset", { asset: asset.asset, quantity: asset.quantity })
@@ -256,20 +265,20 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
             //TOKEN is deregistered we will update the status and return null
             await prisma.registryEntry.upsert({
                 where: {
-                    identifier_registrySourcesId: {
+                    identifier_registrySourceId: {
                         identifier: asset.asset,
-                        registrySourcesId: source.id
+                        registrySourceId: source.id
                     }
                 },
                 update: { status: $Enums.Status.DEREGISTERED },
                 create: {
                     status: $Enums.Status.DEREGISTERED,
-                    capability: { connectOrCreate: { create: { name: "", version: "" }, where: { name_version: { name: "", version: "" } } } },
+                    Capability: { connectOrCreate: { create: { name: "", version: "" }, where: { name_version: { name: "", version: "" } } } },
                     identifier: asset.asset,
-                    registry: { connect: { id: source.id } },
+                    RegistrySource: { connect: { id: source.id } },
                     name: "?",
                     description: "?",
-                    api_url: "?_" + cuid2.createId(),
+                    apiUrl: "?_" + cuid2.createId(),
                     image: "?",
                     lastUptimeCheck: new Date()
                 }
@@ -278,7 +287,7 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
         }
 
         const blockfrost = new BlockFrostAPI({
-            projectId: source.apiKey!,
+            projectId: source.RegistrySourceConfig.rpcProviderApiKey!,
             network: source.network == $Enums.Network.MAINNET ? "mainnet" : "preprod"
         });
 
@@ -316,9 +325,9 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
 
             const existingEntry = await tx.registryEntry.findUnique({
                 where: {
-                    identifier_registrySourcesId: {
+                    identifier_registrySourceId: {
                         identifier: asset.asset,
-                        registrySourcesId: source.id
+                        registrySourceId: source.id
                     }
                 }
             })
@@ -336,17 +345,16 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                 } catch { /* ignore */ }
                 newEntry = await tx.registryEntry.update({
                     include: {
-                        registry: true,
-                        paymentIdentifier: true,
-                        capability: true,
-                        prices: true,
-                        tags: true
+                        RegistrySource: true,
+                        PaymentIdentifier: true,
+                        Capability: true,
+                        Prices: true,
                     },
 
                     where: {
-                        identifier_registrySourcesId: {
+                        identifier_registrySourceId: {
                             identifier: asset.asset,
-                            registrySourcesId: source.id
+                            registrySourceId: source.id
                         }
                     },
                     data: {
@@ -356,28 +364,25 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                         status: isAvailable,
                         name: metadataStringConvert(parsedMetadata.data.name)!,
                         description: metadataStringConvert(parsedMetadata.data.description),
-                        api_url: metadataStringConvert(parsedMetadata.data.api_url)!,
-                        author_name: metadataStringConvert(parsedMetadata.data.author?.name),
-                        author_organization: metadataStringConvert(parsedMetadata.data.author?.organization),
-                        author_contact: metadataStringConvert(parsedMetadata.data.author?.contact),
+                        apiUrl: metadataStringConvert(parsedMetadata.data.api_url)!,
+                        authorName: metadataStringConvert(parsedMetadata.data.author?.name),
+                        authorOrganization: metadataStringConvert(parsedMetadata.data.author?.organization),
+                        authorContact: metadataStringConvert(parsedMetadata.data.author?.contact),
                         image: metadataStringConvert(parsedMetadata.data.image),
-                        privacy_policy: metadataStringConvert(parsedMetadata.data.legal?.privacy_policy),
-                        terms_and_condition: metadataStringConvert(parsedMetadata.data.legal?.terms),
-                        other_legal: metadataStringConvert(parsedMetadata.data.legal?.other),
-                        requests_per_hour: requests_per_hour,
+                        privacyPolicy: metadataStringConvert(parsedMetadata.data.legal?.privacy_policy),
+                        termsAndCondition: metadataStringConvert(parsedMetadata.data.legal?.terms),
+                        otherLegal: metadataStringConvert(parsedMetadata.data.legal?.other),
+                        requestsPerHour: requests_per_hour,
                         tags: parsedMetadata.data.tags ? {
-                            connectOrCreate: parsedMetadata.data.tags.map(tag => ({
-                                create: { value: metadataStringConvert(tag)! },
-                                where: { value: metadataStringConvert(tag)! }
-                            }))
+                            push: parsedMetadata.data.tags.map(tag => metadataStringConvert(tag)!)
                         } : undefined,
-                        prices: {
+                        Prices: {
                             connectOrCreate: parsedMetadata.data.pricing.map(price => ({
                                 create: { quantity: price.quantity, unit: metadataStringConvert(price.unit)! },
                                 where: { quantity_unit_registryEntryId: { quantity: price.quantity, unit: metadataStringConvert(price.unit)!, registryEntryId: existingEntry.id } }
                             })),
                         },
-                        paymentIdentifier: {
+                        PaymentIdentifier: {
                             upsert: {
                                 create: {
                                     paymentIdentifier: holderData[0].address,
@@ -398,8 +403,8 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                             }
                         },
                         identifier: asset.asset,
-                        registry: { connect: { id: source.id } },
-                        capability: { connectOrCreate: { create: { name: capability_name, version: capability_version }, where: { name_version: { name: capability_name, version: capability_version } } } }
+                        RegistrySource: { connect: { id: source.id } },
+                        Capability: { connectOrCreate: { create: { name: capability_name, version: capability_version }, where: { name_version: { name: capability_name, version: capability_version } } } }
                     }
                 })
             } else {
@@ -413,11 +418,10 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                 } catch { /* ignore */ }
                 newEntry = await tx.registryEntry.create({
                     include: {
-                        registry: true,
-                        paymentIdentifier: true,
-                        capability: true,
-                        prices: true,
-                        tags: true
+                        RegistrySource: true,
+                        PaymentIdentifier: true,
+                        Capability: true,
+                        Prices: true,
                     },
                     data: {
                         lastUptimeCheck: new Date(),
@@ -426,31 +430,26 @@ export const updateCardanoAssets = async (latestAssets: { asset: string, quantit
                         status: isAvailable,
                         name: metadataStringConvert(parsedMetadata.data.name)!,
                         description: metadataStringConvert(parsedMetadata.data.description),
-                        api_url: metadataStringConvert(parsedMetadata.data.api_url)!,
-                        author_name: metadataStringConvert(parsedMetadata.data.author?.name),
-                        author_organization: metadataStringConvert(parsedMetadata.data.author?.organization),
-                        author_contact: metadataStringConvert(parsedMetadata.data.author?.contact),
+                        apiUrl: metadataStringConvert(parsedMetadata.data.api_url)!,
+                        authorName: metadataStringConvert(parsedMetadata.data.author?.name),
+                        authorOrganization: metadataStringConvert(parsedMetadata.data.author?.organization),
+                        authorContact: metadataStringConvert(parsedMetadata.data.author?.contact),
                         image: metadataStringConvert(parsedMetadata.data.image)!,
-                        privacy_policy: metadataStringConvert(parsedMetadata.data.legal?.privacy_policy),
-                        terms_and_condition: metadataStringConvert(parsedMetadata.data.legal?.terms),
-                        other_legal: metadataStringConvert(parsedMetadata.data.legal?.other),
-                        requests_per_hour: requests_per_hour,
-                        tags: parsedMetadata.data.tags ? {
-                            connectOrCreate: parsedMetadata.data.tags.map(tag => ({
-                                create: { value: metadataStringConvert(tag)! },
-                                where: { value: metadataStringConvert(tag)! }
-                            }))
-                        } : undefined,
-                        prices: {
+                        privacyPolicy: metadataStringConvert(parsedMetadata.data.legal?.privacy_policy),
+                        termsAndCondition: metadataStringConvert(parsedMetadata.data.legal?.terms),
+                        otherLegal: metadataStringConvert(parsedMetadata.data.legal?.other),
+                        requestsPerHour: requests_per_hour,
+                        tags: parsedMetadata.data.tags,
+                        Prices: {
                             create: parsedMetadata.data.pricing.map(price => ({
                                 quantity: price.quantity,
                                 unit: metadataStringConvert(price.unit)!
                             })),
                         },
                         identifier: asset.asset,
-                        paymentIdentifier: { create: { paymentIdentifier: holderData[0].address, paymentType: $Enums.PaymentType.WEB3_CARDANO_V1, sellerVKey: resolvePaymentKeyHash(holderData[0].address) } },
-                        registry: { connect: { id: source.id } },
-                        capability: { connectOrCreate: { create: { name: capability_name, version: capability_version }, where: { name_version: { name: capability_name, version: capability_version } } } }
+                        PaymentIdentifier: { create: { paymentIdentifier: holderData[0].address, paymentType: $Enums.PaymentType.WEB3_CARDANO_V1, sellerVKey: resolvePaymentKeyHash(holderData[0].address) } },
+                        RegistrySource: { connect: { id: source.id } },
+                        Capability: { connectOrCreate: { create: { name: capability_name, version: capability_version }, where: { name_version: { name: capability_name, version: capability_version } } } }
                     },
                 })
             }

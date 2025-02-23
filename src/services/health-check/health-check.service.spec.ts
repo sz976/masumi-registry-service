@@ -86,9 +86,9 @@ describe("checkAndVerifyRegistryEntry", () => {
         const mockRegistryEntry = {
             identifier: "test-id",
             lastUptimeCheck: new Date(Date.now() - 200),
-            api_url: "http://test.com",
+            apiUrl: "http://test.com",
             status: $Enums.Status.ONLINE,
-            registry: {
+            RegistrySource: {
                 identifier: "registry-id",
                 type: $Enums.RegistryEntryType.WEB3_CARDANO_V1
             }
@@ -112,9 +112,9 @@ describe("checkAndVerifyRegistryEntry", () => {
         const mockRegistryEntry = {
             identifier: "test-id",
             lastUptimeCheck: new Date(Date.now() - 200),
-            api_url: "http://test.com",
+            apiUrl: "http://test.com",
             status: $Enums.Status.OFFLINE,
-            registry: {
+            RegistrySource: {
                 identifier: "registry-id",
                 type: $Enums.RegistryEntryType.WEB3_CARDANO_V1
             }
@@ -142,9 +142,9 @@ describe("checkAndVerifyRegistryEntry", () => {
         const mockRegistryEntry = {
             identifier: "test-id",
             lastUptimeCheck: new Date(Date.now() - 200),
-            api_url: "http://test.com",
+            apiUrl: "http://test.com",
             status: $Enums.Status.ONLINE,
-            registry: {
+            RegistrySource: {
                 identifier: "registry-id",
                 type: $Enums.RegistryEntryType.WEB3_CARDANO_V1
             }
@@ -165,9 +165,9 @@ describe("checkAndVerifyRegistryEntry", () => {
         const mockRegistryEntry = {
             identifier: "test-id",
             lastUptimeCheck: new Date(Date.now() - 200),
-            api_url: "http://test.com",
+            apiUrl: "http://test.com",
             status: $Enums.Status.ONLINE,
-            registry: {
+            RegistrySource: {
                 identifier: "registry-id",
                 type: $Enums.RegistryEntryType.WEB3_CARDANO_V1
             }

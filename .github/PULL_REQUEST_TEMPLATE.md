@@ -21,11 +21,11 @@
 
 ## **Checklist**
 
-<!-- (Ensure all tasks are completed before submitting your PR.) -->
+<!-- (Ensure all tasks are completed before submitting your PR.). Only create a PR to dev -->
 
-- [] I have used `lint` and `format` to follow the code formatting
-- [] I have tested my changes locally and all of them pass
-- [] I have updated documentation (if applicable).
+- I have used `lint` and `format` to follow the code formatting
+- I have tested my changes locally and all of them pass
+- I have updated documentation (if applicable).
 
 ## **Focus for Reviewers**
 

@@ -27,12 +27,12 @@ export const queryRegistrySchemaInput = z.object({
 export const queryRegistrySchemaOutput = z.object({
     entries: z.array(z.object(
         {
-            registry: z.object({
+            RegistrySource: z.object({
                 type: z.nativeEnum($Enums.RegistryEntryType),
                 identifier: z.string().nullable(),
                 url: z.string().nullable(),
             }),
-            capability: z.object({
+            Capability: z.object({
                 name: z.string(),
                 version: z.string(),
                 description: z.string().nullable(),
@@ -44,19 +44,21 @@ export const queryRegistrySchemaOutput = z.object({
             lastUptimeCheck: ez.dateOut(),
             uptimeCount: z.number(),
             uptimeCheckCount: z.number(),
-            api_url: z.string(),
-            author_name: z.string().nullable(),
-            author_organization: z.string().nullable(),
-            author_contact: z.string().nullable(),
+            apiUrl: z.string(),
+            authorName: z.string().nullable(),
+            authorOrganization: z.string().nullable(),
+            authorContact: z.string().nullable(),
             image: z.string().nullable(),
-            privacy_policy: z.string().nullable(),
-            terms_and_condition: z.string().nullable(),
-            other_legal: z.string().nullable(),
-            requests_per_hour: z.number().nullable(),
-            tags: z.array(z.object({
-                value: z.string()
-            })).nullable(),
+            privacyPolicy: z.string().nullable(),
+            termsAndCondition: z.string().nullable(),
+            otherLegal: z.string().nullable(),
+            requestsPerHour: z.number().nullable(),
+            tags: z.array(z.string()).nullable(),
             identifier: z.string(),
+            Prices: z.array(z.object({
+                quantity: z.number(),
+                unit: z.string(),
+            })),
         }
     ))
 });
@@ -73,6 +75,14 @@ export const queryRegistryEntryPost = authenticatedEndpointFactory.build({
         await tokenCreditService.handleTokenCredits(options, tokenCost, "query for: " + input.filter?.capability?.name);
         const data = await registryEntryService.getRegistryEntries(input);
 
-        return { entries: data.slice(0, Math.min(input.limit, data.length)) }
+        return {
+            entries: data.slice(0, Math.min(input.limit, data.length)).map(entry => ({
+                ...entry,
+                Prices: entry.Prices.map(price => ({
+                    ...price,
+                    quantity: Number(price.quantity)
+                }))
+            }))
+        }
     },
 });

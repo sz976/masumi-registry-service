@@ -4,18 +4,17 @@ import { Network, PaymentType, Status } from "@prisma/client";
 async function getRegistryEntry(capability: { name: string | undefined; version: string | undefined } | undefined, allowedPaymentTypes: PaymentType[], allowedStatuses: Status[], currentRegistryIdentifier: string | undefined, currentAssetIdentifier: string | undefined, tags: string[] | undefined, currentCursorId: string | undefined, limit: number, network: Network) {
     return await prisma.registryEntry.findMany({
         where: {
-
-            capability: capability,
-            paymentIdentifier: { some: { paymentType: { in: allowedPaymentTypes } } },
+            Capability: capability,
+            PaymentIdentifier: { some: { paymentType: { in: allowedPaymentTypes } } },
             status: { in: allowedStatuses },
             identifier: currentAssetIdentifier,
-            registry: { identifier: currentRegistryIdentifier, network: network },
-            tags: { some: { value: { in: tags } } }
+            RegistrySource: { identifier: currentRegistryIdentifier, network: network },
+            tags: { hasSome: tags }
         },
         include: {
-            capability: true,
-            registry: true,
-            tags: true
+            Capability: true,
+            RegistrySource: true,
+            Prices: true,
         },
         orderBy: [{
             createdAt: 'desc',
