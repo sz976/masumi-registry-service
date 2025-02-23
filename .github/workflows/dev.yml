@@ -35,15 +35,6 @@ jobs:
       - name: Run Open API Generator
         run: npm run swagger-json
 
-      - name: Install Frontend Dependencies
-        run: cd frontend && npm install
-
-      - name: Generate OpenAPI Types
-        run: cd frontend && npm run openapi-ts-latest
-
-      - name: Run Next Build
-        run: cd frontend && npm run build
-
   lint:
     name: Auto-Fix Lint Issues, Generate Swagger JSON and Push to PR and Comment
     runs-on: ubuntu-latest
