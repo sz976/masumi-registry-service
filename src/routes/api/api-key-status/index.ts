@@ -10,7 +10,7 @@ export const getAPIKeyStatusSchemaInput = z.object({
 
 
 export const getAPIKeyStatusSchemaOutput = z.object({
-    apiKey: z.string(),
+    token: z.string(),
     permission: z.nativeEnum(Permission),
     usageLimited: z.boolean(),
     maxUsageCredits: z.number({ coerce: true }).int().min(0).max(1000000).nullable(),

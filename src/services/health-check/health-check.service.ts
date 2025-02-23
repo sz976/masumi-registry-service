@@ -1,5 +1,5 @@
 import { prisma } from "@/utils/db";
-import { $Enums, Capability, RegistryEntry, RegistrySources, Tag } from "@prisma/client";
+import { $Enums, Capability, RegistryEntry, RegistrySource } from "@prisma/client";
 
 async function checkAndVerifyEndpoint({ api_url, identifier, registry }: { api_url: string, identifier: string, registry: { identifier: string | null, type: $Enums.RegistryEntryType } }) {
     try {
@@ -23,17 +23,30 @@ async function checkAndVerifyEndpoint({ api_url, identifier, registry }: { api_u
         return $Enums.Status.OFFLINE
     }
 }
-async function checkAndVerifyRegistryEntry({ registryEntry, minHealthCheckDate }: { registryEntry: { identifier: string, lastUptimeCheck: Date, api_url: string, status: $Enums.Status, registry: { identifier: string | null, type: $Enums.RegistryEntryType } }, minHealthCheckDate: Date | undefined }) {
+async function checkAndVerifyRegistryEntry({ registryEntry, minHealthCheckDate }: {
+    registryEntry: {
+        identifier: string,
+        lastUptimeCheck: Date,
+        apiUrl: string,
+        status: $Enums.Status,
+        RegistrySource: { identifier: string | null, type: $Enums.RegistryEntryType }
+    },
+    minHealthCheckDate: Date | undefined
+}) {
     console.log("checking registry entry", registryEntry.identifier, registryEntry.lastUptimeCheck, minHealthCheckDate)
     if (registryEntry.lastUptimeCheck.getTime() > (minHealthCheckDate?.getTime() ?? 0)) {
         console.log("returning early", registryEntry.lastUptimeCheck, minHealthCheckDate)
         return registryEntry.status
     }
 
-    return await checkAndVerifyEndpoint({ api_url: registryEntry.api_url, identifier: registryEntry.identifier, registry: registryEntry.registry })
+    return await checkAndVerifyEndpoint({
+        api_url: registryEntry.apiUrl,
+        identifier: registryEntry.identifier,
+        registry: registryEntry.RegistrySource
+    })
 }
 
-async function checkVerifyAndUpdateRegistryEntries({ registryEntries, minHealthCheckDate }: { registryEntries: (RegistryEntry & { registry: RegistrySources, capability: Capability, tags: Tag[] })[], minHealthCheckDate: Date | undefined }) {
+async function checkVerifyAndUpdateRegistryEntries({ registryEntries, minHealthCheckDate }: { registryEntries: (RegistryEntry & { RegistrySource: RegistrySource, Capability: Capability, tags: string[], Prices: { quantity: bigint, unit: string }[] })[], minHealthCheckDate: Date | undefined }) {
     if (minHealthCheckDate == null)
         return registryEntries;
 
@@ -42,7 +55,11 @@ async function checkVerifyAndUpdateRegistryEntries({ registryEntries, minHealthC
         return await prisma.registryEntry.update({
             where: { id: entry.id },
             //select all fields
-            select: { capabilitiesId: true, createdAt: true, capability: true, registry: true, paymentIdentifier: true, api_url: true, identifier: true, name: true, description: true, author_name: true, author_organization: true, author_contact: true, image: true, other_legal: true, privacy_policy: true, requests_per_hour: true, tags: true, terms_and_condition: true, id: true, status: true, uptimeCount: true, uptimeCheckCount: true, lastUptimeCheck: true, registrySourcesId: true, updatedAt: true },
+            select: {
+                Prices: true,
+                capabilitiesId: true, createdAt: true, Capability: true, RegistrySource: true, PaymentIdentifier: true,
+                apiUrl: true, identifier: true, name: true, description: true, authorName: true, authorOrganization: true, authorContact: true, image: true, otherLegal: true, privacyPolicy: true, requestsPerHour: true, tags: true, termsAndCondition: true, id: true, status: true, uptimeCount: true, uptimeCheckCount: true, lastUptimeCheck: true, registrySourceId: true, updatedAt: true
+            },
             data: { status, uptimeCount: { increment: status == $Enums.Status.ONLINE ? 1 : 0 }, uptimeCheckCount: { increment: 1 }, lastUptimeCheck: new Date() }
         })
     }))

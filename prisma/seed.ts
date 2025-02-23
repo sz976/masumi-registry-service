@@ -13,11 +13,7 @@ export const seed = async (prisma: PrismaClient) => {
       update: { token: adminKey, permission: 'ADMIN', status: 'ACTIVE' },
       where: { token: adminKey },
     });
-    await prisma.apiKey.upsert({
-      create: { token: "public-api-key-acimdkf2md3", permission: 'USER', usageLimited: false, status: 'ACTIVE' },
-      update: { token: "public-api-key-acimdkf2md3", permission: 'USER', usageLimited: false, status: 'ACTIVE' },
-      where: { token: "public-api-key-acimdkf2md3" },
-    });
+
   } else {
     console.log('ADMIN_KEY is seeded');
   }

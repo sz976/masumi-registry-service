@@ -86,38 +86,37 @@ export function generateOpenAPI() {
                   name: "Example API",
                   description: "Example Capability description",
                   status: "ONLINE",
-                  registry: {
+                  RegistrySource: {
                     type: "WEB3_CARDANO_V1",
                     identifier: "0000000000000000000000000000000000000000000000000000000000000000",
                     url: null,
                   },
-                  author_contact: null,
-                  author_name: null,
-                  image: "testimage.de",
-                  other_legal: null,
-                  privacy_policy: null,
-                  requests_per_hour: 15,
-                  tags: null,
-                  terms_and_condition: "If the answer is 42 what was the question",
-                  uptimeCheckCount: 10,
-                  uptimeCount: 8,
-                  lastUptimeCheck: new Date(),
-                  api_url: "https://localhost:3000/api/",
-                  capability: {
+                  Capability: {
                     name: "Example Capability",
                     version: "1.0.0",
                     description: "Example Capability description",
                   },
-                  author_organization: "MASUMI",
+                  PaymentIdentifier: [{
+                    paymentIdentifier: "addr1333333333333333333333333333333333333333333333333333333333333333",
+                    paymentType: "WEB3_CARDANO_V1",
+                    sellerVKey: "sellerVKey"
+                  }],
+                  Prices: [{ unit: "USDC", quantity: 100 }, { unit: "USDM", quantity: 15000 }],
+                  authorContact: null,
+                  authorName: null,
+                  image: "testimage.de",
+                  otherLegal: null,
+                  privacyPolicy: null,
+                  requestsPerHour: 15,
+                  tags: null,
+                  termsAndCondition: "If the answer is 42 what was the question",
+                  uptimeCheckCount: 10,
+                  uptimeCount: 8,
+                  lastUptimeCheck: new Date(),
+                  apiUrl: "https://localhost:3000/api/",
+                  authorOrganization: "MASUMI",
                   identifier: "222222222222222222222222222222222222222222222222222222222222222222",
                   id: cuid2.createId(),
-                  paymentIdentifier: [
-                    {
-                      paymentIdentifier: "addr1333333333333333333333333333333333333333333333333333333333333333",
-                      paymentType: "WEB3_CARDANO_V1",
-                      sellerVKey: "sellerVKey"
-                    },
-                  ],
                 },
                 status: "success",
               },
@@ -182,40 +181,38 @@ export function generateOpenAPI() {
           "application/json": {
             schema: z.object({ data: queryRegistrySchemaOutput, status: z.string() }).openapi({
               example: {
-
                 data: {
-                  entries: [
-                    {
-                      name: "Example API",
-                      description: "Example Capability description",
-                      status: "ONLINE",
-                      registry: {
-                        type: "WEB3_CARDANO_V1",
-                        identifier: "0000000000000000000000000000000000000000000000000000000000000000",
-                        url: null,
-                      },
-                      author_contact: null,
-                      author_name: null,
-                      image: "testimage.de",
-                      other_legal: null,
-                      privacy_policy: null,
-                      requests_per_hour: 15,
-                      tags: null,
-                      terms_and_condition: "If the answer is 42 what was the question",
-                      uptimeCheckCount: 10,
-                      uptimeCount: 8,
-                      lastUptimeCheck: new Date(),
-                      api_url: "https://localhost:3000/api/",
-                      capability: {
-                        name: "Example Capability",
-                        version: "1.0.0",
-                        description: "Example Capability description",
-                      },
-                      author_organization: "MASUMI",
-                      identifier: "222222222222222222222222222222222222222222222222222222222222222222",
-                      id: cuid2.createId(),
+                  entries: [{
+                    name: "Example API",
+                    description: "Example Capability description",
+                    status: "ONLINE",
+                    RegistrySource: {
+                      type: "WEB3_CARDANO_V1",
+                      identifier: "0000000000000000000000000000000000000000000000000000000000000000",
+                      url: null,
                     },
-                  ],
+                    Capability: {
+                      name: "Example Capability",
+                      version: "1.0.0",
+                      description: "Example Capability description"
+                    },
+                    Prices: [{ unit: "USDC", quantity: 100 }],
+                    authorContact: null,
+                    authorName: null,
+                    image: "testimage.de",
+                    otherLegal: null,
+                    privacyPolicy: null,
+                    requestsPerHour: 15,
+                    tags: null,
+                    termsAndCondition: "If the answer is 42 what was the question",
+                    uptimeCheckCount: 10,
+                    uptimeCount: 8,
+                    lastUptimeCheck: new Date(),
+                    apiUrl: "https://localhost:3000/api/",
+                    authorOrganization: "MASUMI",
+                    identifier: "222222222222222222222222222222222222222222222222222222222222222222",
+                    id: cuid2.createId(),
+                  }],
                 },
                 status: "success",
               },
@@ -258,19 +255,17 @@ export function generateOpenAPI() {
             schema: z.object({ data: getRegistrySourceSchemaOutput, status: z.string() }).openapi({
               example: {
                 data: {
-                  sources: [
-                    {
-                      id: "unique-cuid-v2-auto-generated",
-                      type: "WEB3_CARDANO_V1",
-                      identifier: "optional_identifier",
-                      url: "optional_url",
-                      note: "optional_note",
-                      apiKey: "optional_apiKey",
-                      network: "PREPROD",
-                      latestPage: 1,
-                      latestIdentifier: "optional_latestIdentifier",
-                    },
-                  ],
+                  sources: [{
+                    id: "unique-cuid-v2-auto-generated",
+                    type: "WEB3_CARDANO_V1",
+                    identifier: "optional_identifier",
+                    url: "optional_url",
+                    note: "optional_note",
+                    rpcProviderApiKey: "optional_apikey",
+                    network: "PREPROD",
+                    latestPage: 1,
+                    latestIdentifier: "optional_latestIdentifier",
+                  }],
                 },
                 status: "success",
               },
@@ -295,8 +290,8 @@ export function generateOpenAPI() {
               example: {
                 type: "WEB3_CARDANO_V1",
                 identifier: "optional_identifier",
+                rpcProviderApiKey: "apikey",
                 note: "optional_note",
-                apiKey: "apiKey",
                 network: "PREPROD",
               },
             }),
@@ -338,7 +333,7 @@ export function generateOpenAPI() {
               example: {
                 id: "unique-cuid-v2-auto-generated",
                 note: "optional_note",
-                apiKey: "optional_apiKey",
+                rpcProviderApiKey: "optional_apiKey",
               },
             }),
           },
@@ -476,7 +471,7 @@ export function generateOpenAPI() {
             schema: z.object({ data: getAPIKeyStatusSchemaOutput, status: z.string() }).openapi({
               example: {
                 data: {
-                  apiKey: "masumi-registry-api-key-secret",
+                  token: "masumi-registry-api-key-secret",
                   permission: "ADMIN",
                   usageLimited: true,
                   maxUsageCredits: 1000000,
@@ -516,16 +511,14 @@ export function generateOpenAPI() {
             schema: z.object({ data: getAPIKeySchemaOutput, status: z.string() }).openapi({
               example: {
                 data: {
-                  apiKeys: [
-                    {
-                      apiKey: "masumi-registry-api-key-secret",
-                      permission: "ADMIN",
-                      usageLimited: true,
-                      maxUsageCredits: 1000000,
-                      accumulatedUsageCredits: 0,
-                      status: "ACTIVE",
-                    },
-                  ],
+                  apiKeys: [{
+                    token: "masumi-registry-api-key-secret",
+                    permission: "ADMIN",
+                    usageLimited: true,
+                    maxUsageCredits: 1000000,
+                    accumulatedUsageCredits: 0,
+                    status: "ACTIVE",
+                  }],
                 },
                 status: "success",
               },
@@ -578,7 +571,7 @@ export function generateOpenAPI() {
                 data: {
                   id: "unique-cuid-v2-auto-generated",
                   status: "ACTIVE",
-                  apiKey: "masumi-registry-api-key-secret",
+                  token: "masumi-registry-api-key-secret",
                   permission: "USER",
                   usageLimited: true,
                   maxUsageCredits: 1000000,
@@ -633,7 +626,7 @@ export function generateOpenAPI() {
             schema: z.object({ data: updateAPIKeySchemaOutput, status: z.string() }).openapi({
               example: {
                 data: {
-                  apiKey: "masumi-registry-api-key-secret",
+                  token: "masumi-registry-api-key-secret",
                   permission: "USER",
                   usageLimited: true,
                   maxUsageCredits: 1000000,
@@ -671,7 +664,7 @@ export function generateOpenAPI() {
           "application/json": {
             schema: deleteAPIKeySchemaInput.openapi({
               example: {
-                apiKey: "api-key-to-delete",
+                token: "api-key-to-delete",
               },
             }),
           },
@@ -687,7 +680,7 @@ export function generateOpenAPI() {
             schema: z.object({ data: deleteAPIKeySchemaOutput, status: z.string() }).openapi({
               example: {
                 data: {
-                  apiKey: "deleted-masumi-registry-api-key-secret",
+                  token: "deleted-masumi-registry-api-key-secret",
                 },
                 status: "success",
               },

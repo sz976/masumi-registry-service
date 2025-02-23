@@ -20,7 +20,7 @@ export const getRegistrySourceSchemaOutput = z.object({
         note: z.string().nullable(),
         latestPage: z.number({ coerce: true }).int().min(0).max(1000000),
         latestIdentifier: z.string().nullable(),
-        apiKey: z.string().nullable(),
+        rpcProviderApiKey: z.string().nullable(),
         network: z.nativeEnum($Enums.Network).nullable(),
     }))
 });
@@ -31,7 +31,7 @@ export const queryRegistrySourceEndpointGet = adminAuthenticatedEndpointFactory.
     output: getRegistrySourceSchemaOutput,
     handler: async ({ input, }) => {
         const data = await registrySourceService.getRegistrySources(input.cursorId, input.limit)
-        return { sources: data }
+        return { sources: data.map(source => ({ ...source, rpcProviderApiKey: source.RegistrySourceConfig.rpcProviderApiKey })) }
     },
 });
 
@@ -39,7 +39,7 @@ export const addRegistrySourceSchemaInput = z.object({
     type: z.nativeEnum($Enums.RegistryEntryType),
     identifier: z.string().nullable(),
     note: z.string().nullable(),
-    apiKey: z.string(),
+    rpcProviderApiKey: z.string(),
     network: z.nativeEnum($Enums.Network).nullable(),
 })
 
@@ -60,7 +60,7 @@ export const addRegistrySourceEndpointPost = adminAuthenticatedEndpointFactory.b
 export const updateRegistrySourceSchemaInput = z.object({
     id: z.string().max(150).optional(),
     note: z.string().nullable().optional(),
-    apiKey: z.string().optional(),
+    rpcProviderApiKey: z.string().optional(),
 })
 
 export const updateRegistrySourceSchemaOutput = z.object({

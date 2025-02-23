@@ -9,7 +9,7 @@ async function handleCreditUsage(id: string, cost: number, note: string | null) 
         if (result.usageLimited && result.accumulatedUsageCredits + cost > (result.maxUsageCredits ?? 0)) {
             throw new Error("Not enough tokens to handleCreditUsage for id: " + id)
         }
-        await prisma.apiKey.update({ where: { id: id }, data: { accumulatedUsageCredits: result.accumulatedUsageCredits + cost, usage: { create: { usedCredits: cost, note: note } } } })
+        await prisma.apiKey.update({ where: { id: id }, data: { accumulatedUsageCredits: result.accumulatedUsageCredits + cost, Usage: { create: { usedCredits: cost, note: note } } } })
     }, { isolationLevel: "ReadCommitted" })
 
     return { "status": "UP" }

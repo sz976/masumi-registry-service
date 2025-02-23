@@ -4,28 +4,35 @@ import { BlockFrostAPI } from "@blockfrost/blockfrost-js";
 
 
 async function getPaymentInformation(currentAssetIdentifier: string, currentRegistryIdentifier: string,) {
-    const registrySource = await prisma.registrySources.findFirst({
+    const registrySource = await prisma.registrySource.findFirst({
         where: {
             identifier: currentRegistryIdentifier
+        },
+        include: {
+            RegistrySourceConfig: true
         }
     })
 
-    if (!registrySource || !registrySource.apiKey || !registrySource.identifier) {
+    if (!registrySource || !registrySource.RegistrySourceConfig.rpcProviderApiKey || !registrySource.identifier) {
         return null
     }
 
     const registryEntry = await prisma.registryEntry.findUnique({
         where: {
-            identifier_registrySourcesId: {
+            identifier_registrySourceId: {
                 identifier: currentAssetIdentifier,
-                registrySourcesId: registrySource.id
+                registrySourceId: registrySource.id
             }
         },
         include: {
-            paymentIdentifier: true,
-            capability: true,
-            registry: true,
-            tags: true
+            PaymentIdentifier: true,
+            Prices: true,
+            Capability: true,
+            RegistrySource: {
+                include: {
+                    RegistrySourceConfig: true
+                }
+            }
         },
     });
 
@@ -34,7 +41,7 @@ async function getPaymentInformation(currentAssetIdentifier: string, currentRegi
     }
 
     const blockfrost = new BlockFrostAPI({
-        projectId: registrySource.apiKey
+        projectId: registrySource.RegistrySourceConfig.rpcProviderApiKey
     })
     const asset = await blockfrost.assetsById(registrySource.identifier + currentAssetIdentifier)
     if (!asset) {

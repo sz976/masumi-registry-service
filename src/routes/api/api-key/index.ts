@@ -14,7 +14,7 @@ export const getAPIKeySchemaInput = z.object({
 
 export const getAPIKeySchemaOutput = z.object({
     apiKeys: z.array(z.object({
-        apiKey: z.string(),
+        token: z.string(),
         permission: z.nativeEnum(Permission),
         usageLimited: z.boolean(),
         maxUsageCredits: z.number({ coerce: true }).int().min(0).max(1000000).nullable(),
@@ -45,7 +45,7 @@ export const addAPIKeySchemaInput = z.object({
 
 export const addAPIKeySchemaOutput = z.object({
     id: z.string(),
-    apiKey: z.string(),
+    token: z.string(),
     permission: z.nativeEnum(Permission),
     usageLimited: z.boolean(),
     maxUsageCredits: z.number({ coerce: true }).int().min(0).max(1000000).nullable(),
@@ -72,7 +72,7 @@ export const updateAPIKeySchemaInput = z.object({
 })
 
 export const updateAPIKeySchemaOutput = z.object({
-    apiKey: z.string(),
+    token: z.string(),
     permission: z.nativeEnum(Permission),
     usageLimited: z.boolean(),
     maxUsageCredits: z.number({ coerce: true }).int().min(0).max(1000000).nullable(),
@@ -86,7 +86,7 @@ export const updateAPIKeyEndpointPatch = adminAuthenticatedEndpointFactory.build
     output: updateAPIKeySchemaOutput,
     handler: async ({ input }) => {
 
-        const result = await apiKeyService.updateApiKey(input.apiKey, input.status, input.usageLimited, input.maxUsageCredits)
+        const result = await apiKeyService.updateApiKey(input.token, input.status, input.usageLimited, input.maxUsageCredits)
         if (!result)
             throw createHttpError(404, "Not found")
 
@@ -95,21 +95,20 @@ export const updateAPIKeyEndpointPatch = adminAuthenticatedEndpointFactory.build
 });
 
 export const deleteAPIKeySchemaInput = z.object({
-    apiKey: z.string().max(550)
+    token: z.string().max(550)
 })
 
 export const deleteAPIKeySchemaOutput = z.object({
-    apiKey: z.string(),
+    token: z.string(),
 });
 
 export const deleteAPIKeyEndpointDelete = adminAuthenticatedEndpointFactory.build({
     method: "delete",
     input: deleteAPIKeySchemaInput,
     output: deleteAPIKeySchemaOutput,
-
     handler: async ({ input }) => {
 
-        const result = await apiKeyService.deleteApiKey(input.apiKey)
+        const result = await apiKeyService.deleteApiKey(input.token)
 
         if (!result)
             throw createHttpError(404, "Not found")

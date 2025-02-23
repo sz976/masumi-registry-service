@@ -21,7 +21,7 @@ export const authMiddleware = (requiresAdmin: boolean) =>
 
             const apiKey = await prisma.apiKey.findUnique({
                 where: {
-                    apiKey: sendKey as string,
+                    token: sendKey as string,
                 },
             });
             logger.info("Found api key", apiKey);

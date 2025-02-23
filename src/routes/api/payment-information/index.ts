@@ -12,21 +12,25 @@ export const queryPaymentInformationInput = z.object({
 })
 
 export const queryPaymentInformationSchemaOutput = z.object({
-    registry: z.object({
+    RegistrySource: z.object({
         type: z.nativeEnum($Enums.RegistryEntryType),
         identifier: z.string().nullable(),
         url: z.string().nullable(),
     }),
-    paymentIdentifier: z.array(z.object({
+    PaymentIdentifier: z.array(z.object({
         paymentIdentifier: z.string().nullable(),
         paymentType: z.nativeEnum($Enums.PaymentType),
         sellerVKey: z.string().nullable(),
     })),
-    capability: z.object({
+    Capability: z.object({
         name: z.string(),
         version: z.string(),
         description: z.string().nullable(),
     }),
+    Prices: z.array(z.object({
+        quantity: z.number(),
+        unit: z.string(),
+    })),
     name: z.string(),
     description: z.string().nullable(),
     status: z.nativeEnum($Enums.Status),
@@ -34,18 +38,16 @@ export const queryPaymentInformationSchemaOutput = z.object({
     lastUptimeCheck: ez.dateOut(),
     uptimeCount: z.number(),
     uptimeCheckCount: z.number(),
-    api_url: z.string(),
-    author_name: z.string().nullable(),
-    author_organization: z.string().nullable(),
-    author_contact: z.string().nullable(),
+    apiUrl: z.string(),
+    authorName: z.string().nullable(),
+    authorOrganization: z.string().nullable(),
+    authorContact: z.string().nullable(),
     image: z.string().nullable(),
-    privacy_policy: z.string().nullable(),
-    terms_and_condition: z.string().nullable(),
-    other_legal: z.string().nullable(),
-    requests_per_hour: z.number().nullable(),
-    tags: z.array(z.object({
-        value: z.string()
-    })).nullable(),
+    privacyPolicy: z.string().nullable(),
+    termsAndCondition: z.string().nullable(),
+    otherLegal: z.string().nullable(),
+    requestsPerHour: z.number().nullable(),
+    tags: z.array(z.string()).nullable(),
     identifier: z.string(),
 });
 
@@ -61,7 +63,12 @@ export const queryPaymentInformationGet = authenticatedEndpointFactory.build({
         if (!result) {
             throw new Error("Payment information not found");
         }
-
-        return result;
+        return {
+            ...result,
+            Prices: result.Prices.map(price => ({
+                ...price,
+                quantity: Number(price.quantity)
+            }))
+        };
     },
 });
