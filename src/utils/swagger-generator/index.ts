@@ -90,8 +90,8 @@ export function generateOpenAPI() {
     request: {
       query: queryPaymentInformationInput.openapi({
         example: {
-          registryIdentifier: 'registry_identifier',
-          assetIdentifier: 'asset_identifier',
+          policyId: 'policy_id',
+          assetName: 'asset_name',
         },
       }),
     },
@@ -113,7 +113,7 @@ export function generateOpenAPI() {
                     status: 'ONLINE',
                     RegistrySource: {
                       type: 'WEB3_CARDANO_V1',
-                      identifier:
+                      policyId:
                         '0000000000000000000000000000000000000000000000000000000000000000',
                       url: null,
                     },
@@ -148,7 +148,7 @@ export function generateOpenAPI() {
                     lastUptimeCheck: new Date(0),
                     apiUrl: 'https://localhost:3000/api/',
                     authorOrganization: 'MASUMI',
-                    identifier:
+                    agentIdentifier:
                       '222222222222222222222222222222222222222222222222222222222222222222',
                     id: cuid2.createId(),
                   },
@@ -190,8 +190,8 @@ export function generateOpenAPI() {
                 cursorId: 'last_paginated_item',
                 network: 'PREPROD',
                 filter: {
-                  registryIdentifier: 'registry_identifier',
-                  assetIdentifier: 'asset_identifier',
+                  policyId: 'policy_id',
+                  assetName: 'asset_name',
                   paymentTypes: [PaymentType.WEB3_CARDANO_V1],
                   status: [Status.ONLINE, Status.OFFLINE],
                   capability: {
