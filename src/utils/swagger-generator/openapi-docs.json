@@ -86,7 +86,7 @@
                             "maxLength": 250
                         },
                         "required": true,
-                        "name": "registryIdentifier",
+                        "name": "policyId",
                         "in": "query"
                     },
                     {
@@ -96,7 +96,7 @@
                             "maxLength": 250
                         },
                         "required": true,
-                        "name": "assetIdentifier",
+                        "name": "assetName",
                         "in": "query"
                     }
                 ],
@@ -120,7 +120,7 @@
                                                                 "WEB3_CARDANO_V1"
                                                             ]
                                                         },
-                                                        "identifier": {
+                                                        "policyId": {
                                                             "type": "string",
                                                             "nullable": true
                                                         },
@@ -131,7 +131,7 @@
                                                     },
                                                     "required": [
                                                         "type",
-                                                        "identifier",
+                                                        "policyId",
                                                         "url"
                                                     ]
                                                 },
@@ -270,7 +270,7 @@
                                                         "type": "string"
                                                     }
                                                 },
-                                                "identifier": {
+                                                "agentIdentifier": {
                                                     "type": "string"
                                                 }
                                             },
@@ -296,7 +296,7 @@
                                                 "otherLegal",
                                                 "requestsPerHour",
                                                 "tags",
-                                                "identifier"
+                                                "agentIdentifier"
                                             ]
                                         },
                                         "status": {
@@ -314,7 +314,7 @@
                                             "status": "ONLINE",
                                             "RegistrySource": {
                                                 "type": "WEB3_CARDANO_V1",
-                                                "identifier": "0000000000000000000000000000000000000000000000000000000000000000",
+                                                "policyId": "0000000000000000000000000000000000000000000000000000000000000000",
                                                 "url": null
                                             },
                                             "Capability": {
@@ -352,8 +352,8 @@
                                             "lastUptimeCheck": "1970-01-01T00:00:00.000Z",
                                             "apiUrl": "https://localhost:3000/api/",
                                             "authorOrganization": "MASUMI",
-                                            "identifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                            "id": "b167e3h4lsvhkngcqc9vjft5"
+                                            "agentIdentifier": "222222222222222222222222222222222222222222222222222222222222222222",
+                                            "id": "oan0755tyhwx05ghxki9pkqm"
                                         },
                                         "status": "success"
                                     }
@@ -767,7 +767,7 @@
                                                     "apiUrl": "https://localhost:3000/api/",
                                                     "authorOrganization": "MASUMI",
                                                     "agentIdentifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                                    "id": "fo3d5uqr48w4ezecnj8fags4"
+                                                    "id": "ghm0rkr988hf4n4y5gpnf4br"
                                                 }
                                             ]
                                         },
