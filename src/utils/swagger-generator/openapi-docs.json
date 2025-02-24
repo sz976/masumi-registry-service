@@ -554,13 +554,16 @@
                                                             "RegistrySource": {
                                                                 "type": "object",
                                                                 "properties": {
+                                                                    "id": {
+                                                                        "type": "string"
+                                                                    },
                                                                     "type": {
                                                                         "type": "string",
                                                                         "enum": [
                                                                             "WEB3_CARDANO_V1"
                                                                         ]
                                                                     },
-                                                                    "identifier": {
+                                                                    "policyId": {
                                                                         "type": "string",
                                                                         "nullable": true
                                                                     },
@@ -570,8 +573,9 @@
                                                                     }
                                                                 },
                                                                 "required": [
+                                                                    "id",
                                                                     "type",
-                                                                    "identifier",
+                                                                    "policyId",
                                                                     "url"
                                                                 ]
                                                             },
@@ -665,7 +669,7 @@
                                                                     "type": "string"
                                                                 }
                                                             },
-                                                            "identifier": {
+                                                            "agentIdentifier": {
                                                                 "type": "string"
                                                             },
                                                             "Prices": {
@@ -707,7 +711,7 @@
                                                             "otherLegal",
                                                             "requestsPerHour",
                                                             "tags",
-                                                            "identifier",
+                                                            "agentIdentifier",
                                                             "Prices"
                                                         ]
                                                     }
@@ -733,8 +737,9 @@
                                                     "description": "Example Capability description",
                                                     "status": "ONLINE",
                                                     "RegistrySource": {
+                                                        "id": "unique-cuid-v2-auto-generated",
                                                         "type": "WEB3_CARDANO_V1",
-                                                        "identifier": "0000000000000000000000000000000000000000000000000000000000000000",
+                                                        "policyId": "0000000000000000000000000000000000000000000000000000000000000000",
                                                         "url": null
                                                     },
                                                     "Capability": {
@@ -761,8 +766,8 @@
                                                     "lastUptimeCheck": "1970-01-01T00:00:00.000Z",
                                                     "apiUrl": "https://localhost:3000/api/",
                                                     "authorOrganization": "MASUMI",
-                                                    "identifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                                    "id": "pdqg4392of3nglpyg84l0etn"
+                                                    "agentIdentifier": "222222222222222222222222222222222222222222222222222222222222222222",
+                                                    "id": "fo3d5uqr48w4ezecnj8fags4"
                                                 }
                                             ]
                                         },
@@ -847,7 +852,7 @@
                                                                 "type": "string",
                                                                 "nullable": true
                                                             },
-                                                            "identifier": {
+                                                            "policyId": {
                                                                 "type": "string",
                                                                 "nullable": true
                                                             },
@@ -882,7 +887,7 @@
                                                             "id",
                                                             "type",
                                                             "url",
-                                                            "identifier",
+                                                            "policyId",
                                                             "note",
                                                             "latestPage",
                                                             "latestIdentifier",
@@ -910,7 +915,7 @@
                                                 {
                                                     "id": "unique-cuid-v2-auto-generated",
                                                     "type": "WEB3_CARDANO_V1",
-                                                    "identifier": "optional_identifier",
+                                                    "policyId": "policyId",
                                                     "url": "optional_url",
                                                     "note": "optional_note",
                                                     "rpcProviderApiKey": "optional_apikey",
@@ -952,7 +957,7 @@
                                             "WEB3_CARDANO_V1"
                                         ]
                                     },
-                                    "identifier": {
+                                    "policyId": {
                                         "type": "string",
                                         "nullable": true
                                     },
@@ -974,14 +979,14 @@
                                 },
                                 "required": [
                                     "type",
-                                    "identifier",
+                                    "policyId",
                                     "note",
                                     "rpcProviderApiKey",
                                     "network"
                                 ],
                                 "example": {
                                     "type": "WEB3_CARDANO_V1",
-                                    "identifier": "optional_identifier",
+                                    "policyId": "policyId",
                                     "rpcProviderApiKey": "apikey",
                                     "note": "optional_note",
                                     "network": "PREPROD"

@@ -34,8 +34,9 @@ export const queryRegistrySchemaOutput = z.object({
   entries: z.array(
     z.object({
       RegistrySource: z.object({
+        id: z.string(),
         type: z.nativeEnum($Enums.RegistryEntryType),
-        identifier: z.string().nullable(),
+        policyId: z.string().nullable(),
         url: z.string().nullable(),
       }),
       Capability: z.object({
@@ -60,7 +61,7 @@ export const queryRegistrySchemaOutput = z.object({
       otherLegal: z.string().nullable(),
       requestsPerHour: z.number().nullable(),
       tags: z.array(z.string()).nullable(),
-      identifier: z.string(),
+      agentIdentifier: z.string(),
       Prices: z.array(
         z.object({
           quantity: z.number(),
@@ -92,6 +93,11 @@ export const queryRegistryEntryPost = authenticatedEndpointFactory.build({
         .slice(0, Math.min(input.limit, data.length))
         .map((entry) => ({
           ...entry,
+          RegistrySource: {
+            ...entry.RegistrySource,
+            policyId: entry.RegistrySource.identifier,
+          },
+          agentIdentifier: entry.identifier,
           Prices: entry.Prices.map((price) => ({
             ...price,
             quantity: Number(price.quantity),

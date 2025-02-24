@@ -224,8 +224,9 @@ export function generateOpenAPI() {
                         description: 'Example Capability description',
                         status: 'ONLINE',
                         RegistrySource: {
+                          id: 'unique-cuid-v2-auto-generated',
                           type: 'WEB3_CARDANO_V1',
-                          identifier:
+                          policyId:
                             '0000000000000000000000000000000000000000000000000000000000000000',
                           url: null,
                         },
@@ -249,7 +250,7 @@ export function generateOpenAPI() {
                         lastUptimeCheck: new Date(0),
                         apiUrl: 'https://localhost:3000/api/',
                         authorOrganization: 'MASUMI',
-                        identifier:
+                        agentIdentifier:
                           '222222222222222222222222222222222222222222222222222222222222222222',
                         id: cuid2.createId(),
                       },
@@ -305,7 +306,7 @@ export function generateOpenAPI() {
                       {
                         id: 'unique-cuid-v2-auto-generated',
                         type: 'WEB3_CARDANO_V1',
-                        identifier: 'optional_identifier',
+                        policyId: 'policyId',
                         url: 'optional_url',
                         note: 'optional_note',
                         rpcProviderApiKey: 'optional_apikey',
@@ -337,7 +338,7 @@ export function generateOpenAPI() {
             schema: addRegistrySourceSchemaInput.openapi({
               example: {
                 type: 'WEB3_CARDANO_V1',
-                identifier: 'optional_identifier',
+                policyId: 'policyId',
                 rpcProviderApiKey: 'apikey',
                 note: 'optional_note',
                 network: 'PREPROD',
