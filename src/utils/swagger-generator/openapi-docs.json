@@ -353,7 +353,7 @@
                                             "apiUrl": "https://localhost:3000/api/",
                                             "authorOrganization": "MASUMI",
                                             "agentIdentifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                            "id": "o5ivzv0nbqh6ypr9l2qcoc3v"
+                                            "id": "cfx68zmtetoe7f1c74dbeeem"
                                         },
                                         "status": "success"
                                     }
@@ -767,7 +767,7 @@
                                                     "apiUrl": "https://localhost:3000/api/",
                                                     "authorOrganization": "MASUMI",
                                                     "agentIdentifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                                    "id": "zz1ztapnh62yk0xrk75j3dnh"
+                                                    "id": "erg7tht0s2psipthpifcwqfd"
                                                 }
                                             ]
                                         },
@@ -958,8 +958,7 @@
                                         ]
                                     },
                                     "policyId": {
-                                        "type": "string",
-                                        "nullable": true
+                                        "type": "string"
                                     },
                                     "note": {
                                         "type": "string",
