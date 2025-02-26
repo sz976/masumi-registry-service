@@ -11,12 +11,12 @@ function getFilterParams(
   const allowedPaymentTypes: $Enums.PaymentType[] =
     filter && filter.paymentTypes && filter.paymentTypes.length > 0
       ? filter.paymentTypes
-      : [PaymentType.WEB3_CARDANO_V1];
+      : [PaymentType.Web3CardanoV1];
 
   const allowedStatuses: $Enums.Status[] =
     filter && filter.status && filter.status.length > 0
       ? filter.status
-      : [Status.ONLINE];
+      : [Status.Online];
 
   const capability = filter?.capability
     ? { name: filter.capability.name, version: filter.capability.version }

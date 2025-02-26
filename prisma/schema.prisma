@@ -30,13 +30,13 @@ model ApiKey {
 }
 
 enum APIKeyStatus {
-  ACTIVE
-  REVOKED
+  Active
+  Revoked
 }
 
 enum Permission {
-  USER
-  ADMIN
+  User
+  Admin
 }
 
 model UsageEntry {
@@ -78,13 +78,13 @@ model RegistryEntry {
   PaymentIdentifier PaymentIdentifier[]
   Capability        Capability          @relation(fields: [capabilitiesId], references: [id])
   registrySourceId  String
-  identifier        String
+  assetName         String
   capabilitiesId    String
   Prices            Price[]
 
   //we might not want to enforce this if we want an agent to be able to register again
   //@@unique([registrySourcesId, api_url])
-  @@unique([identifier, registrySourceId])
+  @@unique([assetName, registrySourceId])
 }
 
 model PaymentIdentifier {
@@ -115,18 +115,18 @@ model Price {
 //TODO maybe add a rating system via payment amounts (success and failure)
 
 enum PaymentType {
-  WEB3_CARDANO_V1
+  Web3CardanoV1
 }
 
 enum Status {
-  ONLINE
-  OFFLINE
-  DEREGISTERED
-  INVALID
+  Online
+  Offline
+  Deregistered
+  Invalid
 }
 
 enum RegistryEntryType {
-  WEB3_CARDANO_V1
+  Web3CardanoV1
 }
 
 model Capability {
@@ -148,7 +148,7 @@ model RegistrySource {
   type                   RegistryEntryType
   network                Network?
   url                    String?
-  identifier             String?
+  policyId               String
   RegistrySourceConfig   RegistrySourceConfig @relation(fields: [registrySourceConfigId], references: [id])
   registrySourceConfigId String
 
@@ -157,11 +157,11 @@ model RegistrySource {
   latestIdentifier String?
   RegistryEntry    RegistryEntry[]
 
-  @@unique([type, identifier])
+  @@unique([type, policyId])
 }
 
 enum RPCProvider {
-  BLOCKFROST
+  Blockfrost
 }
 
 model RegistrySourceConfig {
@@ -174,8 +174,8 @@ model RegistrySourceConfig {
 }
 
 enum Network {
-  PREPROD
-  MAINNET
+  Preprod
+  Mainnet
 }
 
 model UpdatedRegistryEntriesLog {
