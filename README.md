@@ -56,8 +56,8 @@ Copy the `.env.example` file to `.env` and update only the following variables:
 ```sh
 DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/masumi_registry?schema=public"
 ENCRYPTION_KEY="abcdef_this_should_be_very_secure_and_32_characters_long"
-ADMIN_KEY="abcdef_this_should_be_very_secure"
-BLOCKFROST_API_KEY="your_blockfrost_api_key"
+Admin_KEY="abcdef_this_should_be_very_secure"
+Blockfrost_API_KEY="your_blockfrost_api_key"
 ```
 
 If you don't know how to set up a PostgreSQL database - [learn more below](#installing-postgresql-database).
@@ -120,7 +120,7 @@ create database masumi_registry;
 Ensure that your `DATABASE_URL` matches the configured database settings in `.env`:
 
 ```sh
-DATABASE_URL="postgresql://<USERNAME>@localhost:5432/masumi_registry?schema=public"
+DATABASE_URL="postgresql://<UserNAME>@localhost:5432/masumi_registry?schema=public"
 ```
 
 ## Contributing

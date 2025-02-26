@@ -24,14 +24,14 @@ async function addRegistrySource(
   return await prisma.registrySource.create({
     data: {
       type: input.type,
-      identifier: input.policyId,
+      policyId: input.policyId,
       note: input.note,
       network: input.network,
       latestPage: 1,
       RegistrySourceConfig: {
         create: {
           rpcProviderApiKey: input.rpcProviderApiKey,
-          rpcProvider: RPCProvider.BLOCKFROST,
+          rpcProvider: RPCProvider.Blockfrost,
         },
       },
     },

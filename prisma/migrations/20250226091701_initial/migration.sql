@@ -1,23 +1,23 @@
 -- CreateEnum
-CREATE TYPE "APIKeyStatus" AS ENUM ('ACTIVE', 'REVOKED');
+CREATE TYPE "APIKeyStatus" AS ENUM ('Active', 'Revoked');
 
 -- CreateEnum
-CREATE TYPE "Permission" AS ENUM ('USER', 'ADMIN');
+CREATE TYPE "Permission" AS ENUM ('User', 'Admin');
 
 -- CreateEnum
-CREATE TYPE "PaymentType" AS ENUM ('WEB3_CARDANO_V1');
+CREATE TYPE "PaymentType" AS ENUM ('Web3CardanoV1');
 
 -- CreateEnum
-CREATE TYPE "Status" AS ENUM ('ONLINE', 'OFFLINE', 'DEREGISTERED', 'INVALID');
+CREATE TYPE "Status" AS ENUM ('Online', 'Offline', 'Deregistered', 'Invalid');
 
 -- CreateEnum
-CREATE TYPE "RegistryEntryType" AS ENUM ('WEB3_CARDANO_V1');
+CREATE TYPE "RegistryEntryType" AS ENUM ('Web3CardanoV1');
 
 -- CreateEnum
-CREATE TYPE "RPCProvider" AS ENUM ('BLOCKFROST');
+CREATE TYPE "RPCProvider" AS ENUM ('Blockfrost');
 
 -- CreateEnum
-CREATE TYPE "Network" AS ENUM ('PREPROD', 'MAINNET');
+CREATE TYPE "Network" AS ENUM ('Preprod', 'Mainnet');
 
 -- CreateTable
 CREATE TABLE "ApiKey" (
@@ -68,7 +68,7 @@ CREATE TABLE "RegistryEntry" (
     "uptimeCheckCount" INTEGER NOT NULL DEFAULT 0,
     "status" "Status" NOT NULL,
     "registrySourceId" TEXT NOT NULL,
-    "identifier" TEXT NOT NULL,
+    "assetName" TEXT NOT NULL,
     "capabilitiesId" TEXT NOT NULL,
 
     CONSTRAINT "RegistryEntry_pkey" PRIMARY KEY ("id")
@@ -119,7 +119,7 @@ CREATE TABLE "RegistrySource" (
     "type" "RegistryEntryType" NOT NULL,
     "network" "Network",
     "url" TEXT,
-    "identifier" TEXT,
+    "policyId" TEXT NOT NULL,
     "registrySourceConfigId" TEXT NOT NULL,
     "note" TEXT,
     "latestPage" INTEGER NOT NULL DEFAULT 1,
@@ -155,7 +155,7 @@ CREATE UNIQUE INDEX "ApiKey_token_key" ON "ApiKey"("token");
 CREATE INDEX "ApiKey_token_idx" ON "ApiKey"("token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RegistryEntry_identifier_registrySourceId_key" ON "RegistryEntry"("identifier", "registrySourceId");
+CREATE UNIQUE INDEX "RegistryEntry_assetName_registrySourceId_key" ON "RegistryEntry"("assetName", "registrySourceId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "PaymentIdentifier_registryEntryId_paymentType_key" ON "PaymentIdentifier"("registryEntryId", "paymentType");
@@ -167,7 +167,7 @@ CREATE UNIQUE INDEX "Price_quantity_unit_registryEntryId_key" ON "Price"("quanti
 CREATE UNIQUE INDEX "Capability_name_version_key" ON "Capability"("name", "version");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RegistrySource_type_identifier_key" ON "RegistrySource"("type", "identifier");
+CREATE UNIQUE INDEX "RegistrySource_type_policyId_key" ON "RegistrySource"("type", "policyId");
 
 -- AddForeignKey
 ALTER TABLE "UsageEntry" ADD CONSTRAINT "UsageEntry_apiKeyId_fkey" FOREIGN KEY ("apiKeyId") REFERENCES "ApiKey"("id") ON DELETE SET NULL ON UPDATE CASCADE;

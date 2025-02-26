@@ -75,11 +75,7 @@ export const queryPaymentInformationGet = authenticatedEndpointFactory.build({
     }
     return {
       ...result,
-      agentIdentifier: result.identifier,
-      RegistrySource: {
-        ...result.RegistrySource,
-        policyId: result.RegistrySource.identifier,
-      },
+      agentIdentifier: result.RegistrySource.policyId + result.assetName,
       Prices: result.Prices.map((price) => ({
         ...price,
         quantity: Number(price.quantity),
