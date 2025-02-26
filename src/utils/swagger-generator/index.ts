@@ -110,9 +110,9 @@ export function generateOpenAPI() {
                   data: {
                     name: 'Example API',
                     description: 'Example Capability description',
-                    status: 'ONLINE',
+                    status: 'Online',
                     RegistrySource: {
-                      type: 'WEB3_CARDANO_V1',
+                      type: 'Web3CardanoV1',
                       policyId:
                         '0000000000000000000000000000000000000000000000000000000000000000',
                       url: null,
@@ -126,7 +126,7 @@ export function generateOpenAPI() {
                       {
                         paymentIdentifier:
                           'addr1333333333333333333333333333333333333333333333333333333333333333',
-                        paymentType: 'WEB3_CARDANO_V1',
+                        paymentType: 'Web3CardanoV1',
                         sellerVKey: 'sellerVKey',
                       },
                     ],
@@ -188,12 +188,12 @@ export function generateOpenAPI() {
               example: {
                 limit: 10,
                 cursorId: 'last_paginated_item',
-                network: 'PREPROD',
+                network: 'Preprod',
                 filter: {
                   policyId: 'policy_id',
                   assetName: 'asset_name',
-                  paymentTypes: [PaymentType.WEB3_CARDANO_V1],
-                  status: [Status.ONLINE, Status.OFFLINE],
+                  paymentTypes: [PaymentType.Web3CardanoV1],
+                  status: [Status.Online, Status.Offline],
                   capability: {
                     name: 'Example Capability',
                     version: 'Optional version',
@@ -222,10 +222,10 @@ export function generateOpenAPI() {
                       {
                         name: 'Example API',
                         description: 'Example Capability description',
-                        status: 'ONLINE',
+                        status: 'Online',
                         RegistrySource: {
                           id: 'unique-cuid-v2-auto-generated',
-                          type: 'WEB3_CARDANO_V1',
+                          type: 'Web3CardanoV1',
                           policyId:
                             '0000000000000000000000000000000000000000000000000000000000000000',
                           url: null,
@@ -305,12 +305,12 @@ export function generateOpenAPI() {
                     sources: [
                       {
                         id: 'unique-cuid-v2-auto-generated',
-                        type: 'WEB3_CARDANO_V1',
+                        type: 'Web3CardanoV1',
                         policyId: 'policyId',
                         url: 'optional_url',
                         note: 'optional_note',
                         rpcProviderApiKey: 'optional_apikey',
-                        network: 'PREPROD',
+                        network: 'Preprod',
                         latestPage: 1,
                         latestIdentifier: 'optional_latestIdentifier',
                       },
@@ -337,11 +337,11 @@ export function generateOpenAPI() {
           'application/json': {
             schema: addRegistrySourceSchemaInput.openapi({
               example: {
-                type: 'WEB3_CARDANO_V1',
+                type: 'Web3CardanoV1',
                 policyId: 'policyId',
                 rpcProviderApiKey: 'apikey',
                 note: 'optional_note',
-                network: 'PREPROD',
+                network: 'Preprod',
               },
             }),
           },
@@ -538,11 +538,11 @@ export function generateOpenAPI() {
                 example: {
                   data: {
                     token: 'masumi-registry-api-key-secret',
-                    permission: 'ADMIN',
+                    permission: 'Admin',
                     usageLimited: true,
                     maxUsageCredits: 1000000,
                     accumulatedUsageCredits: 0,
-                    status: 'ACTIVE',
+                    status: 'Active',
                   },
                   status: 'success',
                 },
@@ -582,11 +582,11 @@ export function generateOpenAPI() {
                     apiKeys: [
                       {
                         token: 'masumi-registry-api-key-secret',
-                        permission: 'ADMIN',
+                        permission: 'Admin',
                         usageLimited: true,
                         maxUsageCredits: 1000000,
                         accumulatedUsageCredits: 0,
-                        status: 'ACTIVE',
+                        status: 'Active',
                       },
                     ],
                   },
@@ -621,7 +621,7 @@ export function generateOpenAPI() {
           'application/json': {
             schema: addAPIKeySchemaInput.openapi({
               example: {
-                permission: 'ADMIN',
+                permission: 'Admin',
                 usageLimited: true,
                 maxUsageCredits: 1000000,
               },
@@ -642,9 +642,9 @@ export function generateOpenAPI() {
                 example: {
                   data: {
                     id: 'unique-cuid-v2-auto-generated',
-                    status: 'ACTIVE',
+                    status: 'Active',
                     token: 'masumi-registry-api-key-secret',
-                    permission: 'USER',
+                    permission: 'User',
                     usageLimited: true,
                     maxUsageCredits: 1000000,
                     accumulatedUsageCredits: 0,
@@ -701,11 +701,11 @@ export function generateOpenAPI() {
                 example: {
                   data: {
                     token: 'masumi-registry-api-key-secret',
-                    permission: 'USER',
+                    permission: 'User',
                     usageLimited: true,
                     maxUsageCredits: 1000000,
                     accumulatedUsageCredits: 0,
-                    status: 'ACTIVE',
+                    status: 'Active',
                   },
                   status: 'success',
                 },

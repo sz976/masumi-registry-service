@@ -9,29 +9,29 @@ import {
 
 async function checkAndVerifyEndpoint({
   api_url,
-  identifier,
+  assetName,
   registry,
 }: {
   api_url: string;
-  identifier: string;
-  registry: { type: $Enums.RegistryEntryType };
+  assetName: string;
+  registry: { policyId: string; type: $Enums.RegistryEntryType };
 }) {
   try {
     const endpointResponse = await fetch(api_url);
     if (!endpointResponse.ok) {
       //if the endpoint is offline, we probably want to do some later on checks if it is back up again
-      return $Enums.Status.OFFLINE;
+      return $Enums.Status.Offline;
     }
 
     const responseBody = await endpointResponse.json();
     //we need to verify the registry points to the correct url to prevent a later registry providing a wrong payment address
     //if the registry is wrong, we usually want to invalidate the entry in the database and exclude it from further checks
-    return responseBody.agentIdentifier === identifier &&
+    return responseBody.agentIdentifier === registry.policyId + assetName &&
       responseBody.type === registry.type
-      ? $Enums.Status.ONLINE
-      : $Enums.Status.INVALID;
+      ? $Enums.Status.Online
+      : $Enums.Status.Invalid;
   } catch {
-    return $Enums.Status.OFFLINE;
+    return $Enums.Status.Offline;
   }
 }
 async function checkAndVerifyRegistryEntry({
@@ -39,11 +39,11 @@ async function checkAndVerifyRegistryEntry({
   minHealthCheckDate,
 }: {
   registryEntry: {
-    agentIdentifier: string;
+    assetName: string;
     lastUptimeCheck: Date;
     apiUrl: string;
     status: $Enums.Status;
-    RegistrySource: { type: $Enums.RegistryEntryType };
+    RegistrySource: { policyId: string; type: $Enums.RegistryEntryType };
   };
   minHealthCheckDate: Date | undefined;
 }) {
@@ -61,7 +61,7 @@ async function checkAndVerifyRegistryEntry({
 
   return await checkAndVerifyEndpoint({
     api_url: registryEntry.apiUrl,
-    identifier: registryEntry.agentIdentifier,
+    assetName: registryEntry.assetName,
     registry: registryEntry.RegistrySource,
   });
 }
@@ -82,8 +82,15 @@ async function checkVerifyAndUpdateRegistryEntries({
 
   return await Promise.all(
     registryEntries.map(async (entry) => {
+      const registrySource = entry.RegistrySource;
+      if (registrySource == null || registrySource.policyId == null) {
+        logger.error('registrySource is null', entry);
+        return entry;
+      }
       const status = await checkAndVerifyRegistryEntry({
-        registryEntry: { ...entry, agentIdentifier: entry.identifier },
+        registryEntry: {
+          ...entry,
+        },
         minHealthCheckDate: minHealthCheckDate,
       });
       return await prisma.registryEntry.update({
@@ -97,7 +104,7 @@ async function checkVerifyAndUpdateRegistryEntries({
           RegistrySource: true,
           PaymentIdentifier: true,
           apiUrl: true,
-          identifier: true,
+          assetName: true,
           name: true,
           description: true,
           authorName: true,
@@ -119,7 +126,7 @@ async function checkVerifyAndUpdateRegistryEntries({
         },
         data: {
           status,
-          uptimeCount: { increment: status == $Enums.Status.ONLINE ? 1 : 0 },
+          uptimeCount: { increment: status == $Enums.Status.Online ? 1 : 0 },
           uptimeCheckCount: { increment: 1 },
           lastUptimeCheck: new Date(),
         },

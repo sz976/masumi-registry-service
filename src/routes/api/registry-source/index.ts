@@ -38,7 +38,6 @@ export const queryRegistrySourceEndpointGet =
         sources: data.map((source) => ({
           ...source,
           rpcProviderApiKey: source.RegistrySourceConfig.rpcProviderApiKey,
-          policyId: source.identifier,
         })),
       };
     },
@@ -46,7 +45,7 @@ export const queryRegistrySourceEndpointGet =
 
 export const addRegistrySourceSchemaInput = z.object({
   type: z.nativeEnum($Enums.RegistryEntryType),
-  policyId: z.string().nullable(),
+  policyId: z.string(),
   note: z.string().nullable(),
   rpcProviderApiKey: z.string(),
   network: z.nativeEnum($Enums.Network).nullable(),

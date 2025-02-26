@@ -93,11 +93,7 @@ export const queryRegistryEntryPost = authenticatedEndpointFactory.build({
         .slice(0, Math.min(input.limit, data.length))
         .map((entry) => ({
           ...entry,
-          RegistrySource: {
-            ...entry.RegistrySource,
-            policyId: entry.RegistrySource.identifier,
-          },
-          agentIdentifier: entry.identifier,
+          agentIdentifier: entry.RegistrySource.policyId + entry.assetName,
           Prices: entry.Prices.map((price) => ({
             ...price,
             quantity: Number(price.quantity),

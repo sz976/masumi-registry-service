@@ -117,7 +117,7 @@
                                                         "type": {
                                                             "type": "string",
                                                             "enum": [
-                                                                "WEB3_CARDANO_V1"
+                                                                "Web3CardanoV1"
                                                             ]
                                                         },
                                                         "policyId": {
@@ -147,7 +147,7 @@
                                                             "paymentType": {
                                                                 "type": "string",
                                                                 "enum": [
-                                                                    "WEB3_CARDANO_V1"
+                                                                    "Web3CardanoV1"
                                                                 ]
                                                             },
                                                             "sellerVKey": {
@@ -210,10 +210,10 @@
                                                 "status": {
                                                     "type": "string",
                                                     "enum": [
-                                                        "ONLINE",
-                                                        "OFFLINE",
-                                                        "DEREGISTERED",
-                                                        "INVALID"
+                                                        "Online",
+                                                        "Offline",
+                                                        "Deregistered",
+                                                        "Invalid"
                                                     ]
                                                 },
                                                 "id": {
@@ -311,9 +311,9 @@
                                         "data": {
                                             "name": "Example API",
                                             "description": "Example Capability description",
-                                            "status": "ONLINE",
+                                            "status": "Online",
                                             "RegistrySource": {
-                                                "type": "WEB3_CARDANO_V1",
+                                                "type": "Web3CardanoV1",
                                                 "policyId": "0000000000000000000000000000000000000000000000000000000000000000",
                                                 "url": null
                                             },
@@ -325,7 +325,7 @@
                                             "PaymentIdentifier": [
                                                 {
                                                     "paymentIdentifier": "addr1333333333333333333333333333333333333333333333333333333333333333",
-                                                    "paymentType": "WEB3_CARDANO_V1",
+                                                    "paymentType": "Web3CardanoV1",
                                                     "sellerVKey": "sellerVKey"
                                                 }
                                             ],
@@ -395,8 +395,8 @@
                                     "network": {
                                         "type": "string",
                                         "enum": [
-                                            "PREPROD",
-                                            "MAINNET"
+                                            "Preprod",
+                                            "Mainnet"
                                         ]
                                     },
                                     "limit": {
@@ -418,7 +418,7 @@
                                                 "items": {
                                                     "type": "string",
                                                     "enum": [
-                                                        "WEB3_CARDANO_V1"
+                                                        "Web3CardanoV1"
                                                     ]
                                                 },
                                                 "maxItems": 5
@@ -428,10 +428,10 @@
                                                 "items": {
                                                     "type": "string",
                                                     "enum": [
-                                                        "ONLINE",
-                                                        "OFFLINE",
-                                                        "DEREGISTERED",
-                                                        "INVALID"
+                                                        "Online",
+                                                        "Offline",
+                                                        "Deregistered",
+                                                        "Invalid"
                                                     ]
                                                 },
                                                 "maxItems": 5
@@ -512,16 +512,16 @@
                                 "example": {
                                     "limit": 10,
                                     "cursorId": "last_paginated_item",
-                                    "network": "PREPROD",
+                                    "network": "Preprod",
                                     "filter": {
                                         "policyId": "policy_id",
                                         "assetName": "asset_name",
                                         "paymentTypes": [
-                                            "WEB3_CARDANO_V1"
+                                            "Web3CardanoV1"
                                         ],
                                         "status": [
-                                            "ONLINE",
-                                            "OFFLINE"
+                                            "Online",
+                                            "Offline"
                                         ],
                                         "capability": {
                                             "name": "Example Capability",
@@ -560,7 +560,7 @@
                                                                     "type": {
                                                                         "type": "string",
                                                                         "enum": [
-                                                                            "WEB3_CARDANO_V1"
+                                                                            "Web3CardanoV1"
                                                                         ]
                                                                     },
                                                                     "policyId": {
@@ -609,10 +609,10 @@
                                                             "status": {
                                                                 "type": "string",
                                                                 "enum": [
-                                                                    "ONLINE",
-                                                                    "OFFLINE",
-                                                                    "DEREGISTERED",
-                                                                    "INVALID"
+                                                                    "Online",
+                                                                    "Offline",
+                                                                    "Deregistered",
+                                                                    "Invalid"
                                                                 ]
                                                             },
                                                             "id": {
@@ -735,10 +735,10 @@
                                                 {
                                                     "name": "Example API",
                                                     "description": "Example Capability description",
-                                                    "status": "ONLINE",
+                                                    "status": "Online",
                                                     "RegistrySource": {
                                                         "id": "unique-cuid-v2-auto-generated",
-                                                        "type": "WEB3_CARDANO_V1",
+                                                        "type": "Web3CardanoV1",
                                                         "policyId": "0000000000000000000000000000000000000000000000000000000000000000",
                                                         "url": null
                                                     },
@@ -845,7 +845,7 @@
                                                             "type": {
                                                                 "type": "string",
                                                                 "enum": [
-                                                                    "WEB3_CARDANO_V1"
+                                                                    "Web3CardanoV1"
                                                                 ]
                                                             },
                                                             "url": {
@@ -878,8 +878,8 @@
                                                                 "type": "string",
                                                                 "nullable": true,
                                                                 "enum": [
-                                                                    "PREPROD",
-                                                                    "MAINNET"
+                                                                    "Preprod",
+                                                                    "Mainnet"
                                                                 ]
                                                             }
                                                         },
@@ -914,12 +914,12 @@
                                             "sources": [
                                                 {
                                                     "id": "unique-cuid-v2-auto-generated",
-                                                    "type": "WEB3_CARDANO_V1",
+                                                    "type": "Web3CardanoV1",
                                                     "policyId": "policyId",
                                                     "url": "optional_url",
                                                     "note": "optional_note",
                                                     "rpcProviderApiKey": "optional_apikey",
-                                                    "network": "PREPROD",
+                                                    "network": "Preprod",
                                                     "latestPage": 1,
                                                     "latestIdentifier": "optional_latestIdentifier"
                                                 }
@@ -954,7 +954,7 @@
                                     "type": {
                                         "type": "string",
                                         "enum": [
-                                            "WEB3_CARDANO_V1"
+                                            "Web3CardanoV1"
                                         ]
                                     },
                                     "policyId": {
@@ -972,8 +972,8 @@
                                         "type": "string",
                                         "nullable": true,
                                         "enum": [
-                                            "PREPROD",
-                                            "MAINNET"
+                                            "Preprod",
+                                            "Mainnet"
                                         ]
                                     }
                                 },
@@ -985,11 +985,11 @@
                                     "network"
                                 ],
                                 "example": {
-                                    "type": "WEB3_CARDANO_V1",
+                                    "type": "Web3CardanoV1",
                                     "policyId": "policyId",
                                     "rpcProviderApiKey": "apikey",
                                     "note": "optional_note",
-                                    "network": "PREPROD"
+                                    "network": "Preprod"
                                 }
                             }
                         }
@@ -1321,8 +1321,8 @@
                                                 "permission": {
                                                     "type": "string",
                                                     "enum": [
-                                                        "USER",
-                                                        "ADMIN"
+                                                        "User",
+                                                        "Admin"
                                                     ]
                                                 },
                                                 "usageLimited": {
@@ -1343,8 +1343,8 @@
                                                 "status": {
                                                     "type": "string",
                                                     "enum": [
-                                                        "ACTIVE",
-                                                        "REVOKED"
+                                                        "Active",
+                                                        "Revoked"
                                                     ]
                                                 }
                                             },
@@ -1368,11 +1368,11 @@
                                     "example": {
                                         "data": {
                                             "token": "masumi-registry-api-key-secret",
-                                            "permission": "ADMIN",
+                                            "permission": "Admin",
                                             "usageLimited": true,
                                             "maxUsageCredits": 1000000,
                                             "accumulatedUsageCredits": 0,
-                                            "status": "ACTIVE"
+                                            "status": "Active"
                                         },
                                         "status": "success"
                                     }
@@ -1439,8 +1439,8 @@
                                                             "permission": {
                                                                 "type": "string",
                                                                 "enum": [
-                                                                    "USER",
-                                                                    "ADMIN"
+                                                                    "User",
+                                                                    "Admin"
                                                                 ]
                                                             },
                                                             "usageLimited": {
@@ -1461,8 +1461,8 @@
                                                             "status": {
                                                                 "type": "string",
                                                                 "enum": [
-                                                                    "ACTIVE",
-                                                                    "REVOKED"
+                                                                    "Active",
+                                                                    "Revoked"
                                                                 ]
                                                             }
                                                         },
@@ -1494,11 +1494,11 @@
                                             "apiKeys": [
                                                 {
                                                     "token": "masumi-registry-api-key-secret",
-                                                    "permission": "ADMIN",
+                                                    "permission": "Admin",
                                                     "usageLimited": true,
                                                     "maxUsageCredits": 1000000,
                                                     "accumulatedUsageCredits": 0,
-                                                    "status": "ACTIVE"
+                                                    "status": "Active"
                                                 }
                                             ]
                                         },
@@ -1551,14 +1551,14 @@
                                     "permission": {
                                         "type": "string",
                                         "enum": [
-                                            "USER",
-                                            "ADMIN"
+                                            "User",
+                                            "Admin"
                                         ],
-                                        "default": "USER"
+                                        "default": "User"
                                     }
                                 },
                                 "example": {
-                                    "permission": "ADMIN",
+                                    "permission": "Admin",
                                     "usageLimited": true,
                                     "maxUsageCredits": 1000000
                                 }
@@ -1586,8 +1586,8 @@
                                                 "permission": {
                                                     "type": "string",
                                                     "enum": [
-                                                        "USER",
-                                                        "ADMIN"
+                                                        "User",
+                                                        "Admin"
                                                     ]
                                                 },
                                                 "usageLimited": {
@@ -1608,8 +1608,8 @@
                                                 "status": {
                                                     "type": "string",
                                                     "enum": [
-                                                        "ACTIVE",
-                                                        "REVOKED"
+                                                        "Active",
+                                                        "Revoked"
                                                     ]
                                                 }
                                             },
@@ -1634,9 +1634,9 @@
                                     "example": {
                                         "data": {
                                             "id": "unique-cuid-v2-auto-generated",
-                                            "status": "ACTIVE",
+                                            "status": "Active",
                                             "token": "masumi-registry-api-key-secret",
-                                            "permission": "USER",
+                                            "permission": "User",
                                             "usageLimited": true,
                                             "maxUsageCredits": 1000000,
                                             "accumulatedUsageCredits": 0
@@ -1694,10 +1694,10 @@
                                     "status": {
                                         "type": "string",
                                         "enum": [
-                                            "ACTIVE",
-                                            "REVOKED"
+                                            "Active",
+                                            "Revoked"
                                         ],
-                                        "default": "ACTIVE"
+                                        "default": "Active"
                                     }
                                 },
                                 "required": [
@@ -1729,8 +1729,8 @@
                                                 "permission": {
                                                     "type": "string",
                                                     "enum": [
-                                                        "USER",
-                                                        "ADMIN"
+                                                        "User",
+                                                        "Admin"
                                                     ]
                                                 },
                                                 "usageLimited": {
@@ -1751,8 +1751,8 @@
                                                 "status": {
                                                     "type": "string",
                                                     "enum": [
-                                                        "ACTIVE",
-                                                        "REVOKED"
+                                                        "Active",
+                                                        "Revoked"
                                                     ]
                                                 }
                                             },
@@ -1776,11 +1776,11 @@
                                     "example": {
                                         "data": {
                                             "token": "masumi-registry-api-key-secret",
-                                            "permission": "USER",
+                                            "permission": "User",
                                             "usageLimited": true,
                                             "maxUsageCredits": 1000000,
                                             "accumulatedUsageCredits": 0,
-                                            "status": "ACTIVE"
+                                            "status": "Active"
                                         },
                                         "status": "success"
                                     }

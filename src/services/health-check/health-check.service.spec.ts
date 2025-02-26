@@ -12,62 +12,65 @@ describe('healthCheckService', () => {
     const mockIdentifier = 'test-id';
     const mockRegistryId = 'registry-id';
 
-    it('should return OFFLINE status when endpoint is not reachable', async () => {
+    it('should return Offline status when endpoint is not reachable', async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
       });
 
       const result = await healthCheckService.checkAndVerifyEndpoint({
         api_url: mockUrl,
-        identifier: mockIdentifier,
+        assetName: mockIdentifier,
         registry: {
-          type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
+          policyId: mockRegistryId,
+          type: $Enums.RegistryEntryType.Web3CardanoV1,
         },
       });
-      expect(result).toBe($Enums.Status.OFFLINE);
+      expect(result).toBe($Enums.Status.Offline);
     });
 
-    it('should return ONLINE status when decentralized verification succeeds', async () => {
+    it('should return Online status when decentralized verification succeeds', async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
         json: () =>
           Promise.resolve({
-            agentIdentifier: mockIdentifier,
-            type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
+            agentIdentifier: mockRegistryId + mockIdentifier,
+            type: $Enums.RegistryEntryType.Web3CardanoV1,
           }),
       });
 
       const result = await healthCheckService.checkAndVerifyEndpoint({
         api_url: mockUrl,
-        identifier: mockIdentifier,
+        assetName: mockIdentifier,
         registry: {
-          type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
+          policyId: mockRegistryId,
+          type: $Enums.RegistryEntryType.Web3CardanoV1,
         },
       });
 
-      expect(result).toBe($Enums.Status.ONLINE);
+      expect(result).toBe($Enums.Status.Online);
     });
 
-    it('should return INVALID status when decentralized verification fails', async () => {
+    it('should return Invalid status when decentralized verification fails', async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
         json: () =>
           Promise.resolve({
             identifier: 'wrong-id',
             registry: mockRegistryId,
-            type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
+            type: $Enums.RegistryEntryType.Web3CardanoV1,
           }),
       });
 
       const result = await healthCheckService.checkAndVerifyEndpoint({
         api_url: mockUrl,
-        identifier: mockIdentifier,
+        assetName: mockIdentifier,
         registry: {
-          type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
+          policyId: mockRegistryId,
+          type: $Enums.RegistryEntryType.Web3CardanoV1,
         },
       });
 
-      expect(result).toBe($Enums.Status.INVALID);
+      expect(result).toBe($Enums.Status.Invalid);
     });
   });
 });
@@ -79,12 +82,13 @@ describe('checkAndVerifyRegistryEntry', () => {
 
   it('should return existing status if lastUptimeCheck is newer than minHealthCheckDate', async () => {
     const mockRegistryEntry = {
-      agentIdentifier: 'test-id',
+      assetName: 'test-id',
       lastUptimeCheck: new Date(Date.now() - 200),
       apiUrl: 'http://test.com',
-      status: $Enums.Status.ONLINE,
+      status: $Enums.Status.Online,
       RegistrySource: {
-        type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
+        policyId: 'registry-id',
+        type: $Enums.RegistryEntryType.Web3CardanoV1,
       },
     };
     (global.fetch as jest.Mock).mockResolvedValueOnce({
@@ -104,12 +108,13 @@ describe('checkAndVerifyRegistryEntry', () => {
   it('should check endpoint if lastUptimeCheck is older than minHealthCheckDate', async () => {
     const minHealthCheckDate = new Date();
     const mockRegistryEntry = {
-      agentIdentifier: 'test-id',
+      assetName: 'assetname',
       lastUptimeCheck: new Date(Date.now() - 200),
       apiUrl: 'http://test.com',
-      status: $Enums.Status.OFFLINE,
+      status: $Enums.Status.Offline,
       RegistrySource: {
-        type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
+        policyId: 'registry',
+        type: $Enums.RegistryEntryType.Web3CardanoV1,
       },
     };
     mockRegistryEntry.lastUptimeCheck = new Date(Date.now() - 1000); // 1 second ago
@@ -118,8 +123,8 @@ describe('checkAndVerifyRegistryEntry', () => {
       ok: true,
       json: () =>
         Promise.resolve({
-          agentIdentifier: 'test-id',
-          type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
+          agentIdentifier: 'registryassetname',
+          type: $Enums.RegistryEntryType.Web3CardanoV1,
         }),
     });
 
@@ -128,17 +133,18 @@ describe('checkAndVerifyRegistryEntry', () => {
       minHealthCheckDate,
     });
 
-    expect(result).toBe($Enums.Status.ONLINE);
+    expect(result).toBe($Enums.Status.Online);
   });
 
   it('should not check endpoint if minHealthCheckDate is undefined', async () => {
     const mockRegistryEntry = {
-      agentIdentifier: 'test-id',
+      assetName: 'test-id',
       lastUptimeCheck: new Date(Date.now() - 200),
       apiUrl: 'http://test.com',
-      status: $Enums.Status.ONLINE,
+      status: $Enums.Status.Online,
       RegistrySource: {
-        type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
+        policyId: 'registry-id',
+        type: $Enums.RegistryEntryType.Web3CardanoV1,
       },
     };
     (global.fetch as jest.Mock).mockResolvedValueOnce({
@@ -150,17 +156,18 @@ describe('checkAndVerifyRegistryEntry', () => {
       minHealthCheckDate: undefined,
     });
 
-    expect(result).toBe($Enums.Status.ONLINE);
+    expect(result).toBe($Enums.Status.Online);
   });
 
-  it('should return OFFLINE status when endpoint check fails', async () => {
+  it('should return Offline status when endpoint check fails', async () => {
     const mockRegistryEntry = {
-      agentIdentifier: 'test-id',
+      assetName: 'test-id',
       lastUptimeCheck: new Date(Date.now() - 200),
       apiUrl: 'http://test.com',
-      status: $Enums.Status.ONLINE,
+      status: $Enums.Status.Online,
       RegistrySource: {
-        type: $Enums.RegistryEntryType.WEB3_CARDANO_V1,
+        policyId: 'registry-id',
+        type: $Enums.RegistryEntryType.Web3CardanoV1,
       },
     };
     (global.fetch as jest.Mock).mockResolvedValueOnce({
@@ -172,6 +179,6 @@ describe('checkAndVerifyRegistryEntry', () => {
       minHealthCheckDate: new Date(),
     });
 
-    expect(result).toBe($Enums.Status.OFFLINE);
+    expect(result).toBe($Enums.Status.Offline);
   });
 });
