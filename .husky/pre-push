@@ -97,4 +97,23 @@ if ! npm outdated --json >/dev/null 2>&1; then
     # Note: We don't exit here as this is informational
 fi
 
+# Generate Swagger documentation
+echo "${BLUE}🔍 Generating Swagger documentation...${NC}"
+if ! npm run swagger-json; then
+    echo "${RED}❌ Swagger documentation generation failed. Please fix any API documentation issues and try again.${NC}"
+    exit 6
+fi
+
+
+# Check for changes in generated files
+echo "${BLUE}🔍 Checking for generated file changes...${NC}"
+if git diff --quiet; then
+    echo "${GREEN}✅ No changes in generated files${NC}"
+else
+    echo "${BLUE}📝 Committing generated file changes...${NC}"
+    git add .
+    git commit -m "chore: update generated files" --no-verify
+    echo "${GREEN}✅ Generated files committed${NC}"
+fi
+
 echo "${GREEN}✅ All pre-push checks completed!${NC}" 
