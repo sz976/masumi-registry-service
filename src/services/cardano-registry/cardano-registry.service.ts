@@ -95,7 +95,9 @@ export async function updateDeregisteredCardanoRegistryEntries() {
         while (latestAssets.length != 0) {
           const assetsToProcess = await Promise.all(
             latestAssets.map(async (asset) => {
-              return await blockfrost.assetsById(asset.assetName);
+              return await blockfrost.assetsById(
+                source.policyId! + asset.assetName
+              );
             })
           );
 
@@ -213,7 +215,7 @@ export async function updateLatestCardanoRegistryEntries(
           let latestIdentifier = source.latestIdentifier;
           let latestAssets = await blockfrost.assetsPolicyById(
             source.policyId!,
-            { page: pageOffset, count: 100 }
+            { page: pageOffset, count: 100, order: 'desc' }
           );
           pageOffset = pageOffset + 1;
           while (latestAssets.length != 0) {
@@ -289,18 +291,6 @@ export async function updateLatestCardanoRegistryEntries(
     //library is strange as we can release from any non-acquired semaphore
     updateMutex.release();
   }
-
-  //sort by sources creation date and entries creation date
-  //probably unnecessary to return the entries and does not work nicely with mutex
-  /*return latestEntries.sort((a, b) => {
-        if (a.registrySourcesId == b.registrySourcesId)
-            return a.createdAt.getTime() - b.createdAt.getTime()
-        const sourceA = sources.find(s => s.id == a.registrySourcesId)
-        const sourceB = sources.find(s => s.id == b.registrySourcesId)
-        if (sourceA && sourceB)
-            return sourceA.createdAt.getTime() - sourceB.createdAt.getTime()
-        return 0
-    })*/
 }
 
 export const updateCardanoAssets = async (
@@ -381,7 +371,7 @@ export const updateCardanoAssets = async (
         api_url: endpoint,
         assetName: asset.asset,
         registry: {
-          identifier: source.policyId!,
+          policyId: source.policyId!,
           type: $Enums.RegistryEntryType.Web3CardanoV1,
         },
       });
@@ -389,20 +379,20 @@ export const updateCardanoAssets = async (
       return await prisma.$transaction(
         async (tx) => {
           /*We do not need to ensure uniqueness of the api url as we require each agent to send its registry identifier, when requesting a payment 
-            
-            const duplicateEntry = await tx.registryEntry.findFirst({
-                where: {
-                    registrySourcesId: source.id,
-                    api_url: metadataStringConvert(parsedMetadata.data.api_url)!,
-                    identifier: { not: asset.asset }
-                }
-            })
-            if (duplicateEntry) {
-                //TODO this can be removed if we want to allow re registration of the same agent (url)
-                //WARNING this also only works if the api url does not accept any query parameters or similar
-                logger.info("Someone tried to duplicate an entry for the same api url", { duplicateEntry: duplicateEntry })
-                return null;
-            }*/
+                      
+                      const duplicateEntry = await tx.registryEntry.findFirst({
+                          where: {
+                              registrySourcesId: source.id,
+                              api_url: metadataStringConvert(parsedMetadata.data.api_url)!,
+                              identifier: { not: asset.asset }
+                          }
+                      })
+                      if (duplicateEntry) {
+                          //TODO this can be removed if we want to allow re registration of the same agent (url)
+                          //WARNING this also only works if the api url does not accept any query parameters or similar
+                          logger.info("Someone tried to duplicate an entry for the same api url", { duplicateEntry: duplicateEntry })
+                          return null;
+                      }*/
 
           const existingEntry = await tx.registryEntry.findUnique({
             where: {
@@ -555,6 +545,7 @@ export const updateCardanoAssets = async (
             } catch {
               /* ignore */
             }
+
             newEntry = await tx.registryEntry.create({
               include: {
                 RegistrySource: true,
@@ -625,7 +616,6 @@ export const updateCardanoAssets = async (
               },
             });
           }
-
           return newEntry;
         },
         { maxWait: 50000, timeout: 10000 }
