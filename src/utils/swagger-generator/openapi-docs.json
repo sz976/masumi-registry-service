@@ -182,23 +182,46 @@
                                                         "description"
                                                     ]
                                                 },
-                                                "Prices": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "quantity": {
-                                                                "type": "number"
-                                                            },
-                                                            "unit": {
-                                                                "type": "string"
-                                                            }
+                                                "AgentPricing": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "pricingType": {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "Fixed"
+                                                            ]
                                                         },
-                                                        "required": [
-                                                            "quantity",
-                                                            "unit"
-                                                        ]
-                                                    }
+                                                        "FixedPricing": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "Amounts": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "amount": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "unit": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "amount",
+                                                                            "unit"
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "Amounts"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "pricingType",
+                                                        "FixedPricing"
+                                                    ]
                                                 },
                                                 "name": {
                                                     "type": "string"
@@ -278,7 +301,7 @@
                                                 "RegistrySource",
                                                 "PaymentIdentifier",
                                                 "Capability",
-                                                "Prices",
+                                                "AgentPricing",
                                                 "name",
                                                 "description",
                                                 "status",
@@ -329,16 +352,21 @@
                                                     "sellerVKey": "sellerVKey"
                                                 }
                                             ],
-                                            "Prices": [
-                                                {
-                                                    "unit": "USDC",
-                                                    "quantity": 100
-                                                },
-                                                {
-                                                    "unit": "USDM",
-                                                    "quantity": 15000
+                                            "AgentPricing": {
+                                                "pricingType": "Fixed",
+                                                "FixedPricing": {
+                                                    "Amounts": [
+                                                        {
+                                                            "unit": "USDC",
+                                                            "amount": "100"
+                                                        },
+                                                        {
+                                                            "unit": "USDM",
+                                                            "amount": "15000"
+                                                        }
+                                                    ]
                                                 }
-                                            ],
+                                            },
                                             "authorContact": null,
                                             "authorName": null,
                                             "image": "testimage.de",
@@ -353,7 +381,7 @@
                                             "apiUrl": "https://localhost:3000/api/",
                                             "authorOrganization": "MASUMI",
                                             "agentIdentifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                            "id": "q83pmrbzbw2lm5x98zdhp5l0"
+                                            "id": "ops7p212mr4ln1y4rc84d3mk"
                                         },
                                         "status": "success"
                                     }
@@ -672,23 +700,46 @@
                                                             "agentIdentifier": {
                                                                 "type": "string"
                                                             },
-                                                            "Prices": {
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "type": "object",
-                                                                    "properties": {
-                                                                        "quantity": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "unit": {
-                                                                            "type": "string"
-                                                                        }
+                                                            "AgentPricing": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "pricingType": {
+                                                                        "type": "string",
+                                                                        "enum": [
+                                                                            "Fixed"
+                                                                        ]
                                                                     },
-                                                                    "required": [
-                                                                        "quantity",
-                                                                        "unit"
-                                                                    ]
-                                                                }
+                                                                    "FixedPricing": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "Amounts": {
+                                                                                "type": "array",
+                                                                                "items": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "amount": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "unit": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "amount",
+                                                                                        "unit"
+                                                                                    ]
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "Amounts"
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "pricingType",
+                                                                    "FixedPricing"
+                                                                ]
                                                             }
                                                         },
                                                         "required": [
@@ -712,7 +763,7 @@
                                                             "requestsPerHour",
                                                             "tags",
                                                             "agentIdentifier",
-                                                            "Prices"
+                                                            "AgentPricing"
                                                         ]
                                                     }
                                                 }
@@ -747,12 +798,17 @@
                                                         "version": "1.0.0",
                                                         "description": "Example Capability description"
                                                     },
-                                                    "Prices": [
-                                                        {
-                                                            "unit": "USDC",
-                                                            "quantity": 100
+                                                    "AgentPricing": {
+                                                        "pricingType": "Fixed",
+                                                        "FixedPricing": {
+                                                            "Amounts": [
+                                                                {
+                                                                    "amount": "100",
+                                                                    "unit": "USDC"
+                                                                }
+                                                            ]
                                                         }
-                                                    ],
+                                                    },
                                                     "authorContact": null,
                                                     "authorName": null,
                                                     "image": "testimage.de",
@@ -767,7 +823,7 @@
                                                     "apiUrl": "https://localhost:3000/api/",
                                                     "authorOrganization": "MASUMI",
                                                     "agentIdentifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                                    "id": "psttbc923i1zxsnmiq73uler"
+                                                    "id": "fitd2elc5769bspv6c4suo1t"
                                                 }
                                             ]
                                         },
