@@ -5,6 +5,9 @@ CREATE TYPE "APIKeyStatus" AS ENUM ('Active', 'Revoked');
 CREATE TYPE "Permission" AS ENUM ('User', 'Admin');
 
 -- CreateEnum
+CREATE TYPE "PricingType" AS ENUM ('Fixed');
+
+-- CreateEnum
 CREATE TYPE "PaymentType" AS ENUM ('Web3CardanoV1');
 
 -- CreateEnum
@@ -70,6 +73,7 @@ CREATE TABLE "RegistryEntry" (
     "registrySourceId" TEXT NOT NULL,
     "assetName" TEXT NOT NULL,
     "capabilitiesId" TEXT NOT NULL,
+    "agentPricingId" TEXT NOT NULL,
 
     CONSTRAINT "RegistryEntry_pkey" PRIMARY KEY ("id")
 );
@@ -88,15 +92,35 @@ CREATE TABLE "PaymentIdentifier" (
 );
 
 -- CreateTable
-CREATE TABLE "Price" (
+CREATE TABLE "AgentPricing" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "quantity" BIGINT NOT NULL,
-    "unit" TEXT NOT NULL,
-    "registryEntryId" TEXT,
+    "pricingType" "PricingType" NOT NULL,
+    "agentFixedPricingId" TEXT,
 
-    CONSTRAINT "Price_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "AgentPricing_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "AgentFixedPricing" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "AgentFixedPricing_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UnitValue" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "amount" BIGINT NOT NULL,
+    "unit" TEXT NOT NULL,
+    "agentFixedPricingId" TEXT,
+
+    CONSTRAINT "UnitValue_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -161,7 +185,7 @@ CREATE UNIQUE INDEX "RegistryEntry_assetName_registrySourceId_key" ON "RegistryE
 CREATE UNIQUE INDEX "PaymentIdentifier_registryEntryId_paymentType_key" ON "PaymentIdentifier"("registryEntryId", "paymentType");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Price_quantity_unit_registryEntryId_key" ON "Price"("quantity", "unit", "registryEntryId");
+CREATE UNIQUE INDEX "AgentPricing_agentFixedPricingId_key" ON "AgentPricing"("agentFixedPricingId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Capability_name_version_key" ON "Capability"("name", "version");
@@ -179,10 +203,16 @@ ALTER TABLE "RegistryEntry" ADD CONSTRAINT "RegistryEntry_registrySourceId_fkey"
 ALTER TABLE "RegistryEntry" ADD CONSTRAINT "RegistryEntry_capabilitiesId_fkey" FOREIGN KEY ("capabilitiesId") REFERENCES "Capability"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "RegistryEntry" ADD CONSTRAINT "RegistryEntry_agentPricingId_fkey" FOREIGN KEY ("agentPricingId") REFERENCES "AgentPricing"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "PaymentIdentifier" ADD CONSTRAINT "PaymentIdentifier_registryEntryId_fkey" FOREIGN KEY ("registryEntryId") REFERENCES "RegistryEntry"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Price" ADD CONSTRAINT "Price_registryEntryId_fkey" FOREIGN KEY ("registryEntryId") REFERENCES "RegistryEntry"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "AgentPricing" ADD CONSTRAINT "AgentPricing_agentFixedPricingId_fkey" FOREIGN KEY ("agentFixedPricingId") REFERENCES "AgentFixedPricing"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UnitValue" ADD CONSTRAINT "UnitValue_agentFixedPricingId_fkey" FOREIGN KEY ("agentFixedPricingId") REFERENCES "AgentFixedPricing"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "RegistrySource" ADD CONSTRAINT "RegistrySource_registrySourceConfigId_fkey" FOREIGN KEY ("registrySourceConfigId") REFERENCES "RegistrySourceConfig"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
