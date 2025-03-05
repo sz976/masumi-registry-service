@@ -3,6 +3,7 @@ import { logger } from '@/utils/logger';
 import {
   $Enums,
   Capability,
+  PricingType,
   RegistryEntry,
   RegistrySource,
 } from '@prisma/client';
@@ -74,7 +75,12 @@ async function checkVerifyAndUpdateRegistryEntries({
     RegistrySource: RegistrySource;
     Capability: Capability;
     tags: string[];
-    Prices: { quantity: bigint; unit: string }[];
+    AgentPricing: {
+      pricingType: PricingType;
+      FixedPricing: {
+        Amounts: { amount: bigint; unit: string }[];
+      } | null;
+    };
   })[];
   minHealthCheckDate: Date | undefined;
 }) {
@@ -96,33 +102,13 @@ async function checkVerifyAndUpdateRegistryEntries({
       return await prisma.registryEntry.update({
         where: { id: entry.id },
         //select all fields
-        select: {
-          Prices: true,
-          capabilitiesId: true,
-          createdAt: true,
+        include: {
+          AgentPricing: {
+            include: { FixedPricing: { include: { Amounts: true } } },
+          },
           Capability: true,
           RegistrySource: true,
           PaymentIdentifier: true,
-          apiUrl: true,
-          assetName: true,
-          name: true,
-          description: true,
-          authorName: true,
-          authorOrganization: true,
-          authorContact: true,
-          image: true,
-          otherLegal: true,
-          privacyPolicy: true,
-          requestsPerHour: true,
-          tags: true,
-          termsAndCondition: true,
-          id: true,
-          status: true,
-          uptimeCount: true,
-          uptimeCheckCount: true,
-          lastUptimeCheck: true,
-          registrySourceId: true,
-          updatedAt: true,
         },
         data: {
           status,

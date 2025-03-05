@@ -1,4 +1,4 @@
-import { $Enums } from '@prisma/client';
+import { $Enums, PricingType } from '@prisma/client';
 import { Sema } from 'async-sema';
 import { prisma } from '@/utils/db';
 import { z } from 'zod';
@@ -42,17 +42,21 @@ const metadataSchema = z.object({
     })
     .optional(),
   tags: z.array(z.string().min(1)).min(1),
-  pricing: z
-    .array(
-      z.object({
-        quantity: z.number({ coerce: true }).int().min(1),
-        unit: z
-          .string()
-          .min(1)
-          .or(z.array(z.string().min(1))),
-      })
-    )
-    .min(1),
+  AgentPricing: z.object({
+    pricingType: z.enum([PricingType.Fixed]),
+    Pricing: z
+      .array(
+        z.object({
+          amount: z.number({ coerce: true }).int().min(1),
+          unit: z
+            .string()
+            .min(1)
+            .or(z.array(z.string().min(1))),
+        })
+      )
+      .min(1)
+      .max(5),
+  }),
   image: z.string().or(z.array(z.string())),
   metadata_version: z.number({ coerce: true }).int().min(1).max(1),
 });
@@ -335,6 +339,11 @@ export const updateCardanoAssets = async (
                 where: { name_version: { name: '', version: '' } },
               },
             },
+            AgentPricing: {
+              create: {
+                pricingType: PricingType.Fixed,
+              },
+            },
             assetName: assetName,
             RegistrySource: { connect: { id: source.id } },
             name: '?',
@@ -378,21 +387,7 @@ export const updateCardanoAssets = async (
 
       return await prisma.$transaction(
         async (tx) => {
-          /*We do not need to ensure uniqueness of the api url as we require each agent to send its registry identifier, when requesting a payment 
-                      
-                      const duplicateEntry = await tx.registryEntry.findFirst({
-                          where: {
-                              registrySourcesId: source.id,
-                              api_url: metadataStringConvert(parsedMetadata.data.api_url)!,
-                              identifier: { not: asset.asset }
-                          }
-                      })
-                      if (duplicateEntry) {
-                          //TODO this can be removed if we want to allow re registration of the same agent (url)
-                          //WARNING this also only works if the api url does not accept any query parameters or similar
-                          logger.info("Someone tried to duplicate an entry for the same api url", { duplicateEntry: duplicateEntry })
-                          return null;
-                      }*/
+          /*  We do not need to ensure uniqueness of the api url as we require each agent to send its registry identifier, when requesting a payment  */
 
           const existingEntry = await tx.registryEntry.findUnique({
             where: {
@@ -427,7 +422,9 @@ export const updateCardanoAssets = async (
                 RegistrySource: true,
                 PaymentIdentifier: true,
                 Capability: true,
-                Prices: true,
+                AgentPricing: {
+                  include: { FixedPricing: { include: { Amounts: true } } },
+                },
               },
 
               where: {
@@ -475,20 +472,24 @@ export const updateCardanoAssets = async (
                       ),
                     }
                   : undefined,
-                Prices: {
-                  connectOrCreate: parsedMetadata.data.pricing.map((price) => ({
-                    create: {
-                      quantity: price.quantity,
-                      unit: metadataStringConvert(price.unit)!,
-                    },
-                    where: {
-                      quantity_unit_registryEntryId: {
-                        quantity: price.quantity,
-                        unit: metadataStringConvert(price.unit)!,
-                        registryEntryId: existingEntry.id,
+                AgentPricing: {
+                  create: {
+                    pricingType: PricingType.Fixed,
+                    FixedPricing: {
+                      create: {
+                        Amounts: {
+                          createMany: {
+                            data: parsedMetadata.data.AgentPricing.Pricing.map(
+                              (price) => ({
+                                amount: price.amount,
+                                unit: metadataStringConvert(price.unit)!,
+                              })
+                            ),
+                          },
+                        },
                       },
                     },
-                  })),
+                  },
                 },
                 PaymentIdentifier: {
                   upsert: {
@@ -551,7 +552,9 @@ export const updateCardanoAssets = async (
                 RegistrySource: true,
                 PaymentIdentifier: true,
                 Capability: true,
-                Prices: true,
+                AgentPricing: {
+                  include: { FixedPricing: { include: { Amounts: true } } },
+                },
               },
               data: {
                 lastUptimeCheck: new Date(),
@@ -584,11 +587,24 @@ export const updateCardanoAssets = async (
                 ),
                 requestsPerHour: requests_per_hour,
                 tags: parsedMetadata.data.tags,
-                Prices: {
-                  create: parsedMetadata.data.pricing.map((price) => ({
-                    quantity: price.quantity,
-                    unit: metadataStringConvert(price.unit)!,
-                  })),
+                AgentPricing: {
+                  create: {
+                    pricingType: PricingType.Fixed,
+                    FixedPricing: {
+                      create: {
+                        Amounts: {
+                          createMany: {
+                            data: parsedMetadata.data.AgentPricing.Pricing.map(
+                              (price) => ({
+                                amount: price.amount,
+                                unit: metadataStringConvert(price.unit)!,
+                              })
+                            ),
+                          },
+                        },
+                      },
+                    },
+                  },
                 },
                 assetName: assetName,
                 PaymentIdentifier: {

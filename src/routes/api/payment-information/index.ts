@@ -28,12 +28,17 @@ export const queryPaymentInformationSchemaOutput = z.object({
     version: z.string(),
     description: z.string().nullable(),
   }),
-  Prices: z.array(
-    z.object({
-      quantity: z.number(),
-      unit: z.string(),
-    })
-  ),
+  AgentPricing: z.object({
+    pricingType: z.nativeEnum($Enums.PricingType),
+    FixedPricing: z.object({
+      Amounts: z.array(
+        z.object({
+          amount: z.string(),
+          unit: z.string(),
+        })
+      ),
+    }),
+  }),
   name: z.string(),
   description: z.string().nullable(),
   status: z.nativeEnum($Enums.Status),
@@ -76,10 +81,16 @@ export const queryPaymentInformationGet = authenticatedEndpointFactory.build({
     return {
       ...result,
       agentIdentifier: result.RegistrySource.policyId + result.assetName,
-      Prices: result.Prices.map((price) => ({
-        ...price,
-        quantity: Number(price.quantity),
-      })),
+      AgentPricing: {
+        pricingType: result.AgentPricing.pricingType,
+        FixedPricing: {
+          Amounts:
+            result.AgentPricing.FixedPricing?.Amounts.map((amount) => ({
+              amount: amount.amount.toString(),
+              unit: amount.unit,
+            })) ?? [],
+        },
+      },
     };
   },
 });

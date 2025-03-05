@@ -130,10 +130,15 @@ export function generateOpenAPI() {
                         sellerVKey: 'sellerVKey',
                       },
                     ],
-                    Prices: [
-                      { unit: 'USDC', quantity: 100 },
-                      { unit: 'USDM', quantity: 15000 },
-                    ],
+                    AgentPricing: {
+                      pricingType: 'Fixed',
+                      FixedPricing: {
+                        Amounts: [
+                          { unit: 'USDC', amount: '100' },
+                          { unit: 'USDM', amount: '15000' },
+                        ],
+                      },
+                    },
                     authorContact: null,
                     authorName: null,
                     image: 'testimage.de',
@@ -235,7 +240,12 @@ export function generateOpenAPI() {
                           version: '1.0.0',
                           description: 'Example Capability description',
                         },
-                        Prices: [{ unit: 'USDC', quantity: 100 }],
+                        AgentPricing: {
+                          pricingType: 'Fixed',
+                          FixedPricing: {
+                            Amounts: [{ amount: '100', unit: 'USDC' }],
+                          },
+                        },
                         authorContact: null,
                         authorName: null,
                         image: 'testimage.de',
