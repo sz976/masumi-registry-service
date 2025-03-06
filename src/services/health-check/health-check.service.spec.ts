@@ -84,7 +84,7 @@ describe('checkAndVerifyRegistryEntry', () => {
     const mockRegistryEntry = {
       assetName: 'test-id',
       lastUptimeCheck: new Date(Date.now() - 200),
-      apiUrl: 'http://test.com',
+      apiBaseUrl: 'http://test.com',
       status: $Enums.Status.Online,
       RegistrySource: {
         policyId: 'registry-id',
@@ -110,7 +110,7 @@ describe('checkAndVerifyRegistryEntry', () => {
     const mockRegistryEntry = {
       assetName: 'assetname',
       lastUptimeCheck: new Date(Date.now() - 200),
-      apiUrl: 'http://test.com',
+      apiBaseUrl: 'http://test.com',
       status: $Enums.Status.Offline,
       RegistrySource: {
         policyId: 'registry',
@@ -140,7 +140,7 @@ describe('checkAndVerifyRegistryEntry', () => {
     const mockRegistryEntry = {
       assetName: 'test-id',
       lastUptimeCheck: new Date(Date.now() - 200),
-      apiUrl: 'http://test.com',
+      apiBaseUrl: 'http://test.com',
       status: $Enums.Status.Online,
       RegistrySource: {
         policyId: 'registry-id',
@@ -163,7 +163,7 @@ describe('checkAndVerifyRegistryEntry', () => {
     const mockRegistryEntry = {
       assetName: 'test-id',
       lastUptimeCheck: new Date(Date.now() - 200),
-      apiUrl: 'http://test.com',
+      apiBaseUrl: 'http://test.com',
       status: $Enums.Status.Online,
       RegistrySource: {
         policyId: 'registry-id',

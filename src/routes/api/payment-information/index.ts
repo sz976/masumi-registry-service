@@ -23,11 +23,12 @@ export const queryPaymentInformationSchemaOutput = z.object({
       sellerVKey: z.string().nullable(),
     })
   ),
-  Capability: z.object({
-    name: z.string(),
-    version: z.string(),
-    description: z.string().nullable(),
-  }),
+  Capability: z
+    .object({
+      name: z.string().nullable(),
+      version: z.string().nullable(),
+    })
+    .nullable(),
   AgentPricing: z.object({
     pricingType: z.nativeEnum($Enums.PricingType),
     FixedPricing: z.object({
@@ -46,10 +47,11 @@ export const queryPaymentInformationSchemaOutput = z.object({
   lastUptimeCheck: ez.dateOut(),
   uptimeCount: z.number(),
   uptimeCheckCount: z.number(),
-  apiUrl: z.string(),
+  apiBaseUrl: z.string(),
   authorName: z.string().nullable(),
   authorOrganization: z.string().nullable(),
-  authorContact: z.string().nullable(),
+  authorContactEmail: z.string().nullable(),
+  authorContactOther: z.string().nullable(),
   image: z.string().nullable(),
   privacyPolicy: z.string().nullable(),
   termsAndCondition: z.string().nullable(),
@@ -57,6 +59,13 @@ export const queryPaymentInformationSchemaOutput = z.object({
   requestsPerHour: z.number().nullable(),
   tags: z.array(z.string()).nullable(),
   agentIdentifier: z.string(),
+  ExampleOutput: z.array(
+    z.object({
+      name: z.string(),
+      mimeType: z.string(),
+      url: z.string(),
+    })
+  ),
 });
 
 export const queryPaymentInformationGet = authenticatedEndpointFactory.build({

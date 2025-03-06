@@ -8,6 +8,7 @@ import { logger } from '@/utils/logger';
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
 import { resolvePaymentKeyHash } from '@meshsdk/core';
 import cuid2 from '@paralleldrive/cuid2';
+import { DEFAULTS } from '@/utils/config';
 
 const metadataSchema = z.object({
   name: z
@@ -15,23 +16,33 @@ const metadataSchema = z.object({
     .min(1)
     .or(z.array(z.string().min(1))),
   description: z.string().or(z.array(z.string())).optional(),
-  api_url: z
+  api_base_url: z
     .string()
     .min(1)
-    .url()
     .or(z.array(z.string().min(1))),
-  example_output: z.string().or(z.array(z.string())).optional(),
-  capability: z.object({
-    name: z.string().or(z.array(z.string())),
-    version: z.string().or(z.array(z.string())),
-  }),
-  requests_per_hour: z.string().or(z.array(z.string())).optional(),
+  example_output: z
+    .array(
+      z.object({
+        name: z.string().max(60),
+        mime_type: z.string().min(1).max(60),
+        url: z.string().or(z.array(z.string())),
+      })
+    )
+    .optional(),
+  capability: z
+    .object({
+      name: z.string().or(z.array(z.string())),
+      version: z.string().max(60),
+    })
+    .optional(),
+  requests_per_hour: z.number({ coerce: true }).int().min(0).optional(),
   author: z.object({
     name: z
       .string()
       .min(1)
       .or(z.array(z.string().min(1))),
-    contact: z.string().or(z.array(z.string())).optional(),
+    contact_email: z.string().or(z.array(z.string())).optional(),
+    contact_other: z.string().or(z.array(z.string())).optional(),
     organization: z.string().or(z.array(z.string())).optional(),
   }),
   legal: z
@@ -55,11 +66,12 @@ const metadataSchema = z.object({
         })
       )
       .min(1)
-      .max(5),
+      .max(25),
   }),
   image: z.string().or(z.array(z.string())),
   metadata_version: z.number({ coerce: true }).int().min(1).max(1),
 });
+
 const deleteMutex = new Sema(1);
 export async function updateDeregisteredCardanoRegistryEntries() {
   const sources = await prisma.registrySource.findMany({
@@ -344,11 +356,12 @@ export const updateCardanoAssets = async (
                 pricingType: PricingType.Fixed,
               },
             },
+            metadataVersion: -1,
             assetName: assetName,
             RegistrySource: { connect: { id: source.id } },
             name: '?',
             description: '?',
-            apiUrl: '?_' + cuid2.createId(),
+            apiBaseUrl: '?_' + cuid2.createId(),
             image: '?',
             lastUptimeCheck: new Date(),
           },
@@ -375,7 +388,7 @@ export const updateCardanoAssets = async (
       }
 
       //check endpoint
-      const endpoint = metadataStringConvert(parsedMetadata.data.api_url)!;
+      const endpoint = metadataStringConvert(parsedMetadata.data.api_base_url)!;
       const isAvailable = await healthCheckService.checkAndVerifyEndpoint({
         api_url: endpoint,
         assetName: asset.asset,
@@ -402,21 +415,12 @@ export const updateCardanoAssets = async (
           if (existingEntry) {
             //TODO this can be ignored unless we allow updates to the registry entry
             const capability_name = metadataStringConvert(
-              parsedMetadata.data.capability.name
+              parsedMetadata.data.capability?.name
             )!;
             const capability_version = metadataStringConvert(
-              parsedMetadata.data.capability.version
+              parsedMetadata.data.capability?.version
             )!;
-            const requests_per_hour_string = metadataStringConvert(
-              parsedMetadata.data.requests_per_hour
-            );
-            let requests_per_hour = undefined;
-            try {
-              if (requests_per_hour_string)
-                requests_per_hour = parseFloat(requests_per_hour_string);
-            } catch {
-              /* ignore */
-            }
+
             newEntry = await tx.registryEntry.update({
               include: {
                 RegistrySource: true,
@@ -425,6 +429,7 @@ export const updateCardanoAssets = async (
                 AgentPricing: {
                   include: { FixedPricing: { include: { Amounts: true } } },
                 },
+                ExampleOutput: true,
               },
 
               where: {
@@ -444,15 +449,20 @@ export const updateCardanoAssets = async (
                 description: metadataStringConvert(
                   parsedMetadata.data.description
                 ),
-                apiUrl: metadataStringConvert(parsedMetadata.data.api_url)!,
+                apiBaseUrl: metadataStringConvert(
+                  parsedMetadata.data.api_base_url
+                )!,
                 authorName: metadataStringConvert(
                   parsedMetadata.data.author?.name
                 ),
                 authorOrganization: metadataStringConvert(
                   parsedMetadata.data.author?.organization
                 ),
-                authorContact: metadataStringConvert(
-                  parsedMetadata.data.author?.contact
+                authorContactEmail: metadataStringConvert(
+                  parsedMetadata.data.author?.contact_email
+                ),
+                authorContactOther: metadataStringConvert(
+                  parsedMetadata.data.author?.contact_other
                 ),
                 image: metadataStringConvert(parsedMetadata.data.image),
                 privacyPolicy: metadataStringConvert(
@@ -464,7 +474,7 @@ export const updateCardanoAssets = async (
                 otherLegal: metadataStringConvert(
                   parsedMetadata.data.legal?.other
                 ),
-                requestsPerHour: requests_per_hour,
+                requestsPerHour: parsedMetadata.data.requests_per_hour,
                 tags: parsedMetadata.data.tags
                   ? {
                       push: parsedMetadata.data.tags.map(
@@ -531,21 +541,11 @@ export const updateCardanoAssets = async (
             });
           } else {
             const capability_name = metadataStringConvert(
-              parsedMetadata.data.capability.name
+              parsedMetadata.data.capability?.name
             )!;
             const capability_version = metadataStringConvert(
-              parsedMetadata.data.capability.version
+              parsedMetadata.data.capability?.version
             )!;
-            const requests_per_hour_string = metadataStringConvert(
-              parsedMetadata.data.requests_per_hour
-            );
-            let requests_per_hour = undefined;
-            try {
-              if (requests_per_hour_string)
-                requests_per_hour = parseFloat(requests_per_hour_string);
-            } catch {
-              /* ignore */
-            }
 
             newEntry = await tx.registryEntry.create({
               include: {
@@ -555,6 +555,7 @@ export const updateCardanoAssets = async (
                 AgentPricing: {
                   include: { FixedPricing: { include: { Amounts: true } } },
                 },
+                ExampleOutput: true,
               },
               data: {
                 lastUptimeCheck: new Date(),
@@ -565,15 +566,20 @@ export const updateCardanoAssets = async (
                 description: metadataStringConvert(
                   parsedMetadata.data.description
                 ),
-                apiUrl: metadataStringConvert(parsedMetadata.data.api_url)!,
+                apiBaseUrl: metadataStringConvert(
+                  parsedMetadata.data.api_base_url
+                )!,
                 authorName: metadataStringConvert(
                   parsedMetadata.data.author?.name
                 ),
                 authorOrganization: metadataStringConvert(
                   parsedMetadata.data.author?.organization
                 ),
-                authorContact: metadataStringConvert(
-                  parsedMetadata.data.author?.contact
+                authorContactEmail: metadataStringConvert(
+                  parsedMetadata.data.author?.contact_email
+                ),
+                authorContactOther: metadataStringConvert(
+                  parsedMetadata.data.author?.contact_other
                 ),
                 image: metadataStringConvert(parsedMetadata.data.image)!,
                 privacyPolicy: metadataStringConvert(
@@ -585,8 +591,26 @@ export const updateCardanoAssets = async (
                 otherLegal: metadataStringConvert(
                   parsedMetadata.data.legal?.other
                 ),
-                requestsPerHour: requests_per_hour,
+                ExampleOutput:
+                  parsedMetadata.data.example_output &&
+                  parsedMetadata.data.example_output.length > 0
+                    ? {
+                        createMany: {
+                          data: parsedMetadata.data.example_output.map(
+                            (example) => ({
+                              name: example.name,
+                              mimeType: example.mime_type,
+                              url: Array.isArray(example.url)
+                                ? example.url[0]
+                                : example.url,
+                            })
+                          ),
+                        },
+                      }
+                    : undefined,
+                requestsPerHour: parsedMetadata.data.requests_per_hour,
                 tags: parsedMetadata.data.tags,
+                metadataVersion: DEFAULTS.METADATA_VERSION,
                 AgentPricing: {
                   create: {
                     pricingType: PricingType.Fixed,
@@ -614,6 +638,7 @@ export const updateCardanoAssets = async (
                     sellerVKey: resolvePaymentKeyHash(holderData[0].address),
                   },
                 },
+
                 RegistrySource: { connect: { id: source.id } },
                 Capability: {
                   connectOrCreate: {

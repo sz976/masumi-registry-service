@@ -42,7 +42,7 @@ async function checkAndVerifyRegistryEntry({
   registryEntry: {
     assetName: string;
     lastUptimeCheck: Date;
-    apiUrl: string;
+    apiBaseUrl: string;
     status: $Enums.Status;
     RegistrySource: { policyId: string; type: $Enums.RegistryEntryType };
   };
@@ -61,7 +61,7 @@ async function checkAndVerifyRegistryEntry({
   }
 
   return await checkAndVerifyEndpoint({
-    api_url: registryEntry.apiUrl,
+    api_url: registryEntry.apiBaseUrl,
     assetName: registryEntry.assetName,
     registry: registryEntry.RegistrySource,
   });
@@ -73,7 +73,7 @@ async function checkVerifyAndUpdateRegistryEntries({
 }: {
   registryEntries: (RegistryEntry & {
     RegistrySource: RegistrySource;
-    Capability: Capability;
+    Capability: Capability | null;
     tags: string[];
     AgentPricing: {
       pricingType: PricingType;

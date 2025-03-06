@@ -56,11 +56,12 @@ model RegistryEntry {
   updatedAt DateTime @updatedAt
 
   name               String
-  apiUrl             String
+  apiBaseUrl         String
   description        String?
   requestsPerHour    Float?
   authorName         String?
-  authorContact      String?
+  authorContactEmail String?
+  authorContactOther String?
   authorOrganization String?
 
   privacyPolicy     String?
@@ -76,16 +77,34 @@ model RegistryEntry {
   RegistrySource   RegistrySource @relation(fields: [registrySourceId], references: [id], onDelete: Cascade)
 
   PaymentIdentifier PaymentIdentifier[]
-  Capability        Capability          @relation(fields: [capabilitiesId], references: [id])
-  registrySourceId  String
-  assetName         String
-  capabilitiesId    String
-  AgentPricing      AgentPricing        @relation(fields: [agentPricingId], references: [id])
-  agentPricingId    String
+  Capability        Capability?         @relation(fields: [capabilitiesId], references: [id])
+  capabilitiesId    String?
+
+  registrySourceId String
+
+  assetName      String
+  AgentPricing   AgentPricing @relation(fields: [agentPricingId], references: [id])
+  agentPricingId String
+
+  ExampleOutput ExampleOutput[]
+
+  metadataVersion Int
 
   //we might not want to enforce this if we want an agent to be able to register again
   //@@unique([registrySourcesId, api_url])
   @@unique([assetName, registrySourceId])
+}
+
+model ExampleOutput {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  mimeType  String
+  url       String
+
+  RegistryEntry   RegistryEntry? @relation(fields: [registryEntryId], references: [id])
+  registryEntryId String?
 }
 
 model PaymentIdentifier {

@@ -39,11 +39,12 @@ export const queryRegistrySchemaOutput = z.object({
         policyId: z.string().nullable(),
         url: z.string().nullable(),
       }),
-      Capability: z.object({
-        name: z.string(),
-        version: z.string(),
-        description: z.string().nullable(),
-      }),
+      Capability: z
+        .object({
+          name: z.string().nullable(),
+          version: z.string().nullable(),
+        })
+        .nullable(),
       name: z.string(),
       description: z.string().nullable(),
       status: z.nativeEnum($Enums.Status),
@@ -51,10 +52,11 @@ export const queryRegistrySchemaOutput = z.object({
       lastUptimeCheck: ez.dateOut(),
       uptimeCount: z.number(),
       uptimeCheckCount: z.number(),
-      apiUrl: z.string(),
+      apiBaseUrl: z.string(),
       authorName: z.string().nullable(),
       authorOrganization: z.string().nullable(),
-      authorContact: z.string().nullable(),
+      authorContactEmail: z.string().nullable(),
+      authorContactOther: z.string().nullable(),
       image: z.string().nullable(),
       privacyPolicy: z.string().nullable(),
       termsAndCondition: z.string().nullable(),
@@ -73,6 +75,13 @@ export const queryRegistrySchemaOutput = z.object({
           ),
         }),
       }),
+      ExampleOutput: z.array(
+        z.object({
+          name: z.string(),
+          mimeType: z.string(),
+          url: z.string(),
+        })
+      ),
     })
   ),
 });
@@ -104,12 +113,12 @@ export const queryRegistryEntryPost = authenticatedEndpointFactory.build({
             FixedPricing: {
               Amounts:
                 entry.AgentPricing.FixedPricing?.Amounts.map((amount) => ({
-                  ...amount,
                   amount: amount.amount.toString(),
                   unit: amount.unit,
                 })) ?? [],
             },
           },
+          ExampleOutput: [],
         })),
     };
   },

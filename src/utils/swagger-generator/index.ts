@@ -120,7 +120,6 @@ export function generateOpenAPI() {
                     Capability: {
                       name: 'Example Capability',
                       version: '1.0.0',
-                      description: 'Example Capability description',
                     },
                     PaymentIdentifier: [
                       {
@@ -139,8 +138,17 @@ export function generateOpenAPI() {
                         ],
                       },
                     },
-                    authorContact: null,
+                    authorContactEmail: null,
+                    authorContactOther: null,
                     authorName: null,
+                    apiBaseUrl: 'https://example.com/api/',
+                    ExampleOutput: [
+                      {
+                        name: 'Example Output',
+                        mimeType: 'image/png',
+                        url: 'https://example.com/image.png',
+                      },
+                    ],
                     image: 'testimage.de',
                     otherLegal: null,
                     privacyPolicy: null,
@@ -151,7 +159,6 @@ export function generateOpenAPI() {
                     uptimeCheckCount: 10,
                     uptimeCount: 8,
                     lastUptimeCheck: new Date(0),
-                    apiUrl: 'https://localhost:3000/api/',
                     authorOrganization: 'MASUMI',
                     agentIdentifier:
                       '222222222222222222222222222222222222222222222222222222222222222222',
@@ -226,19 +233,17 @@ export function generateOpenAPI() {
                     entries: [
                       {
                         name: 'Example API',
-                        description: 'Example Capability description',
+                        description: 'Example API description',
                         status: 'Online',
                         RegistrySource: {
-                          id: 'unique-cuid-v2-auto-generated',
+                          id: cuid2.createId(),
+                          policyId: 'policy_id',
                           type: 'Web3CardanoV1',
-                          policyId:
-                            '0000000000000000000000000000000000000000000000000000000000000000',
-                          url: null,
+                          url: 'https://example.com/api/',
                         },
                         Capability: {
                           name: 'Example Capability',
                           version: '1.0.0',
-                          description: 'Example Capability description',
                         },
                         AgentPricing: {
                           pricingType: 'Fixed',
@@ -246,7 +251,6 @@ export function generateOpenAPI() {
                             Amounts: [{ amount: '100', unit: 'USDC' }],
                           },
                         },
-                        authorContact: null,
                         authorName: null,
                         image: 'testimage.de',
                         otherLegal: null,
@@ -258,11 +262,20 @@ export function generateOpenAPI() {
                         uptimeCheckCount: 10,
                         uptimeCount: 8,
                         lastUptimeCheck: new Date(0),
-                        apiUrl: 'https://localhost:3000/api/',
+                        apiBaseUrl: 'https://example.com/api/',
                         authorOrganization: 'MASUMI',
                         agentIdentifier:
                           '222222222222222222222222222222222222222222222222222222222222222222',
                         id: cuid2.createId(),
+                        authorContactEmail: null,
+                        authorContactOther: null,
+                        ExampleOutput: [
+                          {
+                            name: 'Example Output',
+                            mimeType: 'image/png',
+                            url: 'https://example.com/image.png',
+                          },
+                        ],
                       },
                     ],
                   },
