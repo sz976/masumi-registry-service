@@ -29,7 +29,9 @@ async function getRegistryEntry(
     include: {
       Capability: true,
       RegistrySource: true,
-      Prices: true,
+      AgentPricing: {
+        include: { FixedPricing: { include: { Amounts: true } } },
+      },
     },
     orderBy: [
       {

@@ -39,11 +39,12 @@ export const queryRegistrySchemaOutput = z.object({
         policyId: z.string().nullable(),
         url: z.string().nullable(),
       }),
-      Capability: z.object({
-        name: z.string(),
-        version: z.string(),
-        description: z.string().nullable(),
-      }),
+      Capability: z
+        .object({
+          name: z.string().nullable(),
+          version: z.string().nullable(),
+        })
+        .nullable(),
       name: z.string(),
       description: z.string().nullable(),
       status: z.nativeEnum($Enums.Status),
@@ -51,10 +52,11 @@ export const queryRegistrySchemaOutput = z.object({
       lastUptimeCheck: ez.dateOut(),
       uptimeCount: z.number(),
       uptimeCheckCount: z.number(),
-      apiUrl: z.string(),
+      apiBaseUrl: z.string(),
       authorName: z.string().nullable(),
       authorOrganization: z.string().nullable(),
-      authorContact: z.string().nullable(),
+      authorContactEmail: z.string().nullable(),
+      authorContactOther: z.string().nullable(),
       image: z.string().nullable(),
       privacyPolicy: z.string().nullable(),
       termsAndCondition: z.string().nullable(),
@@ -62,10 +64,22 @@ export const queryRegistrySchemaOutput = z.object({
       requestsPerHour: z.number().nullable(),
       tags: z.array(z.string()).nullable(),
       agentIdentifier: z.string(),
-      Prices: z.array(
+      AgentPricing: z.object({
+        pricingType: z.nativeEnum($Enums.PricingType),
+        FixedPricing: z.object({
+          Amounts: z.array(
+            z.object({
+              amount: z.string(),
+              unit: z.string(),
+            })
+          ),
+        }),
+      }),
+      ExampleOutput: z.array(
         z.object({
-          quantity: z.number(),
-          unit: z.string(),
+          name: z.string(),
+          mimeType: z.string(),
+          url: z.string(),
         })
       ),
     })
@@ -94,10 +108,17 @@ export const queryRegistryEntryPost = authenticatedEndpointFactory.build({
         .map((entry) => ({
           ...entry,
           agentIdentifier: entry.RegistrySource.policyId + entry.assetName,
-          Prices: entry.Prices.map((price) => ({
-            ...price,
-            quantity: Number(price.quantity),
-          })),
+          AgentPricing: {
+            pricingType: entry.AgentPricing.pricingType,
+            FixedPricing: {
+              Amounts:
+                entry.AgentPricing.FixedPricing?.Amounts.map((amount) => ({
+                  amount: amount.amount.toString(),
+                  unit: amount.unit,
+                })) ?? [],
+            },
+          },
+          ExampleOutput: [],
         })),
     };
   },

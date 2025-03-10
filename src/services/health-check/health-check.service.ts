@@ -3,6 +3,7 @@ import { logger } from '@/utils/logger';
 import {
   $Enums,
   Capability,
+  PricingType,
   RegistryEntry,
   RegistrySource,
 } from '@prisma/client';
@@ -41,7 +42,7 @@ async function checkAndVerifyRegistryEntry({
   registryEntry: {
     assetName: string;
     lastUptimeCheck: Date;
-    apiUrl: string;
+    apiBaseUrl: string;
     status: $Enums.Status;
     RegistrySource: { policyId: string; type: $Enums.RegistryEntryType };
   };
@@ -60,7 +61,7 @@ async function checkAndVerifyRegistryEntry({
   }
 
   return await checkAndVerifyEndpoint({
-    api_url: registryEntry.apiUrl,
+    api_url: registryEntry.apiBaseUrl,
     assetName: registryEntry.assetName,
     registry: registryEntry.RegistrySource,
   });
@@ -72,9 +73,14 @@ async function checkVerifyAndUpdateRegistryEntries({
 }: {
   registryEntries: (RegistryEntry & {
     RegistrySource: RegistrySource;
-    Capability: Capability;
+    Capability: Capability | null;
     tags: string[];
-    Prices: { quantity: bigint; unit: string }[];
+    AgentPricing: {
+      pricingType: PricingType;
+      FixedPricing: {
+        Amounts: { amount: bigint; unit: string }[];
+      } | null;
+    };
   })[];
   minHealthCheckDate: Date | undefined;
 }) {
@@ -96,33 +102,13 @@ async function checkVerifyAndUpdateRegistryEntries({
       return await prisma.registryEntry.update({
         where: { id: entry.id },
         //select all fields
-        select: {
-          Prices: true,
-          capabilitiesId: true,
-          createdAt: true,
+        include: {
+          AgentPricing: {
+            include: { FixedPricing: { include: { Amounts: true } } },
+          },
           Capability: true,
           RegistrySource: true,
           PaymentIdentifier: true,
-          apiUrl: true,
-          assetName: true,
-          name: true,
-          description: true,
-          authorName: true,
-          authorOrganization: true,
-          authorContact: true,
-          image: true,
-          otherLegal: true,
-          privacyPolicy: true,
-          requestsPerHour: true,
-          tags: true,
-          termsAndCondition: true,
-          id: true,
-          status: true,
-          uptimeCount: true,
-          uptimeCheckCount: true,
-          lastUptimeCheck: true,
-          registrySourceId: true,
-          updatedAt: true,
         },
         data: {
           status,

@@ -164,41 +164,62 @@
                                                 },
                                                 "Capability": {
                                                     "type": "object",
+                                                    "nullable": true,
                                                     "properties": {
                                                         "name": {
-                                                            "type": "string"
+                                                            "type": "string",
+                                                            "nullable": true
                                                         },
                                                         "version": {
-                                                            "type": "string"
-                                                        },
-                                                        "description": {
                                                             "type": "string",
                                                             "nullable": true
                                                         }
                                                     },
                                                     "required": [
                                                         "name",
-                                                        "version",
-                                                        "description"
+                                                        "version"
                                                     ]
                                                 },
-                                                "Prices": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "quantity": {
-                                                                "type": "number"
-                                                            },
-                                                            "unit": {
-                                                                "type": "string"
-                                                            }
+                                                "AgentPricing": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "pricingType": {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "Fixed"
+                                                            ]
                                                         },
-                                                        "required": [
-                                                            "quantity",
-                                                            "unit"
-                                                        ]
-                                                    }
+                                                        "FixedPricing": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "Amounts": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "amount": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "unit": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "amount",
+                                                                            "unit"
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "Amounts"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "pricingType",
+                                                        "FixedPricing"
+                                                    ]
                                                 },
                                                 "name": {
                                                     "type": "string"
@@ -228,7 +249,7 @@
                                                 "uptimeCheckCount": {
                                                     "type": "number"
                                                 },
-                                                "apiUrl": {
+                                                "apiBaseUrl": {
                                                     "type": "string"
                                                 },
                                                 "authorName": {
@@ -239,7 +260,11 @@
                                                     "type": "string",
                                                     "nullable": true
                                                 },
-                                                "authorContact": {
+                                                "authorContactEmail": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "authorContactOther": {
                                                     "type": "string",
                                                     "nullable": true
                                                 },
@@ -272,13 +297,35 @@
                                                 },
                                                 "agentIdentifier": {
                                                     "type": "string"
+                                                },
+                                                "ExampleOutput": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "name": {
+                                                                "type": "string"
+                                                            },
+                                                            "mimeType": {
+                                                                "type": "string"
+                                                            },
+                                                            "url": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "name",
+                                                            "mimeType",
+                                                            "url"
+                                                        ]
+                                                    }
                                                 }
                                             },
                                             "required": [
                                                 "RegistrySource",
                                                 "PaymentIdentifier",
                                                 "Capability",
-                                                "Prices",
+                                                "AgentPricing",
                                                 "name",
                                                 "description",
                                                 "status",
@@ -286,17 +333,19 @@
                                                 "lastUptimeCheck",
                                                 "uptimeCount",
                                                 "uptimeCheckCount",
-                                                "apiUrl",
+                                                "apiBaseUrl",
                                                 "authorName",
                                                 "authorOrganization",
-                                                "authorContact",
+                                                "authorContactEmail",
+                                                "authorContactOther",
                                                 "image",
                                                 "privacyPolicy",
                                                 "termsAndCondition",
                                                 "otherLegal",
                                                 "requestsPerHour",
                                                 "tags",
-                                                "agentIdentifier"
+                                                "agentIdentifier",
+                                                "ExampleOutput"
                                             ]
                                         },
                                         "status": {
@@ -319,8 +368,7 @@
                                             },
                                             "Capability": {
                                                 "name": "Example Capability",
-                                                "version": "1.0.0",
-                                                "description": "Example Capability description"
+                                                "version": "1.0.0"
                                             },
                                             "PaymentIdentifier": [
                                                 {
@@ -329,18 +377,32 @@
                                                     "sellerVKey": "sellerVKey"
                                                 }
                                             ],
-                                            "Prices": [
+                                            "AgentPricing": {
+                                                "pricingType": "Fixed",
+                                                "FixedPricing": {
+                                                    "Amounts": [
+                                                        {
+                                                            "unit": "USDC",
+                                                            "amount": "100"
+                                                        },
+                                                        {
+                                                            "unit": "USDM",
+                                                            "amount": "15000"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "authorContactEmail": null,
+                                            "authorContactOther": null,
+                                            "authorName": null,
+                                            "apiBaseUrl": "https://example.com/api/",
+                                            "ExampleOutput": [
                                                 {
-                                                    "unit": "USDC",
-                                                    "quantity": 100
-                                                },
-                                                {
-                                                    "unit": "USDM",
-                                                    "quantity": 15000
+                                                    "name": "Example Output",
+                                                    "mimeType": "image/png",
+                                                    "url": "https://example.com/image.png"
                                                 }
                                             ],
-                                            "authorContact": null,
-                                            "authorName": null,
                                             "image": "testimage.de",
                                             "otherLegal": null,
                                             "privacyPolicy": null,
@@ -350,10 +412,9 @@
                                             "uptimeCheckCount": 10,
                                             "uptimeCount": 8,
                                             "lastUptimeCheck": "1970-01-01T00:00:00.000Z",
-                                            "apiUrl": "https://localhost:3000/api/",
                                             "authorOrganization": "MASUMI",
                                             "agentIdentifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                            "id": "q83pmrbzbw2lm5x98zdhp5l0"
+                                            "id": "osmoks3fupwpbqwmdhglmnjk"
                                         },
                                         "status": "success"
                                     }
@@ -581,22 +642,20 @@
                                                             },
                                                             "Capability": {
                                                                 "type": "object",
+                                                                "nullable": true,
                                                                 "properties": {
                                                                     "name": {
-                                                                        "type": "string"
+                                                                        "type": "string",
+                                                                        "nullable": true
                                                                     },
                                                                     "version": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "description": {
                                                                         "type": "string",
                                                                         "nullable": true
                                                                     }
                                                                 },
                                                                 "required": [
                                                                     "name",
-                                                                    "version",
-                                                                    "description"
+                                                                    "version"
                                                                 ]
                                                             },
                                                             "name": {
@@ -627,7 +686,7 @@
                                                             "uptimeCheckCount": {
                                                                 "type": "number"
                                                             },
-                                                            "apiUrl": {
+                                                            "apiBaseUrl": {
                                                                 "type": "string"
                                                             },
                                                             "authorName": {
@@ -638,7 +697,11 @@
                                                                 "type": "string",
                                                                 "nullable": true
                                                             },
-                                                            "authorContact": {
+                                                            "authorContactEmail": {
+                                                                "type": "string",
+                                                                "nullable": true
+                                                            },
+                                                            "authorContactOther": {
                                                                 "type": "string",
                                                                 "nullable": true
                                                             },
@@ -672,21 +735,66 @@
                                                             "agentIdentifier": {
                                                                 "type": "string"
                                                             },
-                                                            "Prices": {
+                                                            "AgentPricing": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "pricingType": {
+                                                                        "type": "string",
+                                                                        "enum": [
+                                                                            "Fixed"
+                                                                        ]
+                                                                    },
+                                                                    "FixedPricing": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "Amounts": {
+                                                                                "type": "array",
+                                                                                "items": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "amount": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "unit": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "amount",
+                                                                                        "unit"
+                                                                                    ]
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "Amounts"
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "pricingType",
+                                                                    "FixedPricing"
+                                                                ]
+                                                            },
+                                                            "ExampleOutput": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "type": "object",
                                                                     "properties": {
-                                                                        "quantity": {
-                                                                            "type": "number"
+                                                                        "name": {
+                                                                            "type": "string"
                                                                         },
-                                                                        "unit": {
+                                                                        "mimeType": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "url": {
                                                                             "type": "string"
                                                                         }
                                                                     },
                                                                     "required": [
-                                                                        "quantity",
-                                                                        "unit"
+                                                                        "name",
+                                                                        "mimeType",
+                                                                        "url"
                                                                     ]
                                                                 }
                                                             }
@@ -701,10 +809,11 @@
                                                             "lastUptimeCheck",
                                                             "uptimeCount",
                                                             "uptimeCheckCount",
-                                                            "apiUrl",
+                                                            "apiBaseUrl",
                                                             "authorName",
                                                             "authorOrganization",
-                                                            "authorContact",
+                                                            "authorContactEmail",
+                                                            "authorContactOther",
                                                             "image",
                                                             "privacyPolicy",
                                                             "termsAndCondition",
@@ -712,7 +821,8 @@
                                                             "requestsPerHour",
                                                             "tags",
                                                             "agentIdentifier",
-                                                            "Prices"
+                                                            "AgentPricing",
+                                                            "ExampleOutput"
                                                         ]
                                                     }
                                                 }
@@ -734,26 +844,29 @@
                                             "entries": [
                                                 {
                                                     "name": "Example API",
-                                                    "description": "Example Capability description",
+                                                    "description": "Example API description",
                                                     "status": "Online",
                                                     "RegistrySource": {
-                                                        "id": "unique-cuid-v2-auto-generated",
+                                                        "id": "c8dqgndedbczjpedr0b22pu9",
+                                                        "policyId": "policy_id",
                                                         "type": "Web3CardanoV1",
-                                                        "policyId": "0000000000000000000000000000000000000000000000000000000000000000",
-                                                        "url": null
+                                                        "url": "https://example.com/api/"
                                                     },
                                                     "Capability": {
                                                         "name": "Example Capability",
-                                                        "version": "1.0.0",
-                                                        "description": "Example Capability description"
+                                                        "version": "1.0.0"
                                                     },
-                                                    "Prices": [
-                                                        {
-                                                            "unit": "USDC",
-                                                            "quantity": 100
+                                                    "AgentPricing": {
+                                                        "pricingType": "Fixed",
+                                                        "FixedPricing": {
+                                                            "Amounts": [
+                                                                {
+                                                                    "amount": "100",
+                                                                    "unit": "USDC"
+                                                                }
+                                                            ]
                                                         }
-                                                    ],
-                                                    "authorContact": null,
+                                                    },
                                                     "authorName": null,
                                                     "image": "testimage.de",
                                                     "otherLegal": null,
@@ -764,10 +877,19 @@
                                                     "uptimeCheckCount": 10,
                                                     "uptimeCount": 8,
                                                     "lastUptimeCheck": "1970-01-01T00:00:00.000Z",
-                                                    "apiUrl": "https://localhost:3000/api/",
+                                                    "apiBaseUrl": "https://example.com/api/",
                                                     "authorOrganization": "MASUMI",
                                                     "agentIdentifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                                    "id": "psttbc923i1zxsnmiq73uler"
+                                                    "id": "no6huqewpawqn0j7g9bu3djt",
+                                                    "authorContactEmail": null,
+                                                    "authorContactOther": null,
+                                                    "ExampleOutput": [
+                                                        {
+                                                            "name": "Example Output",
+                                                            "mimeType": "image/png",
+                                                            "url": "https://example.com/image.png"
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         },
