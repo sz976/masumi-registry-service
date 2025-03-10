@@ -9,7 +9,6 @@ import {
   queryRegistrySchemaInput,
   queryRegistrySchemaOutput,
 } from '@/routes/api/registry-entry';
-import cuid2 from '@paralleldrive/cuid2';
 import {
   capabilitySchemaInput,
   capabilitySchemaOutput,
@@ -162,7 +161,7 @@ export function generateOpenAPI() {
                     authorOrganization: 'MASUMI',
                     agentIdentifier:
                       '222222222222222222222222222222222222222222222222222222222222222222',
-                    id: cuid2.createId(),
+                    id: 'unique_cuid_v2',
                   },
                   status: 'success',
                 },
@@ -236,7 +235,7 @@ export function generateOpenAPI() {
                         description: 'Example API description',
                         status: 'Online',
                         RegistrySource: {
-                          id: cuid2.createId(),
+                          id: 'unique_cuid_v2',
                           policyId: 'policy_id',
                           type: 'Web3CardanoV1',
                           url: 'https://example.com/api/',
@@ -266,7 +265,7 @@ export function generateOpenAPI() {
                         authorOrganization: 'MASUMI',
                         agentIdentifier:
                           '222222222222222222222222222222222222222222222222222222222222222222',
-                        id: cuid2.createId(),
+                        id: 'unique_cuid_v2',
                         authorContactEmail: null,
                         authorContactOther: null,
                         ExampleOutput: [
