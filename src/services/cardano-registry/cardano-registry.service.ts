@@ -1,4 +1,4 @@
-import { $Enums } from '@prisma/client';
+import { $Enums, PricingType } from '@prisma/client';
 import { Sema } from 'async-sema';
 import { prisma } from '@/utils/db';
 import { z } from 'zod';
@@ -8,6 +8,7 @@ import { logger } from '@/utils/logger';
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
 import { resolvePaymentKeyHash } from '@meshsdk/core';
 import cuid2 from '@paralleldrive/cuid2';
+import { DEFAULTS } from '@/utils/config';
 
 const metadataSchema = z.object({
   name: z
@@ -15,23 +16,43 @@ const metadataSchema = z.object({
     .min(1)
     .or(z.array(z.string().min(1))),
   description: z.string().or(z.array(z.string())).optional(),
-  api_url: z
+  api_base_url: z
     .string()
     .min(1)
-    .url()
     .or(z.array(z.string().min(1))),
-  example_output: z.string().or(z.array(z.string())).optional(),
-  capability: z.object({
-    name: z.string().or(z.array(z.string())),
-    version: z.string().or(z.array(z.string())),
-  }),
-  requests_per_hour: z.string().or(z.array(z.string())).optional(),
+  example_output: z
+    .array(
+      z.object({
+        name: z
+          .string()
+          .max(60)
+          .or(z.array(z.string().max(60)).min(1).max(1)),
+        mime_type: z
+          .string()
+          .min(1)
+          .max(60)
+          .or(z.array(z.string().min(1).max(60)).min(1).max(1)),
+        url: z.string().or(z.array(z.string())),
+      })
+    )
+    .optional(),
+  capability: z
+    .object({
+      name: z.string().or(z.array(z.string())),
+      version: z
+        .string()
+        .max(60)
+        .or(z.array(z.string().max(60)).min(1).max(1)),
+    })
+    .optional(),
+  requests_per_hour: z.number({ coerce: true }).int().min(0).optional(),
   author: z.object({
     name: z
       .string()
       .min(1)
       .or(z.array(z.string().min(1))),
-    contact: z.string().or(z.array(z.string())).optional(),
+    contact_email: z.string().or(z.array(z.string())).optional(),
+    contact_other: z.string().or(z.array(z.string())).optional(),
     organization: z.string().or(z.array(z.string())).optional(),
   }),
   legal: z
@@ -42,20 +63,25 @@ const metadataSchema = z.object({
     })
     .optional(),
   tags: z.array(z.string().min(1)).min(1),
-  pricing: z
-    .array(
-      z.object({
-        quantity: z.number({ coerce: true }).int().min(1),
-        unit: z
-          .string()
-          .min(1)
-          .or(z.array(z.string().min(1))),
-      })
-    )
-    .min(1),
+  agentPricing: z.object({
+    pricingType: z.enum([PricingType.Fixed]),
+    fixedPricing: z
+      .array(
+        z.object({
+          amount: z.number({ coerce: true }).int().min(1),
+          unit: z
+            .string()
+            .min(1)
+            .or(z.array(z.string().min(1))),
+        })
+      )
+      .min(1)
+      .max(25),
+  }),
   image: z.string().or(z.array(z.string())),
   metadata_version: z.number({ coerce: true }).int().min(1).max(1),
 });
+
 const deleteMutex = new Sema(1);
 export async function updateDeregisteredCardanoRegistryEntries() {
   const sources = await prisma.registrySource.findMany({
@@ -335,11 +361,17 @@ export const updateCardanoAssets = async (
                 where: { name_version: { name: '', version: '' } },
               },
             },
+            AgentPricing: {
+              create: {
+                pricingType: PricingType.Fixed,
+              },
+            },
+            metadataVersion: -1,
             assetName: assetName,
             RegistrySource: { connect: { id: source.id } },
             name: '?',
             description: '?',
-            apiUrl: '?_' + cuid2.createId(),
+            apiBaseUrl: '?_' + cuid2.createId(),
             image: '?',
             lastUptimeCheck: new Date(),
           },
@@ -366,7 +398,7 @@ export const updateCardanoAssets = async (
       }
 
       //check endpoint
-      const endpoint = metadataStringConvert(parsedMetadata.data.api_url)!;
+      const endpoint = metadataStringConvert(parsedMetadata.data.api_base_url)!;
       const isAvailable = await healthCheckService.checkAndVerifyEndpoint({
         api_url: endpoint,
         assetName: asset.asset,
@@ -378,21 +410,7 @@ export const updateCardanoAssets = async (
 
       return await prisma.$transaction(
         async (tx) => {
-          /*We do not need to ensure uniqueness of the api url as we require each agent to send its registry identifier, when requesting a payment 
-                      
-                      const duplicateEntry = await tx.registryEntry.findFirst({
-                          where: {
-                              registrySourcesId: source.id,
-                              api_url: metadataStringConvert(parsedMetadata.data.api_url)!,
-                              identifier: { not: asset.asset }
-                          }
-                      })
-                      if (duplicateEntry) {
-                          //TODO this can be removed if we want to allow re registration of the same agent (url)
-                          //WARNING this also only works if the api url does not accept any query parameters or similar
-                          logger.info("Someone tried to duplicate an entry for the same api url", { duplicateEntry: duplicateEntry })
-                          return null;
-                      }*/
+          /*  We do not need to ensure uniqueness of the api url as we require each agent to send its registry identifier, when requesting a payment  */
 
           const existingEntry = await tx.registryEntry.findUnique({
             where: {
@@ -407,27 +425,21 @@ export const updateCardanoAssets = async (
           if (existingEntry) {
             //TODO this can be ignored unless we allow updates to the registry entry
             const capability_name = metadataStringConvert(
-              parsedMetadata.data.capability.name
+              parsedMetadata.data.capability?.name
             )!;
             const capability_version = metadataStringConvert(
-              parsedMetadata.data.capability.version
+              parsedMetadata.data.capability?.version
             )!;
-            const requests_per_hour_string = metadataStringConvert(
-              parsedMetadata.data.requests_per_hour
-            );
-            let requests_per_hour = undefined;
-            try {
-              if (requests_per_hour_string)
-                requests_per_hour = parseFloat(requests_per_hour_string);
-            } catch {
-              /* ignore */
-            }
+
             newEntry = await tx.registryEntry.update({
               include: {
                 RegistrySource: true,
                 PaymentIdentifier: true,
                 Capability: true,
-                Prices: true,
+                AgentPricing: {
+                  include: { FixedPricing: { include: { Amounts: true } } },
+                },
+                ExampleOutput: true,
               },
 
               where: {
@@ -447,15 +459,20 @@ export const updateCardanoAssets = async (
                 description: metadataStringConvert(
                   parsedMetadata.data.description
                 ),
-                apiUrl: metadataStringConvert(parsedMetadata.data.api_url)!,
+                apiBaseUrl: metadataStringConvert(
+                  parsedMetadata.data.api_base_url
+                )!,
                 authorName: metadataStringConvert(
                   parsedMetadata.data.author?.name
                 ),
                 authorOrganization: metadataStringConvert(
                   parsedMetadata.data.author?.organization
                 ),
-                authorContact: metadataStringConvert(
-                  parsedMetadata.data.author?.contact
+                authorContactEmail: metadataStringConvert(
+                  parsedMetadata.data.author?.contact_email
+                ),
+                authorContactOther: metadataStringConvert(
+                  parsedMetadata.data.author?.contact_other
                 ),
                 image: metadataStringConvert(parsedMetadata.data.image),
                 privacyPolicy: metadataStringConvert(
@@ -467,7 +484,7 @@ export const updateCardanoAssets = async (
                 otherLegal: metadataStringConvert(
                   parsedMetadata.data.legal?.other
                 ),
-                requestsPerHour: requests_per_hour,
+                requestsPerHour: parsedMetadata.data.requests_per_hour,
                 tags: parsedMetadata.data.tags
                   ? {
                       push: parsedMetadata.data.tags.map(
@@ -475,20 +492,24 @@ export const updateCardanoAssets = async (
                       ),
                     }
                   : undefined,
-                Prices: {
-                  connectOrCreate: parsedMetadata.data.pricing.map((price) => ({
-                    create: {
-                      quantity: price.quantity,
-                      unit: metadataStringConvert(price.unit)!,
-                    },
-                    where: {
-                      quantity_unit_registryEntryId: {
-                        quantity: price.quantity,
-                        unit: metadataStringConvert(price.unit)!,
-                        registryEntryId: existingEntry.id,
+                AgentPricing: {
+                  create: {
+                    pricingType: PricingType.Fixed,
+                    FixedPricing: {
+                      create: {
+                        Amounts: {
+                          createMany: {
+                            data: parsedMetadata.data.agentPricing.fixedPricing.map(
+                              (price) => ({
+                                amount: price.amount,
+                                unit: metadataStringConvert(price.unit)!,
+                              })
+                            ),
+                          },
+                        },
                       },
                     },
-                  })),
+                  },
                 },
                 PaymentIdentifier: {
                   upsert: {
@@ -530,28 +551,21 @@ export const updateCardanoAssets = async (
             });
           } else {
             const capability_name = metadataStringConvert(
-              parsedMetadata.data.capability.name
+              parsedMetadata.data.capability?.name
             )!;
             const capability_version = metadataStringConvert(
-              parsedMetadata.data.capability.version
+              parsedMetadata.data.capability?.version
             )!;
-            const requests_per_hour_string = metadataStringConvert(
-              parsedMetadata.data.requests_per_hour
-            );
-            let requests_per_hour = undefined;
-            try {
-              if (requests_per_hour_string)
-                requests_per_hour = parseFloat(requests_per_hour_string);
-            } catch {
-              /* ignore */
-            }
 
             newEntry = await tx.registryEntry.create({
               include: {
                 RegistrySource: true,
                 PaymentIdentifier: true,
                 Capability: true,
-                Prices: true,
+                AgentPricing: {
+                  include: { FixedPricing: { include: { Amounts: true } } },
+                },
+                ExampleOutput: true,
               },
               data: {
                 lastUptimeCheck: new Date(),
@@ -562,15 +576,20 @@ export const updateCardanoAssets = async (
                 description: metadataStringConvert(
                   parsedMetadata.data.description
                 ),
-                apiUrl: metadataStringConvert(parsedMetadata.data.api_url)!,
+                apiBaseUrl: metadataStringConvert(
+                  parsedMetadata.data.api_base_url
+                )!,
                 authorName: metadataStringConvert(
                   parsedMetadata.data.author?.name
                 ),
                 authorOrganization: metadataStringConvert(
                   parsedMetadata.data.author?.organization
                 ),
-                authorContact: metadataStringConvert(
-                  parsedMetadata.data.author?.contact
+                authorContactEmail: metadataStringConvert(
+                  parsedMetadata.data.author?.contact_email
+                ),
+                authorContactOther: metadataStringConvert(
+                  parsedMetadata.data.author?.contact_other
                 ),
                 image: metadataStringConvert(parsedMetadata.data.image)!,
                 privacyPolicy: metadataStringConvert(
@@ -582,13 +601,44 @@ export const updateCardanoAssets = async (
                 otherLegal: metadataStringConvert(
                   parsedMetadata.data.legal?.other
                 ),
-                requestsPerHour: requests_per_hour,
+                ExampleOutput:
+                  parsedMetadata.data.example_output &&
+                  parsedMetadata.data.example_output.length > 0
+                    ? {
+                        createMany: {
+                          data: parsedMetadata.data.example_output.map(
+                            (example) => ({
+                              name: metadataStringConvert(example.name)!,
+                              mimeType: metadataStringConvert(
+                                example.mime_type
+                              )!,
+                              url: metadataStringConvert(example.url)!,
+                            })
+                          ),
+                        },
+                      }
+                    : undefined,
+                requestsPerHour: parsedMetadata.data.requests_per_hour,
                 tags: parsedMetadata.data.tags,
-                Prices: {
-                  create: parsedMetadata.data.pricing.map((price) => ({
-                    quantity: price.quantity,
-                    unit: metadataStringConvert(price.unit)!,
-                  })),
+                metadataVersion: DEFAULTS.METADATA_VERSION,
+                AgentPricing: {
+                  create: {
+                    pricingType: PricingType.Fixed,
+                    FixedPricing: {
+                      create: {
+                        Amounts: {
+                          createMany: {
+                            data: parsedMetadata.data.agentPricing.fixedPricing.map(
+                              (price) => ({
+                                amount: price.amount,
+                                unit: metadataStringConvert(price.unit)!,
+                              })
+                            ),
+                          },
+                        },
+                      },
+                    },
+                  },
                 },
                 assetName: assetName,
                 PaymentIdentifier: {
@@ -598,6 +648,7 @@ export const updateCardanoAssets = async (
                     sellerVKey: resolvePaymentKeyHash(holderData[0].address),
                   },
                 },
+
                 RegistrySource: { connect: { id: source.id } },
                 Capability: {
                   connectOrCreate: {

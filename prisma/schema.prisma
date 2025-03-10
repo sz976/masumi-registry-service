@@ -56,11 +56,12 @@ model RegistryEntry {
   updatedAt DateTime @updatedAt
 
   name               String
-  apiUrl             String
+  apiBaseUrl         String
   description        String?
   requestsPerHour    Float?
   authorName         String?
-  authorContact      String?
+  authorContactEmail String?
+  authorContactOther String?
   authorOrganization String?
 
   privacyPolicy     String?
@@ -76,15 +77,34 @@ model RegistryEntry {
   RegistrySource   RegistrySource @relation(fields: [registrySourceId], references: [id], onDelete: Cascade)
 
   PaymentIdentifier PaymentIdentifier[]
-  Capability        Capability          @relation(fields: [capabilitiesId], references: [id])
-  registrySourceId  String
-  assetName         String
-  capabilitiesId    String
-  Prices            Price[]
+  Capability        Capability?         @relation(fields: [capabilitiesId], references: [id])
+  capabilitiesId    String?
+
+  registrySourceId String
+
+  assetName      String
+  AgentPricing   AgentPricing @relation(fields: [agentPricingId], references: [id])
+  agentPricingId String
+
+  ExampleOutput ExampleOutput[]
+
+  metadataVersion Int
 
   //we might not want to enforce this if we want an agent to be able to register again
   //@@unique([registrySourcesId, api_url])
   @@unique([assetName, registrySourceId])
+}
+
+model ExampleOutput {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  mimeType  String
+  url       String
+
+  RegistryEntry   RegistryEntry? @relation(fields: [registryEntryId], references: [id])
+  registryEntryId String?
 }
 
 model PaymentIdentifier {
@@ -100,19 +120,39 @@ model PaymentIdentifier {
   @@unique([registryEntryId, paymentType])
 }
 
-model Price {
-  id              String         @id @default(cuid())
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  quantity        BigInt
-  unit            String
-  RegistryEntry   RegistryEntry? @relation(fields: [registryEntryId], references: [id])
-  registryEntryId String?
+model AgentPricing {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@unique([quantity, unit, registryEntryId])
+  pricingType         PricingType
+  FixedPricing        AgentFixedPricing? @relation(fields: [agentFixedPricingId], references: [id])
+  agentFixedPricingId String?            @unique
+  RegistryEntry       RegistryEntry[]
 }
 
-//TODO maybe add a rating system via payment amounts (success and failure)
+enum PricingType {
+  Fixed
+}
+
+model AgentFixedPricing {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  AgentPricing AgentPricing?
+  Amounts      UnitValue[]
+}
+
+model UnitValue {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  amount              BigInt
+  unit                String
+  AgentFixedPricing   AgentFixedPricing? @relation(fields: [agentFixedPricingId], references: [id])
+  agentFixedPricingId String?
+}
 
 enum PaymentType {
   Web3CardanoV1

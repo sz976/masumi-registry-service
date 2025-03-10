@@ -32,8 +32,11 @@ async function getPaymentInformation(
     },
     include: {
       PaymentIdentifier: true,
-      Prices: true,
+      AgentPricing: {
+        include: { FixedPricing: { include: { Amounts: true } } },
+      },
       Capability: true,
+      ExampleOutput: true,
       RegistrySource: {
         include: {
           RegistrySourceConfig: true,
