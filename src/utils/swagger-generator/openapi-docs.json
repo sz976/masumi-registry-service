@@ -414,7 +414,7 @@
                                             "lastUptimeCheck": "1970-01-01T00:00:00.000Z",
                                             "authorOrganization": "MASUMI",
                                             "agentIdentifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                            "id": "osmoks3fupwpbqwmdhglmnjk"
+                                            "id": "nwh3do3scb34ye27uwyfbubs"
                                         },
                                         "status": "success"
                                     }
@@ -847,7 +847,7 @@
                                                     "description": "Example API description",
                                                     "status": "Online",
                                                     "RegistrySource": {
-                                                        "id": "c8dqgndedbczjpedr0b22pu9",
+                                                        "id": "szzeemfjqc46zszn7ahqh11s",
                                                         "policyId": "policy_id",
                                                         "type": "Web3CardanoV1",
                                                         "url": "https://example.com/api/"
@@ -880,7 +880,7 @@
                                                     "apiBaseUrl": "https://example.com/api/",
                                                     "authorOrganization": "MASUMI",
                                                     "agentIdentifier": "222222222222222222222222222222222222222222222222222222222222222222",
-                                                    "id": "no6huqewpawqn0j7g9bu3djt",
+                                                    "id": "uhqzhbsedum13l8299q3295g",
                                                     "authorContactEmail": null,
                                                     "authorContactOther": null,
                                                     "ExampleOutput": [
