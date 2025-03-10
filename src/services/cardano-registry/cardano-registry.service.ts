@@ -23,8 +23,15 @@ const metadataSchema = z.object({
   example_output: z
     .array(
       z.object({
-        name: z.string().max(60),
-        mime_type: z.string().min(1).max(60),
+        name: z
+          .string()
+          .max(60)
+          .or(z.array(z.string().max(60)).min(1).max(1)),
+        mime_type: z
+          .string()
+          .min(1)
+          .max(60)
+          .or(z.array(z.string().min(1).max(60)).min(1).max(1)),
         url: z.string().or(z.array(z.string())),
       })
     )
@@ -32,7 +39,10 @@ const metadataSchema = z.object({
   capability: z
     .object({
       name: z.string().or(z.array(z.string())),
-      version: z.string().max(60),
+      version: z
+        .string()
+        .max(60)
+        .or(z.array(z.string().max(60)).min(1).max(1)),
     })
     .optional(),
   requests_per_hour: z.number({ coerce: true }).int().min(0).optional(),
@@ -53,9 +63,9 @@ const metadataSchema = z.object({
     })
     .optional(),
   tags: z.array(z.string().min(1)).min(1),
-  AgentPricing: z.object({
+  agentPricing: z.object({
     pricingType: z.enum([PricingType.Fixed]),
-    Pricing: z
+    fixedPricing: z
       .array(
         z.object({
           amount: z.number({ coerce: true }).int().min(1),
@@ -489,7 +499,7 @@ export const updateCardanoAssets = async (
                       create: {
                         Amounts: {
                           createMany: {
-                            data: parsedMetadata.data.AgentPricing.Pricing.map(
+                            data: parsedMetadata.data.agentPricing.fixedPricing.map(
                               (price) => ({
                                 amount: price.amount,
                                 unit: metadataStringConvert(price.unit)!,
@@ -598,11 +608,11 @@ export const updateCardanoAssets = async (
                         createMany: {
                           data: parsedMetadata.data.example_output.map(
                             (example) => ({
-                              name: example.name,
-                              mimeType: example.mime_type,
-                              url: Array.isArray(example.url)
-                                ? example.url[0]
-                                : example.url,
+                              name: metadataStringConvert(example.name)!,
+                              mimeType: metadataStringConvert(
+                                example.mime_type
+                              )!,
+                              url: metadataStringConvert(example.url)!,
                             })
                           ),
                         },
@@ -618,7 +628,7 @@ export const updateCardanoAssets = async (
                       create: {
                         Amounts: {
                           createMany: {
-                            data: parsedMetadata.data.AgentPricing.Pricing.map(
+                            data: parsedMetadata.data.agentPricing.fixedPricing.map(
                               (price) => ({
                                 amount: price.amount,
                                 unit: metadataStringConvert(price.unit)!,

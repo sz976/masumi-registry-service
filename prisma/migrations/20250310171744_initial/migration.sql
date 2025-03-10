@@ -55,11 +55,12 @@ CREATE TABLE "RegistryEntry" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
-    "apiUrl" TEXT NOT NULL,
+    "apiBaseUrl" TEXT NOT NULL,
     "description" TEXT,
     "requestsPerHour" DOUBLE PRECISION,
     "authorName" TEXT,
-    "authorContact" TEXT,
+    "authorContactEmail" TEXT,
+    "authorContactOther" TEXT,
     "authorOrganization" TEXT,
     "privacyPolicy" TEXT,
     "termsAndCondition" TEXT,
@@ -70,12 +71,26 @@ CREATE TABLE "RegistryEntry" (
     "uptimeCount" INTEGER NOT NULL DEFAULT 0,
     "uptimeCheckCount" INTEGER NOT NULL DEFAULT 0,
     "status" "Status" NOT NULL,
+    "capabilitiesId" TEXT,
     "registrySourceId" TEXT NOT NULL,
     "assetName" TEXT NOT NULL,
-    "capabilitiesId" TEXT NOT NULL,
     "agentPricingId" TEXT NOT NULL,
+    "metadataVersion" INTEGER NOT NULL,
 
     CONSTRAINT "RegistryEntry_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ExampleOutput" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "name" TEXT NOT NULL,
+    "mimeType" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "registryEntryId" TEXT,
+
+    CONSTRAINT "ExampleOutput_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -200,10 +215,13 @@ ALTER TABLE "UsageEntry" ADD CONSTRAINT "UsageEntry_apiKeyId_fkey" FOREIGN KEY (
 ALTER TABLE "RegistryEntry" ADD CONSTRAINT "RegistryEntry_registrySourceId_fkey" FOREIGN KEY ("registrySourceId") REFERENCES "RegistrySource"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RegistryEntry" ADD CONSTRAINT "RegistryEntry_capabilitiesId_fkey" FOREIGN KEY ("capabilitiesId") REFERENCES "Capability"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "RegistryEntry" ADD CONSTRAINT "RegistryEntry_capabilitiesId_fkey" FOREIGN KEY ("capabilitiesId") REFERENCES "Capability"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "RegistryEntry" ADD CONSTRAINT "RegistryEntry_agentPricingId_fkey" FOREIGN KEY ("agentPricingId") REFERENCES "AgentPricing"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ExampleOutput" ADD CONSTRAINT "ExampleOutput_registryEntryId_fkey" FOREIGN KEY ("registryEntryId") REFERENCES "RegistryEntry"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PaymentIdentifier" ADD CONSTRAINT "PaymentIdentifier_registryEntryId_fkey" FOREIGN KEY ("registryEntryId") REFERENCES "RegistryEntry"("id") ON DELETE SET NULL ON UPDATE CASCADE;
