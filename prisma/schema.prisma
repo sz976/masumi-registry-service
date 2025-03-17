@@ -58,7 +58,6 @@ model RegistryEntry {
   name               String
   apiBaseUrl         String
   description        String?
-  requestsPerHour    Float?
   authorName         String?
   authorContactEmail String?
   authorContactOther String?

@@ -484,7 +484,6 @@ export const updateCardanoAssets = async (
                 otherLegal: metadataStringConvert(
                   parsedMetadata.data.legal?.other
                 ),
-                requestsPerHour: parsedMetadata.data.requests_per_hour,
                 tags: parsedMetadata.data.tags
                   ? {
                       push: parsedMetadata.data.tags.map(
@@ -618,7 +617,6 @@ export const updateCardanoAssets = async (
                         },
                       }
                     : undefined,
-                requestsPerHour: parsedMetadata.data.requests_per_hour,
                 tags: parsedMetadata.data.tags,
                 metadataVersion: DEFAULTS.METADATA_VERSION,
                 AgentPricing: {

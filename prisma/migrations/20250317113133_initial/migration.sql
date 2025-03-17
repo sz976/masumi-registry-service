@@ -57,7 +57,6 @@ CREATE TABLE "RegistryEntry" (
     "name" TEXT NOT NULL,
     "apiBaseUrl" TEXT NOT NULL,
     "description" TEXT,
-    "requestsPerHour" DOUBLE PRECISION,
     "authorName" TEXT,
     "authorContactEmail" TEXT,
     "authorContactOther" TEXT,
