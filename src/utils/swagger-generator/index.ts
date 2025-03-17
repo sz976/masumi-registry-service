@@ -151,7 +151,6 @@ export function generateOpenAPI() {
                     image: 'testimage.de',
                     otherLegal: null,
                     privacyPolicy: null,
-                    requestsPerHour: 15,
                     tags: null,
                     termsAndCondition:
                       'If the answer is 42 what was the question',
@@ -254,7 +253,6 @@ export function generateOpenAPI() {
                         image: 'testimage.de',
                         otherLegal: null,
                         privacyPolicy: null,
-                        requestsPerHour: 15,
                         tags: null,
                         termsAndCondition:
                           'If the answer is 42 what was the question',
