@@ -13,6 +13,7 @@ export const seed = async (prisma: PrismaClient) => {
       update: { token: adminKey, permission: 'Admin', status: 'Active' },
       where: { token: adminKey },
     });
+
   } else {
     console.log('Admin_KEY is seeded');
   }
