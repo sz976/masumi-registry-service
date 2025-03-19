@@ -26,8 +26,8 @@ export const CONFIG = {
 
 export const DEFAULTS = {
   REGISTRY_POLICY_ID_Preprod:
-    '47a846da5666b09446dd4b791c0d873bd85ec83df61ece4bb9b519a6',
+    'e6c57104dfa95943ffab95eafe1f12ed9a8da791678bfbf765b05649',
   REGISTRY_POLICY_ID_Mainnet:
-    '4f7d566652ea6d699943264f3d2925da92eec83dd93a54570dec33e9',
+    '1d2fcf188632b7dfc3d881c2215a0e94db3b6823996f64a86ec263ff',
   METADATA_VERSION: 1,
 };
