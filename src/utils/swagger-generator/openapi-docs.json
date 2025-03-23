@@ -715,10 +715,6 @@
                                                                 "type": "string",
                                                                 "nullable": true
                                                             },
-                                                            "requestsPerHour": {
-                                                                "type": "number",
-                                                                "nullable": true
-                                                            },
                                                             "tags": {
                                                                 "type": "array",
                                                                 "nullable": true,
@@ -812,7 +808,6 @@
                                                             "privacyPolicy",
                                                             "termsAndCondition",
                                                             "otherLegal",
-                                                            "requestsPerHour",
                                                             "tags",
                                                             "agentIdentifier",
                                                             "AgentPricing",

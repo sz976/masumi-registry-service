@@ -61,7 +61,6 @@ export const queryRegistrySchemaOutput = z.object({
       privacyPolicy: z.string().nullable(),
       termsAndCondition: z.string().nullable(),
       otherLegal: z.string().nullable(),
-      requestsPerHour: z.number().nullable(),
       tags: z.array(z.string()).nullable(),
       agentIdentifier: z.string(),
       AgentPricing: z.object({
