@@ -41,7 +41,7 @@ initialize()
             explorer: false,
             swaggerOptions: {
               persistAuthorization: true,
-              tryItOutEnabled: false,
+              tryItOutEnabled: true,
             },
           })
         );
