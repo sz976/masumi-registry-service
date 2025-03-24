@@ -647,20 +647,23 @@ export const updateCardanoAssets = async (
                 },
 
                 RegistrySource: { connect: { id: source.id } },
-                Capability: {
-                  connectOrCreate: {
-                    create: {
-                      name: capability_name,
-                      version: capability_version,
-                    },
-                    where: {
-                      name_version: {
-                        name: capability_name,
-                        version: capability_version,
+                Capability:
+                  capability_name == null || capability_version == null
+                    ? undefined
+                    : {
+                        connectOrCreate: {
+                          create: {
+                            name: capability_name,
+                            version: capability_version,
+                          },
+                          where: {
+                            name_version: {
+                              name: capability_name,
+                              version: capability_version,
+                            },
+                          },
+                        },
                       },
-                    },
-                  },
-                },
               },
             });
           }
