@@ -531,20 +531,23 @@ export const updateCardanoAssets = async (
                 },
                 assetName: assetName,
                 RegistrySource: { connect: { id: source.id } },
-                Capability: {
-                  connectOrCreate: {
-                    create: {
-                      name: capability_name,
-                      version: capability_version,
-                    },
-                    where: {
-                      name_version: {
-                        name: capability_name,
-                        version: capability_version,
+                Capability:
+                  capability_name == null || capability_version == null
+                    ? undefined
+                    : {
+                        connectOrCreate: {
+                          create: {
+                            name: capability_name,
+                            version: capability_version,
+                          },
+                          where: {
+                            name_version: {
+                              name: capability_name,
+                              version: capability_version,
+                            },
+                          },
+                        },
                       },
-                    },
-                  },
-                },
               },
             });
           } else {
@@ -645,22 +648,24 @@ export const updateCardanoAssets = async (
                     sellerVKey: resolvePaymentKeyHash(holderData[0].address),
                   },
                 },
-
                 RegistrySource: { connect: { id: source.id } },
-                Capability: {
-                  connectOrCreate: {
-                    create: {
-                      name: capability_name,
-                      version: capability_version,
-                    },
-                    where: {
-                      name_version: {
-                        name: capability_name,
-                        version: capability_version,
+                Capability:
+                  capability_name == null || capability_version == null
+                    ? undefined
+                    : {
+                        connectOrCreate: {
+                          create: {
+                            name: capability_name,
+                            version: capability_version,
+                          },
+                          where: {
+                            name_version: {
+                              name: capability_name,
+                              version: capability_version,
+                            },
+                          },
+                        },
                       },
-                    },
-                  },
-                },
               },
             });
           }
