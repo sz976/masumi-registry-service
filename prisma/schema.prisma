@@ -81,17 +81,13 @@ model RegistryEntry {
 
   registrySourceId String
 
-  assetName      String
-  AgentPricing   AgentPricing @relation(fields: [agentPricingId], references: [id])
-  agentPricingId String
+  assetIdentifier String       @unique
+  AgentPricing    AgentPricing @relation(fields: [agentPricingId], references: [id])
+  agentPricingId  String
 
   ExampleOutput ExampleOutput[]
 
   metadataVersion Int
-
-  //we might not want to enforce this if we want an agent to be able to register again
-  //@@unique([registrySourcesId, api_url])
-  @@unique([assetName, registrySourceId])
 }
 
 model ExampleOutput {

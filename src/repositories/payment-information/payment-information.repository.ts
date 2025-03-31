@@ -2,13 +2,10 @@ import { updateCardanoAssets } from '@/services/cardano-registry/cardano-registr
 import { prisma } from '@/utils/db';
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
 
-async function getPaymentInformation(
-  currentRegistryPolicyId: string,
-  currentAssetIdentifier: string
-) {
+async function getPaymentInformation(currentAgentIdentifier: string) {
   const registrySource = await prisma.registrySource.findFirst({
     where: {
-      policyId: currentRegistryPolicyId,
+      policyId: currentAgentIdentifier.substring(0, 56),
     },
     include: {
       RegistrySourceConfig: true,
@@ -25,10 +22,7 @@ async function getPaymentInformation(
 
   const registryEntry = await prisma.registryEntry.findUnique({
     where: {
-      assetName_registrySourceId: {
-        assetName: currentAssetIdentifier,
-        registrySourceId: registrySource.id,
-      },
+      assetIdentifier: currentAgentIdentifier,
     },
     include: {
       PaymentIdentifier: true,
@@ -52,14 +46,12 @@ async function getPaymentInformation(
   const blockfrost = new BlockFrostAPI({
     projectId: registrySource.RegistrySourceConfig.rpcProviderApiKey,
   });
-  const asset = await blockfrost.assetsById(
-    registrySource.policyId + currentAssetIdentifier
-  );
+  const asset = await blockfrost.assetsById(currentAgentIdentifier);
   if (!asset) {
     return null;
   }
   const updatedTMP = await updateCardanoAssets(
-    [{ asset: currentAssetIdentifier, quantity: asset.quantity }],
+    [{ asset: currentAgentIdentifier, quantity: asset.quantity }],
     registrySource
   );
 

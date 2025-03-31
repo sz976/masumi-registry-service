@@ -72,7 +72,7 @@ CREATE TABLE "RegistryEntry" (
     "status" "Status" NOT NULL,
     "capabilitiesId" TEXT,
     "registrySourceId" TEXT NOT NULL,
-    "assetName" TEXT NOT NULL,
+    "assetIdentifier" TEXT NOT NULL,
     "agentPricingId" TEXT NOT NULL,
     "metadataVersion" INTEGER NOT NULL,
 
@@ -193,7 +193,7 @@ CREATE UNIQUE INDEX "ApiKey_token_key" ON "ApiKey"("token");
 CREATE INDEX "ApiKey_token_idx" ON "ApiKey"("token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RegistryEntry_assetName_registrySourceId_key" ON "RegistryEntry"("assetName", "registrySourceId");
+CREATE UNIQUE INDEX "RegistryEntry_assetIdentifier_key" ON "RegistryEntry"("assetIdentifier");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "PaymentIdentifier_registryEntryId_paymentType_key" ON "PaymentIdentifier"("registryEntryId", "paymentType");

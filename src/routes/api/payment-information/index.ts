@@ -79,15 +79,14 @@ export const queryPaymentInformationGet = authenticatedEndpointFactory.build({
       'query for payment information: ' + input.agentIdentifier
     );
     const result = await paymentInformationRepository.getPaymentInformation(
-      input.agentIdentifier.substring(0, 56),
-      input.agentIdentifier.substring(56)
+      input.agentIdentifier
     );
     if (!result) {
       throw new Error('Payment information not found');
     }
     return {
       ...result,
-      agentIdentifier: result.RegistrySource.policyId + result.assetName,
+      agentIdentifier: result.assetIdentifier,
       AgentPricing: {
         pricingType: result.AgentPricing.pricingType,
         FixedPricing: {
