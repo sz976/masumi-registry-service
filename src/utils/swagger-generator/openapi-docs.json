@@ -82,21 +82,11 @@
                     {
                         "schema": {
                             "type": "string",
-                            "minLength": 1,
+                            "minLength": 57,
                             "maxLength": 250
                         },
                         "required": true,
-                        "name": "policyId",
-                        "in": "query"
-                    },
-                    {
-                        "schema": {
-                            "type": "string",
-                            "minLength": 1,
-                            "maxLength": 250
-                        },
-                        "required": true,
-                        "name": "assetName",
+                        "name": "assetIdentifier",
                         "in": "query"
                     }
                 ],
