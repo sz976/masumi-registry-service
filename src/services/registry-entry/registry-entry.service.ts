@@ -44,7 +44,7 @@ async function getRegistryEntries(
       allowedPaymentTypes,
       allowedStatuses,
       input.filter?.policyId,
-      input.filter?.assetName,
+      input.filter?.assetIdentifier,
       input.filter?.tags,
       currentCursorId,
       input.limit,

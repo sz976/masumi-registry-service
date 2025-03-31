@@ -10,15 +10,31 @@ import {
 
 async function checkAndVerifyEndpoint({
   api_url,
-  assetName,
-  registry,
+  assetIdentifier,
 }: {
   api_url: string;
-  assetName: string;
-  registry: { policyId: string; type: $Enums.RegistryEntryType };
+  assetIdentifier: string;
 }) {
   try {
-    const endpointResponse = await fetch(api_url);
+    const invalidHostname = ['localhost', '127.0.0.1'];
+    const url = new URL(api_url);
+    if (invalidHostname.includes(url.hostname)) {
+      return $Enums.Status.Invalid;
+    }
+    if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+      return $Enums.Status.Invalid;
+    }
+    if (url.port !== '80' && url.port !== '443' && url.port !== '') {
+      return $Enums.Status.Invalid;
+    }
+    if (url.search != '') {
+      return $Enums.Status.Invalid;
+    }
+    let urlString = url.toString();
+    if (urlString.endsWith('/')) {
+      urlString = urlString.slice(0, -1);
+    }
+    const endpointResponse = await fetch(`${urlString}/availability`);
     if (!endpointResponse.ok) {
       //if the endpoint is offline, we probably want to do some later on checks if it is back up again
       return $Enums.Status.Offline;
@@ -27,8 +43,8 @@ async function checkAndVerifyEndpoint({
     const responseBody = await endpointResponse.json();
     //we need to verify the registry points to the correct url to prevent a later registry providing a wrong payment address
     //if the registry is wrong, we usually want to invalidate the entry in the database and exclude it from further checks
-    return responseBody.agentIdentifier === registry.policyId + assetName &&
-      responseBody.type === registry.type
+
+    return responseBody.agentIdentifier === assetIdentifier
       ? $Enums.Status.Online
       : $Enums.Status.Invalid;
   } catch {
@@ -40,7 +56,7 @@ async function checkAndVerifyRegistryEntry({
   minHealthCheckDate,
 }: {
   registryEntry: {
-    assetName: string;
+    assetIdentifier: string;
     lastUptimeCheck: Date;
     apiBaseUrl: string;
     status: $Enums.Status;
@@ -62,8 +78,7 @@ async function checkAndVerifyRegistryEntry({
 
   return await checkAndVerifyEndpoint({
     api_url: registryEntry.apiBaseUrl,
-    assetName: registryEntry.assetName,
-    registry: registryEntry.RegistrySource,
+    assetIdentifier: registryEntry.assetIdentifier,
   });
 }
 

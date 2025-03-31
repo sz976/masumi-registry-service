@@ -120,9 +120,7 @@ export async function updateDeregisteredCardanoRegistryEntries() {
         while (latestAssets.length != 0) {
           const assetsToProcess = await Promise.all(
             latestAssets.map(async (asset) => {
-              return await blockfrost.assetsById(
-                source.policyId! + asset.assetName
-              );
+              return await blockfrost.assetsById(asset.assetIdentifier);
             })
           );
 
@@ -130,13 +128,9 @@ export async function updateDeregisteredCardanoRegistryEntries() {
 
           await Promise.all(
             burnedAssets.map(async (asset) => {
-              const assetName = asset.asset.replace(source.policyId, '');
               await prisma.registryEntry.update({
                 where: {
-                  assetName_registrySourceId: {
-                    assetName: assetName,
-                    registrySourceId: source.id,
-                  },
+                  assetIdentifier: asset.asset,
                 },
                 data: { status: $Enums.Status.Deregistered },
               });
@@ -339,17 +333,13 @@ export const updateCardanoAssets = async (
         asset: asset.asset,
         quantity: asset.quantity,
       });
-      const assetName = asset.asset.replace(source.policyId, '');
       //we will allow only unique tokens (integer quantities) via smart contract, therefore we do not care about large numbers
       const quantity = parseInt(asset.quantity);
       if (quantity == 0) {
         //TOKEN is deregistered we will update the status and return null
         await prisma.registryEntry.upsert({
           where: {
-            assetName_registrySourceId: {
-              assetName: assetName,
-              registrySourceId: source.id,
-            },
+            assetIdentifier: asset.asset,
           },
           update: { status: $Enums.Status.Deregistered },
           create: {
@@ -366,7 +356,7 @@ export const updateCardanoAssets = async (
               },
             },
             metadataVersion: -1,
-            assetName: assetName,
+            assetIdentifier: asset.asset,
             RegistrySource: { connect: { id: source.id } },
             name: '?',
             description: '?',
@@ -384,15 +374,10 @@ export const updateCardanoAssets = async (
           source.network == $Enums.Network.Mainnet ? 'mainnet' : 'preprod',
       });
 
-      const registryData = await blockfrost.assetsById(
-        source.policyId + assetName
-      );
-      const holderData = await blockfrost.assetsAddresses(
-        source.policyId + assetName,
-        {
-          order: 'desc',
-        }
-      );
+      const registryData = await blockfrost.assetsById(asset.asset);
+      const holderData = await blockfrost.assetsAddresses(asset.asset, {
+        order: 'desc',
+      });
       const onchainMetadata = registryData.onchain_metadata;
       const parsedMetadata = metadataSchema.safeParse(onchainMetadata);
 
@@ -405,11 +390,7 @@ export const updateCardanoAssets = async (
       const endpoint = metadataStringConvert(parsedMetadata.data.api_base_url)!;
       const isAvailable = await healthCheckService.checkAndVerifyEndpoint({
         api_url: endpoint,
-        assetName: asset.asset,
-        registry: {
-          policyId: source.policyId!,
-          type: $Enums.RegistryEntryType.Web3CardanoV1,
-        },
+        assetIdentifier: asset.asset,
       });
 
       return await prisma.$transaction(
@@ -418,10 +399,7 @@ export const updateCardanoAssets = async (
 
           const existingEntry = await tx.registryEntry.findUnique({
             where: {
-              assetName_registrySourceId: {
-                assetName: assetName,
-                registrySourceId: source.id,
-              },
+              assetIdentifier: asset.asset,
             },
           });
 
@@ -441,10 +419,7 @@ export const updateCardanoAssets = async (
               },
 
               where: {
-                assetName_registrySourceId: {
-                  assetName: assetName,
-                  registrySourceId: source.id,
-                },
+                assetIdentifier: asset.asset,
               },
               data: {
                 lastUptimeCheck: new Date(),
@@ -585,7 +560,7 @@ export const updateCardanoAssets = async (
                     },
                   },
                 },
-                assetName: assetName,
+                assetIdentifier: asset.asset,
                 PaymentIdentifier: {
                   create: {
                     paymentIdentifier: holderData[0].address,

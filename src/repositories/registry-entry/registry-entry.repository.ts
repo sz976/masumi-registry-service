@@ -19,7 +19,7 @@ async function getRegistryEntry(
       Capability: capability,
       PaymentIdentifier: { some: { paymentType: { in: allowedPaymentTypes } } },
       status: { in: allowedStatuses },
-      assetName: currentAssetIdentifier,
+      assetIdentifier: currentAssetIdentifier,
       RegistrySource: {
         policyId: currentRegistryPolicyId,
         network: network,
