@@ -6,7 +6,7 @@ import { tokenCreditService } from '@/services/token-credit';
 import { paymentInformationRepository } from '@/repositories/payment-information';
 
 export const queryPaymentInformationInput = z.object({
-  assetIdentifier: z.string().min(57).max(250),
+  agentIdentifier: z.string().min(57).max(250),
 });
 
 export const queryPaymentInformationSchemaOutput = z.object({
@@ -76,11 +76,11 @@ export const queryPaymentInformationGet = authenticatedEndpointFactory.build({
     await tokenCreditService.handleTokenCredits(
       options,
       tokenCost,
-      'query for payment information: ' + input.assetName
+      'query for payment information: ' + input.agentIdentifier
     );
     const result = await paymentInformationRepository.getPaymentInformation(
-      input.assetIdentifier.substring(0, 56),
-      input.assetIdentifier.substring(56)
+      input.agentIdentifier.substring(0, 56),
+      input.agentIdentifier.substring(56)
     );
     if (!result) {
       throw new Error('Payment information not found');
