@@ -384,10 +384,15 @@ export const updateCardanoAssets = async (
           source.network == $Enums.Network.Mainnet ? 'mainnet' : 'preprod',
       });
 
-      const registryData = await blockfrost.assetsById(asset.asset);
-      const holderData = await blockfrost.assetsAddresses(asset.asset, {
-        order: 'desc',
-      });
+      const registryData = await blockfrost.assetsById(
+        source.policyId + assetName
+      );
+      const holderData = await blockfrost.assetsAddresses(
+        source.policyId + assetName,
+        {
+          order: 'desc',
+        }
+      );
       const onchainMetadata = registryData.onchain_metadata;
       const parsedMetadata = metadataSchema.safeParse(onchainMetadata);
 
@@ -422,13 +427,7 @@ export const updateCardanoAssets = async (
 
           let newEntry;
           if (existingEntry) {
-            //TODO this can be ignored unless we allow updates to the registry entry
-            const capability_name = metadataStringConvert(
-              parsedMetadata.data.capability?.name
-            )!;
-            const capability_version = metadataStringConvert(
-              parsedMetadata.data.capability?.version
-            )!;
+            //TODO: once we have dynamic pricing, update the pricing here
 
             newEntry = await tx.registryEntry.update({
               include: {
@@ -454,42 +453,7 @@ export const updateCardanoAssets = async (
                 },
                 uptimeCheckCount: { increment: 1 },
                 status: isAvailable,
-                name: metadataStringConvert(parsedMetadata.data.name)!,
-                description: metadataStringConvert(
-                  parsedMetadata.data.description
-                ),
-                apiBaseUrl: metadataStringConvert(
-                  parsedMetadata.data.api_base_url
-                )!,
-                authorName: metadataStringConvert(
-                  parsedMetadata.data.author?.name
-                ),
-                authorOrganization: metadataStringConvert(
-                  parsedMetadata.data.author?.organization
-                ),
-                authorContactEmail: metadataStringConvert(
-                  parsedMetadata.data.author?.contact_email
-                ),
-                authorContactOther: metadataStringConvert(
-                  parsedMetadata.data.author?.contact_other
-                ),
-                image: metadataStringConvert(parsedMetadata.data.image),
-                privacyPolicy: metadataStringConvert(
-                  parsedMetadata.data.legal?.privacy_policy
-                ),
-                termsAndCondition: metadataStringConvert(
-                  parsedMetadata.data.legal?.terms
-                ),
-                otherLegal: metadataStringConvert(
-                  parsedMetadata.data.legal?.other
-                ),
-                tags: parsedMetadata.data.tags
-                  ? {
-                      push: parsedMetadata.data.tags.map(
-                        (tag) => metadataStringConvert(tag)!
-                      ),
-                    }
-                  : undefined,
+
                 AgentPricing: {
                   create: {
                     pricingType: PricingType.Fixed,
@@ -529,25 +493,6 @@ export const updateCardanoAssets = async (
                     },
                   },
                 },
-                assetName: assetName,
-                RegistrySource: { connect: { id: source.id } },
-                Capability:
-                  capability_name == null || capability_version == null
-                    ? undefined
-                    : {
-                        connectOrCreate: {
-                          create: {
-                            name: capability_name,
-                            version: capability_version,
-                          },
-                          where: {
-                            name_version: {
-                              name: capability_name,
-                              version: capability_version,
-                            },
-                          },
-                        },
-                      },
               },
             });
           } else {

@@ -3,8 +3,8 @@ import { prisma } from '@/utils/db';
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js';
 
 async function getPaymentInformation(
-  currentAssetIdentifier: string,
-  currentRegistryPolicyId: string
+  currentRegistryPolicyId: string,
+  currentAssetIdentifier: string
 ) {
   const registrySource = await prisma.registrySource.findFirst({
     where: {
