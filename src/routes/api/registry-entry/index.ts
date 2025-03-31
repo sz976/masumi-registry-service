@@ -15,7 +15,7 @@ export const queryRegistrySchemaInput = z.object({
       paymentTypes: z.array(z.nativeEnum($Enums.PaymentType)).max(5).optional(),
       status: z.array(z.nativeEnum($Enums.Status)).max(5).optional(),
       policyId: z.string().min(1).max(250).optional(),
-      assetName: z.string().min(1).max(250).optional(),
+      assetIdentifier: z.string().min(1).max(250).optional(),
       tags: z.array(z.string().min(1).max(150)).optional(),
       capability: z
         .object({
@@ -106,7 +106,7 @@ export const queryRegistryEntryPost = authenticatedEndpointFactory.build({
         .slice(0, Math.min(input.limit, data.length))
         .map((entry) => ({
           ...entry,
-          agentIdentifier: entry.RegistrySource.policyId + entry.assetName,
+          agentIdentifier: entry.assetIdentifier,
           AgentPricing: {
             pricingType: entry.AgentPricing.pricingType,
             FixedPricing: {

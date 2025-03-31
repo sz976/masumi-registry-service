@@ -19,11 +19,7 @@ describe('healthCheckService', () => {
 
       const result = await healthCheckService.checkAndVerifyEndpoint({
         api_url: mockUrl,
-        assetName: mockIdentifier,
-        registry: {
-          policyId: mockRegistryId,
-          type: $Enums.RegistryEntryType.Web3CardanoV1,
-        },
+        assetIdentifier: `${mockRegistryId}${mockIdentifier}`,
       });
       expect(result).toBe($Enums.Status.Offline);
     });
@@ -33,18 +29,14 @@ describe('healthCheckService', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            agentIdentifier: mockRegistryId + mockIdentifier,
+            agentIdentifier: `${mockRegistryId}${mockIdentifier}`,
             type: $Enums.RegistryEntryType.Web3CardanoV1,
           }),
       });
 
       const result = await healthCheckService.checkAndVerifyEndpoint({
         api_url: mockUrl,
-        assetName: mockIdentifier,
-        registry: {
-          policyId: mockRegistryId,
-          type: $Enums.RegistryEntryType.Web3CardanoV1,
-        },
+        assetIdentifier: `${mockRegistryId}${mockIdentifier}`,
       });
 
       expect(result).toBe($Enums.Status.Online);
@@ -63,11 +55,7 @@ describe('healthCheckService', () => {
 
       const result = await healthCheckService.checkAndVerifyEndpoint({
         api_url: mockUrl,
-        assetName: mockIdentifier,
-        registry: {
-          policyId: mockRegistryId,
-          type: $Enums.RegistryEntryType.Web3CardanoV1,
-        },
+        assetIdentifier: mockIdentifier,
       });
 
       expect(result).toBe($Enums.Status.Invalid);
@@ -82,7 +70,7 @@ describe('checkAndVerifyRegistryEntry', () => {
 
   it('should return existing status if lastUptimeCheck is newer than minHealthCheckDate', async () => {
     const mockRegistryEntry = {
-      assetName: 'test-id',
+      assetIdentifier: 'test-id',
       lastUptimeCheck: new Date(Date.now() - 200),
       apiBaseUrl: 'http://test.com',
       status: $Enums.Status.Online,
@@ -108,7 +96,7 @@ describe('checkAndVerifyRegistryEntry', () => {
   it('should check endpoint if lastUptimeCheck is older than minHealthCheckDate', async () => {
     const minHealthCheckDate = new Date();
     const mockRegistryEntry = {
-      assetName: 'assetname',
+      assetIdentifier: 'registry-assetname',
       lastUptimeCheck: new Date(Date.now() - 200),
       apiBaseUrl: 'http://test.com',
       status: $Enums.Status.Offline,
@@ -123,7 +111,7 @@ describe('checkAndVerifyRegistryEntry', () => {
       ok: true,
       json: () =>
         Promise.resolve({
-          agentIdentifier: 'registryassetname',
+          agentIdentifier: 'registry-assetname',
           type: $Enums.RegistryEntryType.Web3CardanoV1,
         }),
     });
@@ -138,7 +126,7 @@ describe('checkAndVerifyRegistryEntry', () => {
 
   it('should not check endpoint if minHealthCheckDate is undefined', async () => {
     const mockRegistryEntry = {
-      assetName: 'test-id',
+      assetIdentifier: 'test-id',
       lastUptimeCheck: new Date(Date.now() - 200),
       apiBaseUrl: 'http://test.com',
       status: $Enums.Status.Online,
@@ -161,7 +149,7 @@ describe('checkAndVerifyRegistryEntry', () => {
 
   it('should return Offline status when endpoint check fails', async () => {
     const mockRegistryEntry = {
-      assetName: 'test-id',
+      assetIdentifier: 'test-id',
       lastUptimeCheck: new Date(Date.now() - 200),
       apiBaseUrl: 'http://test.com',
       status: $Enums.Status.Online,
