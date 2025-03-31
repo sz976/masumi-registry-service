@@ -89,11 +89,11 @@ export function generateOpenAPI() {
     request: {
       query: queryPaymentInformationInput.openapi({
         example: {
-          policyId: 'policy_id',
-          assetName: 'asset_name',
+          agentIdentifier: 'agent_identifier',
         },
       }),
     },
+    security: [{ [apiKeyAuth.name]: [] }],
     responses: {
       200: {
         description: 'Registry entries',
