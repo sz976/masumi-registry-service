@@ -3,6 +3,7 @@ import createHttpError from 'http-errors';
 import { prisma } from '@/utils/db';
 import { z } from 'zod';
 import { $Enums } from '@prisma/client';
+import { hashToken } from '@/utils/crypto';
 
 export const authMiddleware = (requiresAdmin: boolean) =>
   new Middleware({
@@ -14,14 +15,14 @@ export const authMiddleware = (requiresAdmin: boolean) =>
     input: z.object({}),
     handler: async ({ request, logger }) => {
       logger.info('Checking the key and token');
-      const sendKey = request.headers.token;
-      if (!sendKey) {
+      const sentKey = request.headers.token;
+      if (!sentKey || typeof sentKey !== 'string' || sentKey.length === 0) {
         throw createHttpError(401, 'No token provided');
       }
 
       const apiKey = await prisma.apiKey.findUnique({
         where: {
-          token: sendKey as string,
+          tokenHash: hashToken(sentKey),
         },
       });
       logger.info('Found api key', apiKey);

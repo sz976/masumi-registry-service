@@ -1,3 +1,4 @@
+import { hashToken } from '@/utils/crypto';
 import { prisma } from '@/utils/db';
 import { APIKeyStatus } from '@prisma/client';
 import { Permission } from '@prisma/client';
@@ -15,7 +16,9 @@ async function getApiKeyById(id: string) {
   return await prisma.apiKey.findUnique({ where: { id } });
 }
 async function getApiKeyByApiKey(token: string) {
-  return await prisma.apiKey.findUnique({ where: { token } });
+  return await prisma.apiKey.findUnique({
+    where: { tokenHash: hashToken(token) },
+  });
 }
 
 async function addApiKey(
@@ -32,6 +35,7 @@ async function addApiKey(
       usageLimited,
       maxUsageCredits,
       accumulatedUsageCredits: 0,
+      tokenHash: hashToken(token),
     },
   });
 }
@@ -55,7 +59,7 @@ async function updateApiKeyViaApiKey(
   maxUsageCredits: number
 ) {
   return await prisma.apiKey.update({
-    where: { token },
+    where: { tokenHash: hashToken(token) },
     data: { status, usageLimited, maxUsageCredits },
   });
 }
@@ -63,7 +67,7 @@ async function deleteApiKeyViaId(id: string) {
   return await prisma.apiKey.delete({ where: { id } });
 }
 async function deleteApiKeyViaApiKey(token: string) {
-  return await prisma.apiKey.delete({ where: { token } });
+  return await prisma.apiKey.delete({ where: { tokenHash: hashToken(token) } });
 }
 export const apiKeyRepository = {
   getApiKeyById,
