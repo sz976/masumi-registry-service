@@ -3,6 +3,7 @@ import createHttpError from 'http-errors';
 import { prisma } from '@/utils/db';
 import { z } from 'zod';
 import { $Enums } from '@prisma/client';
+import { hashToken } from '@/utils/crypto';
 
 export const authMiddleware = (requiresAdmin: boolean) =>
   new Middleware({
@@ -21,7 +22,7 @@ export const authMiddleware = (requiresAdmin: boolean) =>
 
       const apiKey = await prisma.apiKey.findUnique({
         where: {
-          token: sendKey as string,
+          tokenHash: hashToken(sendKey as string),
         },
       });
       logger.info('Found api key', apiKey);

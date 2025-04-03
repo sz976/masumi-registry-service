@@ -28,6 +28,7 @@ CREATE TABLE "ApiKey" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "token" TEXT NOT NULL,
+    "tokenHash" TEXT NOT NULL,
     "status" "APIKeyStatus" NOT NULL,
     "permission" "Permission" NOT NULL,
     "usageLimited" BOOLEAN NOT NULL DEFAULT false,
@@ -188,6 +189,9 @@ CREATE TABLE "UpdatedRegistryEntriesLog" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ApiKey_token_key" ON "ApiKey"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ApiKey_tokenHash_key" ON "ApiKey"("tokenHash");
 
 -- CreateIndex
 CREATE INDEX "ApiKey_token_idx" ON "ApiKey"("token");
