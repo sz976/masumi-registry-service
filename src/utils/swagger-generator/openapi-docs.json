@@ -1780,7 +1780,7 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
-                                    "apiKey": {
+                                    "token": {
                                         "type": "string",
                                         "maxLength": 550
                                     },
@@ -1805,10 +1805,10 @@
                                     }
                                 },
                                 "required": [
-                                    "apiKey"
+                                    "token"
                                 ],
                                 "example": {
-                                    "apiKey": "id_or_apiKey_api-key-to-update",
+                                    "token": "id_or_apiKey_api-key-to-update",
                                     "usageLimited": true,
                                     "maxUsageCredits": 1000000
                                 }
