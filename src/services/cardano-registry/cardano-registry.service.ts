@@ -1,5 +1,5 @@
 import { $Enums, PricingType } from '@prisma/client';
-import { Sema } from 'async-sema';
+import { Mutex, tryAcquire, MutexInterface } from 'async-mutex';
 import { prisma } from '@/utils/db';
 import { z } from 'zod';
 import { metadataStringConvert } from '@/utils/metadata-string-convert';
@@ -81,7 +81,8 @@ const metadataSchema = z.object({
   metadata_version: z.number({ coerce: true }).int().min(1).max(1),
 });
 
-const deleteMutex = new Sema(1);
+const deleteMutex = new Mutex();
+
 export async function updateDeregisteredCardanoRegistryEntries() {
   const sources = await prisma.registrySource.findMany({
     where: {
@@ -94,9 +95,13 @@ export async function updateDeregisteredCardanoRegistryEntries() {
 
   if (sources.length == 0) return;
 
-  const acquiredMutex = await deleteMutex.tryAcquire();
-  //if we are already performing an update, we wait for it to finish and return
-  if (!acquiredMutex) return await deleteMutex.acquire();
+  let release: MutexInterface.Releaser | null;
+  try {
+    release = await tryAcquire(deleteMutex).acquire();
+  } catch (e) {
+    logger.info('Mutex timeout when locking', { error: e });
+    return;
+  }
 
   await Promise.all(
     sources.map(async (source) => {
@@ -160,9 +165,10 @@ export async function updateDeregisteredCardanoRegistryEntries() {
       return null;
     })
   );
+  release();
 }
 
-const updateMutex = new Sema(1);
+const updateMutex = new Mutex();
 export async function updateLatestCardanoRegistryEntries(
   onlyEntriesAfter?: Date | undefined
 ) {
@@ -186,25 +192,22 @@ export async function updateLatestCardanoRegistryEntries(
 
   if (sources.length == 0) return;
 
-  let acquiredMutex = await updateMutex.tryAcquire();
+  const release = await updateMutex.acquire();
   //if we are already performing an update, we wait for it to finish and return
-  if (!acquiredMutex) {
-    acquiredMutex = await updateMutex.acquire();
-    sources = await prisma.registrySource.findMany({
-      where: {
-        type: $Enums.RegistryEntryType.Web3CardanoV1,
-        updatedAt: {
-          lte: onlyEntriesAfter,
-        },
+
+  sources = await prisma.registrySource.findMany({
+    where: {
+      type: $Enums.RegistryEntryType.Web3CardanoV1,
+      updatedAt: {
+        lte: onlyEntriesAfter,
       },
-      include: {
-        RegistrySourceConfig: true,
-      },
-    });
-    if (sources.length == 0) {
-      updateMutex.release();
-      return;
-    }
+    },
+    include: {
+      RegistrySourceConfig: true,
+    },
+  });
+  if (sources.length == 0) {
+    return;
   }
 
   try {
@@ -307,8 +310,7 @@ export async function updateLatestCardanoRegistryEntries(
       })
     );
   } finally {
-    //library is strange as we can release from any non-acquired semaphore
-    updateMutex.release();
+    release();
   }
 }
 

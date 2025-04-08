@@ -1,6 +1,7 @@
 import { $Enums, Network, PrismaClient, RPCProvider } from '@prisma/client';
 import dotenv from 'dotenv';
 import { DEFAULTS } from '../src/utils/config';
+import { hashToken } from '../src/utils/crypto';
 dotenv.config();
 const prisma = new PrismaClient();
 export const seed = async (prisma: PrismaClient) => {
@@ -9,11 +10,20 @@ export const seed = async (prisma: PrismaClient) => {
     if (adminKey.length < 15) throw Error('API-KEY is insecure');
     console.log('Admin_KEY is seeded');
     await prisma.apiKey.upsert({
-      create: { token: adminKey, permission: 'Admin', status: 'Active' },
-      update: { token: adminKey, permission: 'Admin', status: 'Active' },
+      create: {
+        token: adminKey,
+        permission: 'Admin',
+        status: 'Active',
+        tokenHash: hashToken(adminKey),
+      },
+      update: {
+        token: adminKey,
+        permission: 'Admin',
+        status: 'Active',
+        tokenHash: hashToken(adminKey),
+      },
       where: { token: adminKey },
     });
-
   } else {
     console.log('Admin_KEY is seeded');
   }

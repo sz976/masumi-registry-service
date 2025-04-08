@@ -29,7 +29,11 @@ export const queryRegistrySourceEndpointGet =
     method: 'get',
     input: getRegistrySourceSchemaInput,
     output: getRegistrySourceSchemaOutput,
-    handler: async ({ input }) => {
+    handler: async ({
+      input,
+    }: {
+      input: z.infer<typeof getRegistrySourceSchemaInput>;
+    }) => {
       const data = await registrySourceService.getRegistrySources(
         input.cursorId,
         input.limit
@@ -60,7 +64,11 @@ export const addRegistrySourceEndpointPost =
     method: 'post',
     input: addRegistrySourceSchemaInput,
     output: addRegistrySourceSchemaOutput,
-    handler: async ({ input }) => {
+    handler: async ({
+      input,
+    }: {
+      input: z.infer<typeof addRegistrySourceSchemaInput>;
+    }) => {
       const result = await registrySourceService.addRegistrySource(input);
       return result;
     },
@@ -81,7 +89,11 @@ export const updateRegistrySourceEndpointPatch =
     method: 'patch',
     input: updateRegistrySourceSchemaInput,
     output: updateRegistrySourceSchemaOutput,
-    handler: async ({ input }) => {
+    handler: async ({
+      input,
+    }: {
+      input: z.infer<typeof updateRegistrySourceSchemaInput>;
+    }) => {
       const result = await registrySourceService.updateRegistrySource(input);
       return result;
     },
@@ -100,7 +112,11 @@ export const deleteRegistrySourceEndpointDelete =
     method: 'delete',
     input: deleteRegistrySourceSchemaInput,
     output: deleteRegistrySourceSchemaOutput,
-    handler: async ({ input }) => {
+    handler: async ({
+      input,
+    }: {
+      input: z.infer<typeof deleteRegistrySourceSchemaInput>;
+    }) => {
       const result = await registrySourceService.deleteRegistrySource(input.id);
       return result;
     },

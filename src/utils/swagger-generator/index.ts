@@ -700,7 +700,7 @@ export function generateOpenAPI() {
           'application/json': {
             schema: updateAPIKeySchemaInput.openapi({
               example: {
-                apiKey: 'id_or_apiKey_api-key-to-update',
+                token: 'id_or_apiKey_api-key-to-update',
                 usageLimited: true,
                 maxUsageCredits: 1000000,
               },

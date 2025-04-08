@@ -70,8 +70,18 @@ export const queryPaymentInformationGet = authenticatedEndpointFactory.build({
   method: 'get',
   input: queryPaymentInformationInput,
   output: queryPaymentInformationSchemaOutput,
-  handler: async ({ input, options, logger }) => {
-    logger.info('Querying registry', input.paymentTypes);
+  handler: async ({
+    input,
+    options,
+  }: {
+    input: z.infer<typeof queryPaymentInformationInput>;
+    options: {
+      id: string;
+      accumulatedUsageCredits: number;
+      maxUsageCredits: number | null;
+      usageLimited: boolean;
+    };
+  }) => {
     const tokenCost = 0;
     await tokenCreditService.handleTokenCredits(
       options,
