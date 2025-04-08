@@ -35,7 +35,11 @@ export const queryAPIKeyEndpointGet = adminAuthenticatedEndpointFactory.build({
   method: 'get',
   input: getAPIKeySchemaInput,
   output: getAPIKeySchemaOutput,
-  handler: async ({ input }) => {
+  handler: async ({
+    input,
+  }: {
+    input: z.infer<typeof getAPIKeySchemaInput>;
+  }) => {
     const data = await apiKeyService.getApiKey(input.cursorId, input.limit);
 
     if (!data) throw createHttpError(404, 'Not found');
@@ -74,7 +78,11 @@ export const addAPIKeyEndpointPost = adminAuthenticatedEndpointFactory.build({
   method: 'post',
   input: addAPIKeySchemaInput,
   output: addAPIKeySchemaOutput,
-  handler: async ({ input }) => {
+  handler: async ({
+    input,
+  }: {
+    input: z.infer<typeof addAPIKeySchemaInput>;
+  }) => {
     const result = await apiKeyService.addApiKey(
       input.permission,
       input.usageLimited,
@@ -85,7 +93,7 @@ export const addAPIKeyEndpointPost = adminAuthenticatedEndpointFactory.build({
 });
 
 export const updateAPIKeySchemaInput = z.object({
-  apiKey: z.string().max(550),
+  token: z.string().max(550),
   usageLimited: z.boolean().default(false),
   maxUsageCredits: z
     .number({ coerce: true })
@@ -115,7 +123,11 @@ export const updateAPIKeyEndpointPatch =
     method: 'patch',
     input: updateAPIKeySchemaInput,
     output: updateAPIKeySchemaOutput,
-    handler: async ({ input }) => {
+    handler: async ({
+      input,
+    }: {
+      input: z.infer<typeof updateAPIKeySchemaInput>;
+    }) => {
       const result = await apiKeyService.updateApiKey(
         input.token,
         input.status,
@@ -141,7 +153,11 @@ export const deleteAPIKeyEndpointDelete =
     method: 'delete',
     input: deleteAPIKeySchemaInput,
     output: deleteAPIKeySchemaOutput,
-    handler: async ({ input }) => {
+    handler: async ({
+      input,
+    }: {
+      input: z.infer<typeof deleteAPIKeySchemaInput>;
+    }) => {
       const result = await apiKeyService.deleteApiKey(input.token);
 
       if (!result) throw createHttpError(404, 'Not found');

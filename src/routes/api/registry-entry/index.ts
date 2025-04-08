@@ -89,8 +89,18 @@ export const queryRegistryEntryPost = authenticatedEndpointFactory.build({
   method: 'post',
   input: queryRegistrySchemaInput,
   output: queryRegistrySchemaOutput,
-  handler: async ({ input, options, logger }) => {
-    logger.info('Querying registry', input.paymentTypes);
+  handler: async ({
+    input,
+    options,
+  }: {
+    input: z.infer<typeof queryRegistrySchemaInput>;
+    options: {
+      id: string;
+      accumulatedUsageCredits: number;
+      maxUsageCredits: number | null;
+      usageLimited: boolean;
+    };
+  }) => {
     const tokenCost = 0;
     //TODO update cost model
     //TODO add custom errors
