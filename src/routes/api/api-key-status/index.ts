@@ -2,7 +2,7 @@ import { authenticatedEndpointFactory } from '@/utils/endpoint-factory/authentic
 import { z } from 'zod';
 import { APIKeyStatus, Permission } from '@prisma/client';
 import createHttpError from 'http-errors';
-import { apiKeyStatusService } from '@/services/api-key-status/api-key-status.service';
+import { apiKeyStatusService } from '@/services/api-key-status/';
 
 export const getAPIKeyStatusSchemaInput = z.object({});
 
