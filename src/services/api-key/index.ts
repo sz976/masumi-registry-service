@@ -1,2 +1,1 @@
-export { apiKeyService as healthService } from "./api-key.service";
-
+export { apiKeyService } from './api-key.service';

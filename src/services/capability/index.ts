@@ -1,2 +1,1 @@
-export { capabilityService } from "./capability.service";
-
+export { capabilityService } from './capability.service';

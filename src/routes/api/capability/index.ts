@@ -1,5 +1,5 @@
-import { capabilityService } from '@/services/capability/capability.service';
-import { tokenCreditService } from '@/services/token-credit/token-credit.service';
+import { capabilityService } from '@/services/capability';
+import { tokenCreditService } from '@/services/token-credit';
 import { authenticatedEndpointFactory } from '@/utils/endpoint-factory/authenticated';
 import { z } from 'zod';
 

@@ -10,6 +10,7 @@
         "seed": "tsx ./prisma/seed.ts"
     },
     "scripts": {
+        "prepare": "husky",
         "lint": "eslint --fix --quiet --config eslint.config.mjs",
         "format": "prettier --log-level silent --write src/**/*.ts",
         "test": "jest",
@@ -21,7 +22,8 @@
         "dev": "tsx watch ./src/index.ts",
         "build": "npx prisma generate && npx pkgroll",
         "start": "NODE_ENV=production && node ./dist/index.js",
-        "swagger-json": "export DATABASE_URL=set-mock-env-for-generation && tsx ./src/utils/swagger-generator/cli.ts"
+        "swagger-json": "export DATABASE_URL=set-mock-env-for-generation && tsx ./src/utils/swagger-generator/cli.ts",
+        "knip": "knip"
     },
     "dependencies": {
         "@asteasolutions/zod-to-openapi": "^7.3.0",
@@ -35,8 +37,6 @@
         "express": "^5.0.1",
         "express-zod-api": "^22.13.1",
         "http-errors": "^2.0.0",
-        "http-status-codes": "^2.3.0",
-        "node": "20.17.0",
         "swagger-ui-express": "^5.0.1",
         "winston": "^3.17.0",
         "zod": "^3.24.2"
@@ -47,17 +47,13 @@
         "@eslint/js": "^9.21.0",
         "@types/express": "^5.0.0",
         "@types/jest": "^29.5.14",
-        "@types/node": "^18.19.0",
-        "@types/node-cron": "^3.0.11",
+        "@types/node": "^18.19.86",
         "@types/swagger-ui-express": "^4.1.8",
-        "@typescript-eslint/eslint-plugin": "^8.24.1",
-        "@typescript-eslint/parser": "^8.24.1",
         "eslint": "^9.21.0",
-        "eslint-config-prettier": "^10.0.1",
-        "eslint-plugin-prettier": "^5.2.3",
         "globals": "^15.15.0",
         "husky": "^9.1.7",
         "jest": "^29.7.0",
+        "knip": "^5.50.1",
         "lint-staged": "^15.4.3",
         "pkgroll": "^2.11.0",
         "prettier": "^3.5.2",

@@ -2,7 +2,7 @@ import { adminAuthenticatedEndpointFactory } from '@/utils/endpoint-factory/admi
 import { z } from 'zod';
 import { APIKeyStatus, Permission } from '@prisma/client';
 import createHttpError from 'http-errors';
-import { apiKeyService } from '@/services/api-key/api-key.service';
+import { apiKeyService } from '@/services/api-key/';
 
 export const getAPIKeySchemaInput = z.object({
   cursorId: z.string().max(550).optional(),
