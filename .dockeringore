@@ -1,2 +1,16 @@
 node_modules
+npm-debug.log
 dist
+.git
+.github
+.gitignore
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+.husky
+docs
+*.md
+LICENSE

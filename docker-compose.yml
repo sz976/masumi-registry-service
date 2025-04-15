@@ -1,0 +1,127 @@
+services:
+
+  # PostgreSQL database service
+  postgres:
+    image: postgres:15-alpine
+    container_name: masumi-registry-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: masumi_registry
+      POSTGRES_USER: masumi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-masumi_secure_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U masumi -d masumi_registry"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - masumi-network
+    # No ports exposed to host - only accessible within the network
+
+  # Initialization service to prepare database
+  init-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder  # Use the builder stage which has both src and dist
+    container_name: masumi-registry-init-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://masumi:${POSTGRES_PASSWORD:-masumi_secure_password}@postgres:5432/masumi_registry?schema=public
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-change_this_to_a_secure_32_character_string}
+      Admin_KEY: ${Admin_KEY:-change_this_to_a_secure_string}
+      Blockfrost_API_KEY_Mainnet: ${Blockfrost_API_KEY_Mainnet:-}
+      Blockfrost_API_KEY_Preprod: ${Blockfrost_API_KEY_Preprod}
+    networks:
+      - masumi-network
+    command: >
+      sh -c "
+        echo 'Running database migrations...' &&
+        npm run prisma:migrate &&
+        
+        echo 'Database initialization completed successfully!'
+      "
+    restart: "no"
+    # No ports exposed to host - only accessible within the network
+
+  # Masumi Registry Service
+  registry-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: masumi-registry-service
+    restart: unless-stopped
+    depends_on:
+      init-service:
+        condition: service_completed_successfully
+    environment:
+      # Database configuration
+      DATABASE_URL: postgresql://masumi:${POSTGRES_PASSWORD:-masumi_secure_password}@postgres:5432/masumi_registry?schema=public
+      
+      # Port
+      PORT: 3000
+      
+      # Security keys - use .env file to override these
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-change_this_to_a_secure_32_character_string}
+      Admin_KEY: ${Admin_KEY:-change_this_to_a_secure_string}
+      
+      # Blockfrost API keys
+      Blockfrost_API_KEY_Mainnet: ${Blockfrost_API_KEY_Mainnet:-}
+      Blockfrost_API_KEY_Preprod: ${Blockfrost_API_KEY_Preprod}
+      
+      # Environment settings
+      NODE_ENV: ${NODE_ENV:-production}
+      
+      # Registry update intervals
+      UPDATE_CARDANO_REGISTRY_INTERVAL: ${UPDATE_CARDANO_REGISTRY_INTERVAL:-120}
+      UPDATE_CARDANO_DEREGISTER_INTERVAL: ${UPDATE_CARDANO_DEREGISTER_INTERVAL:-150}
+      
+    volumes:
+      - masumi_registry_logs:/usr/src/app/logs
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - masumi-network
+    command: ["npm", "run", "start"]
+    # No ports exposed to host - only accessible via nginx
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: masumi-registry-nginx
+    restart: unless-stopped
+    depends_on:
+      - registry-service
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - nginx_logs:/var/log/nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - masumi-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  masumi-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  masumi_registry_logs:
+    driver: local
+  nginx_logs:
+    driver: local

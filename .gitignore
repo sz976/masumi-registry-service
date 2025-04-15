@@ -14,3 +14,7 @@ src/utils/.DS_Store
 src/services/.DS_Store
 .DS_Store
 
+# Keys and Certificates
+*.key
+*.pem
+*.crt
