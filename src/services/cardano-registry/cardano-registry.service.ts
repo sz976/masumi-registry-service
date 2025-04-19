@@ -237,7 +237,7 @@ export async function updateLatestCardanoRegistryEntries(
           let latestIdentifier = source.latestIdentifier;
           let latestAssets = await blockfrost.assetsPolicyById(
             source.policyId!,
-            { page: pageOffset, count: 100, order: 'desc' }
+            { page: pageOffset, count: 100, order: 'asc' }
           );
           pageOffset = pageOffset + 1;
           while (latestAssets.length != 0) {
@@ -286,6 +286,7 @@ export async function updateLatestCardanoRegistryEntries(
             latestAssets = await blockfrost.assetsPolicyById(source.policyId!, {
               page: pageOffset,
               count: 100,
+              order: 'asc',
             });
             pageOffset = pageOffset + 1;
           }
@@ -295,11 +296,6 @@ export async function updateLatestCardanoRegistryEntries(
               latestPage: pageOffset - 1,
               latestIdentifier: latestIdentifier,
             },
-          });
-
-          latestAssets = await blockfrost.assetsPolicyById(source.policyId!, {
-            page: pageOffset,
-            count: 100,
           });
         } catch (error) {
           logger.error('Error updating cardano registry entries', {
