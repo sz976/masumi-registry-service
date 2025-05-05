@@ -221,11 +221,7 @@ export async function updateHealthCheck(onlyEntriesAfter?: Date | undefined) {
           where: {
             registrySourceId: source.id,
             status: {
-              in: [
-                $Enums.Status.Online,
-                $Enums.Status.Offline,
-                $Enums.Status.Invalid,
-              ],
+              in: [$Enums.Status.Online, $Enums.Status.Offline],
             },
             lastUptimeCheck: {
               lte: onlyEntriesAfter,
@@ -245,8 +241,64 @@ export async function updateHealthCheck(onlyEntriesAfter?: Date | undefined) {
             },
           },
         });
+        const invalidEntries = await prisma.registryEntry.findMany({
+          where: {
+            registrySourceId: source.id,
+            status: {
+              in: [$Enums.Status.Online, $Enums.Status.Offline],
+            },
+            lastUptimeCheck: {
+              lte: onlyEntriesAfter,
+            },
+            uptimeCheckCount: {
+              lte: 20,
+            },
+          },
+          orderBy: { lastUptimeCheck: 'asc' },
+          take: 50,
+          include: {
+            RegistrySource: true,
+            Capability: true,
+            AgentPricing: {
+              include: {
+                FixedPricing: {
+                  include: { Amounts: true },
+                },
+              },
+            },
+          },
+        });
+        const filteredOutInvalidStaggeredEntries = invalidEntries.filter(
+          (e) => {
+            if (e.status !== $Enums.Status.Invalid) return true;
+            const retries = e.uptimeCheckCount;
+            const staggeredWaitTime = 1000 * 60 * 10 * retries;
+            return (
+              e.lastUptimeCheck.getTime() + staggeredWaitTime <
+              onlyEntriesAfter.getTime()
+            );
+          }
+        );
+        const excludedEntries = invalidEntries.filter(
+          (e) => !filteredOutInvalidStaggeredEntries.includes(e)
+        );
+        await Promise.allSettled(
+          excludedEntries.map(async (e) => {
+            await prisma.registryEntry.update({
+              where: { id: e.id },
+              data: {
+                lastUptimeCheck: new Date(),
+              },
+            });
+          })
+        );
+        const invalidBatch = filteredOutInvalidStaggeredEntries.slice(
+          0,
+          Math.min(10, filteredOutInvalidStaggeredEntries.length)
+        );
+        const combinedEntries = [...entries, ...invalidBatch];
         await healthCheckService.checkVerifyAndUpdateRegistryEntries({
-          registryEntries: entries,
+          registryEntries: combinedEntries,
           minHealthCheckDate: onlyEntriesAfter,
         });
       })
