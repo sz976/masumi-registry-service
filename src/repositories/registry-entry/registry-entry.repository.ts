@@ -14,6 +14,14 @@ async function getRegistryEntry(
   limit: number,
   network: Network
 ) {
+  const networkExists = await prisma.registrySource.findFirst({
+    where: {
+      network: network,
+    },
+  });
+  if (!networkExists) {
+    throw new Error('Network not found');
+  }
   return await prisma.registryEntry.findMany({
     where: {
       Capability: capability,
