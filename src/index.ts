@@ -19,10 +19,10 @@ initialize()
     const serverConfig = createConfig({
       inputSources: {
         get: ['query', 'params'],
-        post: ['body', 'params', 'files'],
+        post: ['body', 'params'],
         put: ['body', 'params'],
         patch: ['body', 'params'],
-        delete: ['query', 'params'],
+        delete: ['body', 'params'],
       },
       startupLogo: false,
 
