@@ -245,7 +245,7 @@ export async function updateHealthCheck(onlyEntriesAfter?: Date | undefined) {
           where: {
             registrySourceId: source.id,
             status: {
-              in: [$Enums.Status.Online, $Enums.Status.Offline],
+              in: [$Enums.Status.Invalid],
             },
             lastUptimeCheck: {
               lte: onlyEntriesAfter,
@@ -254,7 +254,7 @@ export async function updateHealthCheck(onlyEntriesAfter?: Date | undefined) {
               lte: 20,
             },
           },
-          orderBy: { lastUptimeCheck: 'asc' },
+          orderBy: { updatedAt: 'asc' },
           take: 50,
           include: {
             RegistrySource: true,
@@ -287,7 +287,7 @@ export async function updateHealthCheck(onlyEntriesAfter?: Date | undefined) {
             await prisma.registryEntry.update({
               where: { id: e.id },
               data: {
-                lastUptimeCheck: new Date(),
+                updatedAt: new Date(),
               },
             });
           })
