@@ -102,7 +102,7 @@ async function checkVerifyAndUpdateRegistryEntries({
 }) {
   if (minHealthCheckDate == null) return registryEntries;
 
-  return await Promise.allSettled(
+  const data = await Promise.allSettled(
     registryEntries.map(async (entry) => {
       const registrySource = entry.RegistrySource;
       if (registrySource == null || registrySource.policyId == null) {
@@ -135,6 +135,7 @@ async function checkVerifyAndUpdateRegistryEntries({
       });
     })
   );
+  return data.filter((r) => r.status === 'fulfilled').map((r) => r.value);
 }
 
 export const healthCheckService = {
