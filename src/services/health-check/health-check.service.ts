@@ -44,7 +44,8 @@ async function checkAndVerifyEndpoint({
     //we need to verify the registry points to the correct url to prevent a later registry providing a wrong payment address
     //if the registry is wrong, we usually want to invalidate the entry in the database and exclude it from further checks
 
-    return responseBody.agentIdentifier === assetIdentifier
+    return responseBody.agentIdentifier === assetIdentifier ||
+      responseBody.type == 'masumi-agent'
       ? $Enums.Status.Online
       : $Enums.Status.Invalid;
   } catch {
