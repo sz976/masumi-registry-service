@@ -188,7 +188,13 @@ export async function updateHealthCheck(onlyEntriesAfter?: Date | undefined) {
 
   if (sources.length == 0) return;
 
-  const release = await healthMutex.acquire();
+  let release: MutexInterface.Releaser | null;
+  try {
+    release = await tryAcquire(healthMutex).acquire();
+  } catch (e) {
+    logger.info('Mutex timeout when locking', { error: e });
+    return;
+  }
   //if we are already performing an update, we wait for it to finish and return
 
   sources = await prisma.registrySource.findMany({
@@ -203,6 +209,7 @@ export async function updateHealthCheck(onlyEntriesAfter?: Date | undefined) {
     release();
     return;
   }
+
   try {
     //sanity checks
     const invalidSourcesTypes = sources.filter(
@@ -332,7 +339,13 @@ export async function updateLatestCardanoRegistryEntries(
 
   if (sources.length == 0) return;
 
-  const release = await updateMutex.acquire();
+  let release: MutexInterface.Releaser | null;
+  try {
+    release = await tryAcquire(updateMutex).acquire();
+  } catch (e) {
+    logger.info('Mutex timeout when locking', { error: e });
+    return;
+  }
   //if we are already performing an update, we wait for it to finish and return
 
   sources = await prisma.registrySource.findMany({
