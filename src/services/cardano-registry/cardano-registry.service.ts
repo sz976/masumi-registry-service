@@ -103,7 +103,7 @@ export async function updateDeregisteredCardanoRegistryEntries() {
     return;
   }
 
-  await Promise.all(
+  await Promise.allSettled(
     sources.map(async (source) => {
       try {
         const blockfrost = new BlockFrostAPI({
@@ -167,6 +167,146 @@ export async function updateDeregisteredCardanoRegistryEntries() {
   );
   release();
 }
+const healthMutex = new Mutex();
+export async function updateHealthCheck(onlyEntriesAfter?: Date | undefined) {
+  logger.info('Updating cardano registry entries health check: ', {
+    onlyEntriesAfter: onlyEntriesAfter,
+  });
+  if (onlyEntriesAfter == undefined) {
+    onlyEntriesAfter = new Date();
+  }
+
+  //we do not need any isolation level here as worst case we have a few duplicate checks in the next run but no data loss. Advantage we do not need to lock the table
+  let sources = await prisma.registrySource.findMany({
+    where: {
+      type: $Enums.RegistryEntryType.Web3CardanoV1,
+    },
+    include: {
+      RegistrySourceConfig: true,
+    },
+  });
+
+  if (sources.length == 0) return;
+
+  const release = await healthMutex.acquire();
+  //if we are already performing an update, we wait for it to finish and return
+
+  sources = await prisma.registrySource.findMany({
+    where: {
+      type: $Enums.RegistryEntryType.Web3CardanoV1,
+    },
+    include: {
+      RegistrySourceConfig: true,
+    },
+  });
+  if (sources.length == 0) {
+    release();
+    return;
+  }
+  try {
+    //sanity checks
+    const invalidSourcesTypes = sources.filter(
+      (s) => s.type !== $Enums.RegistryEntryType.Web3CardanoV1
+    );
+    if (invalidSourcesTypes.length > 0) throw new Error('Invalid source types');
+    const invalidSourceIdentifiers = sources.filter((s) => s.policyId == null);
+    if (invalidSourceIdentifiers.length > 0)
+      //this should never happen unless the db is corrupted or someone played with the settings
+      throw new Error('Invalid source identifiers');
+
+    logger.debug('updating entries from sources', { count: sources.length });
+    await Promise.allSettled(
+      sources.map(async (source) => {
+        const entries = await prisma.registryEntry.findMany({
+          where: {
+            registrySourceId: source.id,
+            status: {
+              in: [$Enums.Status.Online, $Enums.Status.Offline],
+            },
+            lastUptimeCheck: {
+              lte: onlyEntriesAfter,
+            },
+          },
+          orderBy: { lastUptimeCheck: 'asc' },
+          take: 50,
+          include: {
+            RegistrySource: true,
+            Capability: true,
+            AgentPricing: {
+              include: {
+                FixedPricing: {
+                  include: { Amounts: true },
+                },
+              },
+            },
+          },
+        });
+        const invalidEntries = await prisma.registryEntry.findMany({
+          where: {
+            registrySourceId: source.id,
+            status: {
+              in: [$Enums.Status.Invalid],
+            },
+            lastUptimeCheck: {
+              lte: onlyEntriesAfter,
+            },
+            uptimeCheckCount: {
+              lte: 20,
+            },
+          },
+          orderBy: { updatedAt: 'asc' },
+          take: 50,
+          include: {
+            RegistrySource: true,
+            Capability: true,
+            AgentPricing: {
+              include: {
+                FixedPricing: {
+                  include: { Amounts: true },
+                },
+              },
+            },
+          },
+        });
+        const filteredOutInvalidStaggeredEntries = invalidEntries.filter(
+          (e) => {
+            if (e.status !== $Enums.Status.Invalid) return true;
+            const retries = e.uptimeCheckCount;
+            const staggeredWaitTime = 1000 * 60 * 10 * retries;
+            return (
+              e.lastUptimeCheck.getTime() + staggeredWaitTime <
+              onlyEntriesAfter.getTime()
+            );
+          }
+        );
+        const excludedEntries = invalidEntries.filter(
+          (e) => !filteredOutInvalidStaggeredEntries.includes(e)
+        );
+        await Promise.allSettled(
+          excludedEntries.map(async (e) => {
+            await prisma.registryEntry.update({
+              where: { id: e.id },
+              data: {
+                updatedAt: new Date(),
+              },
+            });
+          })
+        );
+        const invalidBatch = filteredOutInvalidStaggeredEntries.slice(
+          0,
+          Math.min(10, filteredOutInvalidStaggeredEntries.length)
+        );
+        const combinedEntries = [...entries, ...invalidBatch];
+        await healthCheckService.checkVerifyAndUpdateRegistryEntries({
+          registryEntries: combinedEntries,
+          minHealthCheckDate: onlyEntriesAfter,
+        });
+      })
+    );
+  } finally {
+    release();
+  }
+}
 
 const updateMutex = new Mutex();
 export async function updateLatestCardanoRegistryEntries(
@@ -207,6 +347,7 @@ export async function updateLatestCardanoRegistryEntries(
     },
   });
   if (sources.length == 0) {
+    release();
     return;
   }
 

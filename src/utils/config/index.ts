@@ -7,6 +7,9 @@ if (process.env.DATABASE_URL == null)
 const updateCardanoRegistryInterval = Number(
   process.env.UPDATE_CARDANO_REGISTRY_INTERVAL ?? '50'
 );
+const updateHealthCheckInterval = Number(
+  process.env.UPDATE_HEALTH_CHECK_INTERVAL ?? '100'
+);
 if (updateCardanoRegistryInterval < 20)
   throw new Error('Invalid UPDATE_CARDANO_REGISTRY_INTERVAL ENV variables');
 
@@ -21,6 +24,7 @@ export const CONFIG = {
   DATABASE_URL: process.env.DATABASE_URL,
   UPDATE_CARDANO_REGISTRY_INTERVAL: updateCardanoRegistryInterval,
   UPDATE_CARDANO_DEREGISTER_INTERVAL: updateCardanoDeregisterInterval,
+  UPDATE_HEALTH_CHECK_INTERVAL: updateHealthCheckInterval,
   VERSION: '0.1.2',
 };
 
