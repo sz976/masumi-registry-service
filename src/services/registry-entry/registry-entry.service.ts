@@ -57,8 +57,11 @@ async function getRegistryEntries(
         minHealthCheckDate: input.minHealthCheckDate,
       }
     );
+    const filteredResult = result
+      .filter((r) => r.status === 'fulfilled')
+      .map((r) => r.value);
 
-    healthCheckedEntries.push(...result);
+    healthCheckedEntries.push(...filteredResult);
 
     if (registryEntries.length < input.limit * 2) break;
     currentCursorId = registryEntries[registryEntries.length - 1].id;
