@@ -5,10 +5,10 @@ import { hashToken } from '../src/utils/crypto';
 dotenv.config();
 const prisma = new PrismaClient();
 export const seed = async (prisma: PrismaClient) => {
-  const adminKey = process.env.Admin_KEY;
+  const adminKey = process.env.ADMIN_KEY;
   if (adminKey != null) {
     if (adminKey.length < 15) throw Error('API-KEY is insecure');
-    console.log('Admin_KEY is seeded');
+    console.log('ADMIN_KEY is seeded');
     await prisma.apiKey.upsert({
       create: {
         token: adminKey,
@@ -25,11 +25,11 @@ export const seed = async (prisma: PrismaClient) => {
       where: { token: adminKey },
     });
   } else {
-    console.log('Admin_KEY is seeded');
+    console.log('ADMIN_KEY is seeded');
   }
 
   const registryPolicyPreprod = DEFAULTS.REGISTRY_POLICY_ID_Preprod;
-  if (process.env.Blockfrost_API_KEY_Preprod != null) {
+  if (process.env.BLOCKFROST_API_KEY_PREPROD != null) {
     console.log('REGISTRY_SOURCE_IDENTIFIER_CARDANO_Preprod is seeded');
     await prisma.registrySource.upsert({
       create: {
@@ -40,7 +40,7 @@ export const seed = async (prisma: PrismaClient) => {
         RegistrySourceConfig: {
           create: {
             rpcProvider: RPCProvider.Blockfrost,
-            rpcProviderApiKey: process.env.Blockfrost_API_KEY_Preprod,
+            rpcProviderApiKey: process.env.BLOCKFROST_API_KEY_PREPROD,
           },
         },
       },
@@ -57,7 +57,7 @@ export const seed = async (prisma: PrismaClient) => {
   }
 
   const registrySourcePolicyMainnet = DEFAULTS.REGISTRY_POLICY_ID_Mainnet;
-  if (process.env.Blockfrost_API_KEY_Mainnet != null) {
+  if (process.env.BLOCKFROST_API_KEY_MAINNET != null) {
     console.log('REGISTRY_SOURCE_IDENTIFIER_CARDANO_Mainnet is seeded');
     await prisma.registrySource.upsert({
       create: {
@@ -68,7 +68,7 @@ export const seed = async (prisma: PrismaClient) => {
         RegistrySourceConfig: {
           create: {
             rpcProvider: RPCProvider.Blockfrost,
-            rpcProviderApiKey: process.env.Blockfrost_API_KEY_Mainnet,
+            rpcProviderApiKey: process.env.BLOCKFROST_API_KEY_MAINNET,
           },
         },
       },

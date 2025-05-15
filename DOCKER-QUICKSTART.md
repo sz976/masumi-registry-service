@@ -18,8 +18,8 @@ This guide will help you quickly deploy Masumi Registry Service using Docker Com
    # At minimum, update these values
    POSTGRES_PASSWORD=your_secure_postgres_password
    ENCRYPTION_KEY=your_secure_32_character_encryption_key (must be at least 32 chars)
-   Admin_KEY=your_secure_admin_key
-   Blockfrost_API_KEY_Preprod=your_blockfrost_preprod_api_key
+   ADMIN_KEY=your_secure_admin_key
+   BLOCKFROST_API_KEY_PREPROD=your_blockfrost_preprod_api_key
    ```
 
 2. **Generate SSL Certificates**
