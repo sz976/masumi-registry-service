@@ -1,5 +1,6 @@
 name: Deploy to Azure VM (Registry Service)
 
+
 # Azure VM deployment workflow for Masumi Registry Service
 # This workflow deploys the registry service to an Azure VM with Docker and Docker Compose installed
 on:
